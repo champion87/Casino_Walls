@@ -7,6 +7,16 @@ from fastapi.security import APIKeyHeader, APIKeyQuery
 import random
 import string
 
+SYMBOLS = {
+    "clubs" : "♣",
+    "diamonds" : "♦",
+    "hearts" : "♥",
+    "spades" : "♠",
+}
+
+# class card_t:
+#     symbol 
+
 API_KEYS = {}
 KEYS_TO_COINS = {}
 app = FastAPI()
@@ -54,8 +64,8 @@ def read_item():
     pass
 
 @app.get("/games/black_jack/draw")
-def read_item():
-    return {"card": "I'ma random card"}
+def BJ_draw(api_key):
+    return {"card": "A♠"}
 
 @app.get("/games/black_jack/fold")
 def read_item():
