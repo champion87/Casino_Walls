@@ -61,7 +61,14 @@ class BlackJack:
         return self.BJ_sum > 21 # BJ max hand value
     
     def to_json(self):
-        return {"hand" : self.hand.to_json}
+        return {
+            "hand" : self.hand.to_list_of_str(),
+            "sum" : self.BJ_sum,
+            "end_game" : self.is_overdraft()
+            }
+        
+    def draw(self):
+        self.hand.draw_to_hand()
     
 
 class Card:
@@ -123,7 +130,7 @@ class Hand:
         return sum(card.get_BJ_value() for card in self.cards)
         return 69 # TODO Aces
     
-    def import_me(self):
-        return 
+    def to_list_of_str(self):
+        return [str(card) for card in self.cards]
 
 
