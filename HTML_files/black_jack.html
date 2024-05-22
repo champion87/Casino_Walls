@@ -12,11 +12,10 @@ canvas {
 </head>
 <body onload="startGame()">
     <br>
+    <p>Wanna draw another card?</p>
     <button onclick="choose(1)">YES</button> 
     <button onclick="choose(0)">NO</button> 
     <!-- 1 is for 'yes', 0 is for 'no' -->
-    <p>Use the ACCELERATE button to stay in the air</p>
-    <p>How long can you stay alive?</p>
 </body>
 </html>
 
@@ -33,8 +32,10 @@ function startGame() {
     myGameArea.start();
 }
 
-function choose(choice) {
-    console.log('Hello World');
+function choose(choice) {   
+    console.log('Hello World', choice);
+    const response = await fetch("/games/black_jack/draw");
+    const movies = await response.json();
 }
 
 var myGameArea = {

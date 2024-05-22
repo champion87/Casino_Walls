@@ -19,9 +19,23 @@ def read_item(item_id: int, q: Union[str, None] = None):
 
 @app.get("/games/wheel_of_fortune/", response_class=HTMLResponse)
 def read_item():
-    # return {"hello": "world"}
     return FileResponse('HTML_files/wheel_of_fortune.html')
 
+@app.get("/games/black_jack/", response_class=HTMLResponse)
+def read_item():
+    return FileResponse('HTML_files/black_jack.html')
+
+@app.get("/games/black_jack/start_game", response_class=HTMLResponse)
+def read_item():
+    pass
+
+@app.get("/games/black_jack/draw", response_class=HTMLResponse)
+def read_item():
+    pass
+
+@app.get("/games/black_jack/fold", response_class=HTMLResponse)
+def read_item():
+    pass
 
 @app.get("/games/", response_class=HTMLResponse)
 async def read_root():
