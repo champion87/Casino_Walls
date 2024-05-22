@@ -38,7 +38,6 @@ class User:
         self.wheel = NO_GAME
 
         
-
 def api_key_query(api_key=Cookie()):
     return api_key
 
