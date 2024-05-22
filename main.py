@@ -29,8 +29,8 @@ def key_gen():
     return result_str
 
 
-def get_page(page_address, legal_key):
-    if legal_key:
+def get_page(page_address):
+    if Security(get_api_key):
         return FileResponse(page_address)
     
     return FileResponse('HTML_files/root_page.html')
@@ -48,16 +48,16 @@ async def read_root():
     return FileResponse('HTML_files/root_page.html')
 
 @app.get("/games/", response_class=HTMLResponse)
-async def read_games(api_key: bool = Security(get_api_key)):
-    return get_page('HTML_files/games.html', api_key)
+async def read_games():
+    return get_page('HTML_files/games.html')
 
 @app.get("/games/wheel_of_fortune/", response_class=HTMLResponse)
-def read_item(api_key: bool = Security(get_api_key)):
-    return get_page('HTML_files/wheel_of_fortune.html', api_key)
+def read_item():
+    return get_page('HTML_files/wheel_of_fortune.html')
 
 @app.get("/games/black_jack/", response_class=HTMLResponse)
-def read_item(api_key: bool = Security(get_api_key)):
-    return get_page('HTML_files/black_jack.html', api_key)
+def read_item():
+    return get_page('HTML_files/black_jack.html')
 
 @app.get("/games/black_jack/start_game")
 def read_item():
