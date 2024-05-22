@@ -21,6 +21,11 @@ API_KEYS = {}
 KEYS_TO_COINS = {}
 app = FastAPI()
 
+# api_key |-> User
+USERS = {}
+
+class User:
+    pass
 
 api_key_query = APIKeyQuery(name="api-key", auto_error=False)
 api_key_header = APIKeyHeader(name="x-api-key", auto_error=False)
@@ -64,6 +69,7 @@ def read_item():
 
 @app.get("/games/black_jack/draw")
 def BJ_draw(api_key):
+    # USERS[api_key].
     return {"card": "A♠"}
 
 @app.get("/games/black_jack/fold")
