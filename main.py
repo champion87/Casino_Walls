@@ -7,6 +7,7 @@ from fastapi.security import APIKeyHeader, APIKeyQuery
 import random
 import math
 import string
+from card_game import *
 
 SYMBOLS = {
     "clubs": "♣",
@@ -22,6 +23,19 @@ API_KEYS = {}
 KEYS_TO_COINS = {}
 app = FastAPI()
 
+# api_key |-> User
+USERS = {}
+
+NO_GAME = None
+
+
+class User:
+    def __init__(self, name):
+        self.name = name
+        self.coins = 100
+        self.black_jack = NO_GAME
+        self.wheel = NO_GAME
+
 
 api_key_query = APIKeyQuery(name="api-key", auto_error=False)
 api_key_header = APIKeyHeader(name="x-api-key", auto_error=False)
@@ -32,6 +46,11 @@ def key_gen():
         random.choice(string.ascii_letters + string.digits) for i in range(20)
     )
     return result_str
+
+
+def get_page(page_address):
+    if Security(get_api_key):
+        return FileResponse(page_address)
 
 
 def get_api_key(
@@ -57,17 +76,20 @@ async def read_root(request: Request):
 
 @app.get("/games/wheel_of_fortune/", response_class=HTMLResponse)
 def read_item():
+    register_demo()  # DELETE
     return FileResponse("HTML_files/wheel_of_fortune.html")
 
 
-@app.get("/games/wheel_of_fortune/spin_wheel/{bet_money}")
-def generate_random_prize(bet_money):
-    bet_money = int(bet_money)
+@app.get("/games/wheel_of_fortune/spin_wheel/{bet_percentage}")
+def generate_random_prize(bet_percentage):
+    api_key = "3"
+    bet_percentage = int(bet_percentage)
     possible_prizes_list = [0.1, 1.9, 0.3, 1.7, 0.5, 0, 1.5, 0.7, 0.9, 1.1]
     # make it less uniform and more close to a normal distribution, maybe using sum of bernulli random variables
 
-    prize = math.floor(bet_money * random.choice(possible_prizes_list))
-    return {"coins": prize}
+    prize = math.floor(bet_percentage * random.choice(possible_prizes_list))
+    USERS[api_key].coins += prize - bet_percentage
+    return {"prize": prize, "coins": USERS[api_key].coins}
 
 
 @app.get("/games/black_jack/", response_class=HTMLResponse)
@@ -75,13 +97,23 @@ def read_item():
     return FileResponse("HTML_files/black_jack.html")
 
 
+@app.get("/register_user_3")
+def register_demo():
+    USERS["3"] = User("Lidor")
+
+
 @app.get("/games/black_jack/start_game")
-def read_item():
-    pass
+def play_BJ():
+    api_key = "3"  # TODO
+    USERS[api_key].black_jack = BlackJack()
+    # return USERS[api_key].black_jack.
+    # TODO take money
 
 
 @app.get("/games/black_jack/draw")
 def BJ_draw(api_key):
+    api_key = "3"  # TODO
+    USERS[api_key].black_jack = BlackJack()
     return {"card": "A♠"}
 
 
