@@ -2,7 +2,7 @@ from typing import Union
 from fastapi.responses import HTMLResponse
 from fastapi import FastAPI
 from pydantic import BaseModel
-from starlette.responses import FileResponse 
+from starlette.responses import FileResponse
 
 
 app = FastAPI()
