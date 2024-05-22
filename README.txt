@@ -6,5 +6,9 @@ Startup:
 To run:
 
 >>> fastapi dev main.py
-Brose at:
+
+For query brose at:
 http://127.0.0.1:8000/items/5?q=somequery
+
+For docs brose at:
+http://127.0.0.1:8000/docs
