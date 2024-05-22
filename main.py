@@ -5,17 +5,18 @@ from pydantic import BaseModel
 from starlette.responses import FileResponse
 from fastapi.security import APIKeyHeader, APIKeyQuery
 import random
+import math
 import string
 
 SYMBOLS = {
-    "clubs" : "♣",
-    "diamonds" : "♦",
-    "hearts" : "♥",
-    "spades" : "♠",
+    "clubs": "♣",
+    "diamonds": "♦",
+    "hearts": "♥",
+    "spades": "♠",
 }
 
 # class card_t:
-#     symbol 
+#     symbol
 
 API_KEYS = {}
 KEYS_TO_COINS = {}
@@ -24,11 +25,14 @@ app = FastAPI()
 
 api_key_query = APIKeyQuery(name="api-key", auto_error=False)
 api_key_header = APIKeyHeader(name="x-api-key", auto_error=False)
- 
+
+
 def key_gen():
-    result_str = ''.join(random.choice(string.ascii_letters + string.digits) for i in range(20))
+    result_str = "".join(
+        random.choice(string.ascii_letters + string.digits) for i in range(20)
+    )
     return result_str
-    
+
 
 def get_api_key(
     api_key_query: str = Security(api_key_query),
@@ -45,47 +49,65 @@ def get_api_key(
         detail="Invalid or missing API Key",
     )
 
+
 @app.get("/", response_class=HTMLResponse)
-async def read_root(request : Request):
-    return FileResponse('HTML_files/root_page.html')
+async def read_root(request: Request):
+    return FileResponse("HTML_files/root_page.html")
 
 
 @app.get("/games/wheel_of_fortune/", response_class=HTMLResponse)
 def read_item():
-    return FileResponse('HTML_files/wheel_of_fortune.html')
+    return FileResponse("HTML_files/wheel_of_fortune.html")
+
+
+@app.get("/games/wheel_of_fortune/spin_wheel/{bet_money}")
+def generate_random_prize(bet_money):
+    bet_money = int(bet_money)
+    possible_prizes_list = [0.1, 1.9, 0.3, 1.7, 0.5, 0, 1.5, 0.7, 0.9, 1.1]
+    # make it less uniform and more close to a normal distribution, maybe using sum of bernulli random variables
+
+    prize = math.floor(bet_money * random.choice(possible_prizes_list))
+    return {"coins": prize}
+
 
 @app.get("/games/black_jack/", response_class=HTMLResponse)
 def read_item():
-    return FileResponse('HTML_files/black_jack.html')
+    return FileResponse("HTML_files/black_jack.html")
+
 
 @app.get("/games/black_jack/start_game")
 def read_item():
     pass
 
+
 @app.get("/games/black_jack/draw")
 def BJ_draw(api_key):
     return {"card": "A♠"}
+
 
 @app.get("/games/black_jack/fold")
 def read_item():
     pass
 
+
 @app.get("/games/", response_class=HTMLResponse)
 async def read_games(api_key: str = Security(get_api_key)):
-    return FileResponse('HTML_files/games.html')
+    return FileResponse("HTML_files/games.html")
 
 
 @app.get("/get_my_api_key/")
-async def read_my_api_key(request : Request):
+async def read_my_api_key(request: Request):
     client_ip = request.client.host
     return API_KEYS[client_ip]
+
 
 @app.get("/get_coin_amount/{key}")
 async def get_coin_amount(key):
     return str(KEYS_TO_COINS[key])
 
+
 @app.get("/create_guest_acount/")
-async def create_guest_acount(request : Request):
+async def create_guest_acount(request: Request):
     client_ip = request.client.host
     my_api_key = key_gen()
     API_KEYS[client_ip] = my_api_key

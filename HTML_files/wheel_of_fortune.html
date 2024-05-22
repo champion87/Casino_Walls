@@ -6,23 +6,58 @@
     </title>
 </head>
 
-<body>
+<body onload="start()">
     <h1>Welcome to the wheel of fortune</h1>
-    <button type="button">spin the wheel</button>
-    <button onclick="display_rules()">rules</button>
+    <button onclick="spin_wheel()" id="spin">spin the wheel (5 coins)</button>
 
+    <button onclick="open_rules()" id="open">open rules</button>
+    <button onclick="close_rules()" id="close">close rules</button>
+    <p id="text">Spinning the wheel will cost you 5 coins. You will recieve back a random amount of coins between 0 and
+        10. Good luck!</p>
+    <p id="prize_text"></p>
 
 
 
 </body>
-
-
 <script>
-    var RULES_MESSAGE = "The rules of the game are blaa blaa blaaaaaaaaaaa";
-    function display_rules() {
-        window.alert('The rules of the game are: bla bla bla');
+    //var RULES_MESSAGE = "The rules of the game are blaa blaa blaaaaaaaaaaa";
+    function start() {
+        document.getElementById('open').style.display = "inline"
+        document.getElementById('close').style.display = "none"
+        document.getElementById('text').style.display = "none"
+    }
+    function open_rules() {
+        document.getElementById('open').style.display = 'none'
+        document.getElementById('close').style.display = 'inline'
+        document.getElementById('text').style.display = 'inline'
 
     }
+
+    function close_rules() {
+        document.getElementById('open').style.display = 'inline'
+        document.getElementById('close').style.display = 'none'
+        document.getElementById('text').style.display = 'none'
+    }
+
+    // function spin_wheel() {
+    //     let x = Math.floor(Math.random() * 11)
+    //     document.getElementById('prize_text').innerHTML = 'Your prize is ' + x + " coins"
+
+    // }
+
+
+    async function spin_wheel() {
+        bet_money = 50
+        response = await fetch("/games/wheel_of_fortune/spin_wheel/" + bet_money);
+        json = await response.json();
+
+        prize = json.coins
+        document.getElementById('prize_text').innerHTML = 'Your prize is ' + prize + " coins"
+
+    }
+
+
+
 
 
 </script>
