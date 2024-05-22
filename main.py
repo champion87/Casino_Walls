@@ -10,19 +10,19 @@ app = FastAPI()
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root():
-    return "<html><head><title>Casino Walls</title></head><body><h1>Welcome to Casino walls</h1><p>Here you can play games</p></body></html>"
+    return FileResponse('HTML_files/root_page.html')
 
 
 @app.get("/items/{item_id}")
 def read_item(item_id: int, q: Union[str, None] = None):
     return {"item_id": item_id, "q": q}
 
-@app.get("/games/wheel_of_fortune", response_class=HTMLResponse)
+@app.get("/games/wheel_of_fortune/", response_class=HTMLResponse)
 def read_item():
     # return {"hello": "world"}
     return FileResponse('HTML_files/wheel_of_fortune.html')
 
-@app.get("/games/black_jack", response_class=HTMLResponse)
-def read_item():
-    # return {"hello": "world"}
-    return FileResponse('HTML_files/black_jack.html')
+
+@app.get("/games/", response_class=HTMLResponse)
+async def read_root():
+    return FileResponse('HTML_files/games.html')
