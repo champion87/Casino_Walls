@@ -66,8 +66,6 @@ def read_item(key_passed: bool = Security(get_api_key)):
 def read_item(key_passed: bool = Security(get_api_key)):
     return FileResponse('HTML_files/black_jack.html')
 
-def read_item():
-    return FileResponse('HTML_files/black_jack.html')
 
 @app.get("/register_user_3")
 def register_demo():
