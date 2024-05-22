@@ -18,5 +18,6 @@ def read_item(item_id: int, q: Union[str, None] = None):
     return {"item_id": item_id, "q": q}
 
 @app.get("/games/wheel_of_fortune", response_class=HTMLResponse)
-def read_item(item_id: int, q: Union[str, None] = None):
-    return FileResponse('index.html')
+def read_item():
+    # return {"hello": "world"}
+    return FileResponse('wheel_of_fortune.html')
