@@ -58,6 +58,21 @@ async def read_root(request : Request):
 def read_item():
     return FileResponse('HTML_files/wheel_of_fortune.html')
 
+@app.get("/games/black_jack/", response_class=HTMLResponse)
+def read_item():
+    return FileResponse('HTML_files/black_jack.html')
+
+@app.get("/games/black_jack/start_game")
+def read_item():
+    pass
+
+@app.get("/games/black_jack/draw")
+def read_item():
+    return {"card": "I'ma random card"}
+
+@app.get("/games/black_jack/fold")
+def read_item():
+    pass
 
 @app.get("/games/", response_class=HTMLResponse)
 async def read_games(api_key: str = Security(get_api_key)):
