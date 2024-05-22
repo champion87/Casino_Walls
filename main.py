@@ -6,7 +6,7 @@ from starlette.responses import FileResponse
 from fastapi.security import APIKeyHeader, APIKeyQuery
 import random
 import string
-from card_game import *
+import card_game
 
 
 # class card_t:
@@ -75,19 +75,25 @@ def read_item():
 def register_demo():
     USERS["3"] = User("Lidor")
 
+def end_game():
+    print("BJ game ended!")
+    # TODO take money
+
 @app.get("/games/black_jack/start_game")
 def play_BJ():
     api_key = "3" # TODO
-    USERS[api_key].black_jack = BlackJack()
-    return USERS[api_key].black_jack.
-    # TODO take money
-    
+    USERS[api_key].black_jack = card_game.BlackJack()
+    if USERS[api_key].black_jack.is_overdraft():
+        end_game()
+    return USERS[api_key].black_jack.to_json()
 
 @app.get("/games/black_jack/draw")
 def BJ_draw(api_key):
     api_key = "3" # TODO
-    USERS[api_key].black_jack = BlackJack()
-    return {"card": "A♠"}
+    USERS[api_key].black_jack.draw()
+    if USERS[api_key].black_jack.is_overdraft():
+        end_game()
+    return USERS[api_key].black_jack.to_json()
 
 @app.get("/games/black_jack/fold")
 def read_item():
