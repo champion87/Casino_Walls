@@ -33,6 +33,11 @@ api_key_header = APIKeyHeader(name="x-api-key", auto_error=False)
 def key_gen():
     result_str = ''.join(random.choice(string.ascii_letters + string.digits) for i in range(20))
     return result_str
+
+
+def get_page(page_address):
+    if Security(get_api_key):
+        return FileResponse(page_address)
     
 
 def get_api_key(
