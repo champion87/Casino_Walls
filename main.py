@@ -6,13 +6,8 @@ from starlette.responses import FileResponse
 from fastapi.security import APIKeyHeader, APIKeyQuery
 import random
 import string
+from card_game import *
 
-SYMBOLS = {
-    "clubs" : "♣",
-    "diamonds" : "♦",
-    "hearts" : "♥",
-    "spades" : "♠",
-}
 
 # class card_t:
 #     symbol 
@@ -24,8 +19,16 @@ app = FastAPI()
 # api_key |-> User
 USERS = {}
 
+NO_GAME = None
+
 class User:
-    pass
+    def __init__(self, name):
+        self.name = name
+        self.coins = 100
+        self.black_jack = NO_GAME
+        self.wheel = NO_GAME
+
+        
 
 api_key_query = APIKeyQuery(name="api-key", auto_error=False)
 api_key_header = APIKeyHeader(name="x-api-key", auto_error=False)
@@ -68,13 +71,22 @@ def read_item():
 def read_item():
     return FileResponse('HTML_files/black_jack.html')
 
+@app.get("/register_user_3")
+def register_demo():
+    USERS["3"] = User("Lidor")
+
 @app.get("/games/black_jack/start_game")
-def read_item():
-    pass
+def play_BJ():
+    api_key = "3" # TODO
+    USERS[api_key].black_jack = BlackJack()
+    return USERS[api_key].black_jack.
+    # TODO take money
+    
 
 @app.get("/games/black_jack/draw")
 def BJ_draw(api_key):
-    # USERS[api_key].
+    api_key = "3" # TODO
+    USERS[api_key].black_jack = BlackJack()
     return {"card": "A♠"}
 
 @app.get("/games/black_jack/fold")
