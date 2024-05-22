@@ -74,6 +74,7 @@ def read_item():
 @app.get("/register_user_3")
 def register_demo():
     USERS["3"] = User("Lidor")
+    return {"hello" : "world"}
 
 def end_game():
     print("BJ game ended!")
