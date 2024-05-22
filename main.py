@@ -1,12 +1,21 @@
 from typing import Union
-from fastapi.responses import HTMLResponse
-from fastapi import HTTPException, status, Security, FastAPI, Request
+from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi import HTTPException, status, Security, FastAPI, Request, Cookie, Response
 from pydantic import BaseModel
 from starlette.responses import FileResponse
 from fastapi.security import APIKeyHeader, APIKeyQuery
+from fastapi.exceptions import HTTPException
 import random
 import math
 import string
+
+
+SYMBOLS = {
+    "clubs": "♣",
+    "diamonds": "♦",
+    "hearts": "♥",
+    "spades": "♠",
+}
 from card_game import *
 
 SYMBOLS = {
@@ -19,7 +28,7 @@ SYMBOLS = {
 # class card_t:
 #     symbol
 
-API_KEYS = {}
+API_KEYS = []
 KEYS_TO_COINS = {}
 app = FastAPI()
 
@@ -37,8 +46,8 @@ class User:
         self.wheel = NO_GAME
 
 
-api_key_query = APIKeyQuery(name="api-key", auto_error=False)
-api_key_header = APIKeyHeader(name="x-api-key", auto_error=False)
+def api_key_query(api_key=Cookie()):
+    return api_key
 
 
 def key_gen():
@@ -48,30 +57,30 @@ def key_gen():
     return result_str
 
 
-def get_page(page_address):
-    if Security(get_api_key):
-        return FileResponse(page_address)
+def un_authrized_handler(a, b):
+    return RedirectResponse(status_code=302, url="/")
 
 
 def get_api_key(
     api_key_query: str = Security(api_key_query),
-    api_key_header: str = Security(api_key_header),
-) -> str:
-    print(api_key_query)
-
-    if api_key_query in API_KEYS.values():
+) -> bool:
+    if api_key_query in API_KEYS:
         return api_key_query
-    if api_key_header in API_KEYS.values():
-        return api_key_header
-    raise HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Invalid or missing API Key",
-    )
+    raise HTTPException(status_code=401, detail="no valid token")
 
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
     return FileResponse("HTML_files/root_page.html")
+
+
+async def read_root():
+    return FileResponse("HTML_files/root_page.html")
+
+
+@app.get("/games/", response_class=HTMLResponse)
+async def read_games(key_passed: bool = Security(get_api_key)):
+    return FileResponse("HTML_files/games.html")
 
 
 @app.get("/games/wheel_of_fortune/", response_class=HTMLResponse)
@@ -92,7 +101,15 @@ def generate_random_prize(bet_percentage):
     return {"prize": prize, "coins": USERS[api_key].coins}
 
 
+def read_item(key_passed: bool = Security(get_api_key)):
+    return FileResponse("HTML_files/wheel_of_fortune.html")
+
+
 @app.get("/games/black_jack/", response_class=HTMLResponse)
+def read_item(key_passed: bool = Security(get_api_key)):
+    return FileResponse("HTML_files/black_jack.html")
+
+
 def read_item():
     return FileResponse("HTML_files/black_jack.html")
 
@@ -138,10 +155,24 @@ async def get_coin_amount(key):
     return str(KEYS_TO_COINS[key])
 
 
+@app.get("/get_coin_amount/")
+async def get_coin_amount(api_key: string = Security(get_api_key)):
+    return str(KEYS_TO_COINS[api_key])
+
+
 @app.get("/create_guest_acount/")
 async def create_guest_acount(request: Request):
     client_ip = request.client.host
+
+
+async def create_guest_acount(response: Response):
     my_api_key = key_gen()
-    API_KEYS[client_ip] = my_api_key
+    API_KEYS.append(my_api_key)
     KEYS_TO_COINS[my_api_key] = 100
     return my_api_key
+
+    response.set_cookie(key="api_key", value=my_api_key)
+    return {"status": "ok"}
+
+
+app.add_exception_handler(401, un_authrized_handler)
