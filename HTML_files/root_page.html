@@ -13,7 +13,7 @@
             async function sign_as_guest(){
                 let api_key;
                 let go_to = '/games/?api-key=';
-                const res = await fetch('/get_my_api_key/')
+                const res = await fetch('/create_guest_acount/')
                 api_key = await res.text();
                 go_to += api_key.slice(1, -1);
                 location.href = go_to

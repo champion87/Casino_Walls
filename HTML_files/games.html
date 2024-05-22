@@ -4,9 +4,18 @@
             Casino Walls
         </title>
     </head>
-    <body>
+    <body onload="display_coin_amount()">
         <h1>This is the main game screen please chose a game</h1>
-        <p>coin count: 100</p>
-        <button onclick="location.href='/games/wheel_of_fortune/';">Go to wheel of fortune</button> 
+        <p id="coins">coin count: </p>
+        <button onclick="location.href='/games/wheel_of_fortune/';">Go to wheel of fortune</button>
+        <script>
+            async function display_coin_amount(){
+                const key_res = await fetch('/get_my_api_key/');
+                let api_key = await key_res.text();
+                const coin_res = await fetch('/get_coin_amount/' + api_key.slice(1,-1));
+                let coin_amount = await coin_res.text();
+                document.getElementById("coins").textContent = "coin amount: " + coin_amount.slice(1, -1);
+            }
+        </script>
     </body>
 </html>
