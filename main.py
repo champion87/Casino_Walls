@@ -13,40 +13,41 @@ app = FastAPI()
 
 
 api_key_query = APIKeyQuery(name="api-key", auto_error=False)
-api_key_header = APIKeyHeader(name="x-api-key", auto_error=False)
  
 def key_gen():
     result_str = ''.join(random.choice(string.ascii_letters + string.digits) for i in range(20))
     return result_str
+
+
+def get_page(page_address, legal_key):
+    if legal_key:
+        return FileResponse(page_address)
     
+    return FileResponse('HTML_files/root_page.html')
 
 def get_api_key(
     api_key_query: str = Security(api_key_query),
-    api_key_header: str = Security(api_key_header),
-) -> str:
-    print(api_key_query)
-
+) -> bool:
     if api_key_query in API_KEYS.values():
-        return api_key_query
-    if api_key_header in API_KEYS.values():
-        return api_key_header
-    raise HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Invalid or missing API Key",
-    )
+        return True
+    return False
+    
 
 @app.get("/", response_class=HTMLResponse)
-async def read_root(request : Request):
+async def read_root():
     return FileResponse('HTML_files/root_page.html')
 
+@app.get("/games/", response_class=HTMLResponse)
+async def read_games(api_key: bool = Security(get_api_key)):
+    return get_page('HTML_files/games.html', api_key)
 
 @app.get("/games/wheel_of_fortune/", response_class=HTMLResponse)
-def read_item():
-    return FileResponse('HTML_files/wheel_of_fortune.html')
+def read_item(api_key: bool = Security(get_api_key)):
+    return get_page('HTML_files/wheel_of_fortune.html', api_key)
 
 @app.get("/games/black_jack/", response_class=HTMLResponse)
-def read_item():
-    return FileResponse('HTML_files/black_jack.html')
+def read_item(api_key: bool = Security(get_api_key)):
+    return get_page('HTML_files/black_jack.html', api_key)
 
 @app.get("/games/black_jack/start_game")
 def read_item():
@@ -59,10 +60,6 @@ def read_item():
 @app.get("/games/black_jack/fold")
 def read_item():
     pass
-
-@app.get("/games/", response_class=HTMLResponse)
-async def read_games(api_key: str = Security(get_api_key)):
-    return FileResponse('HTML_files/games.html')
 
 
 @app.get("/get_my_api_key/")
