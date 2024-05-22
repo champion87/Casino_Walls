@@ -2,6 +2,7 @@ from typing import Union
 from fastapi.responses import HTMLResponse
 from fastapi import FastAPI
 from pydantic import BaseModel
+from starlette.responses import FileResponse 
 
 
 app = FastAPI()
@@ -16,6 +17,6 @@ async def read_root():
 def read_item(item_id: int, q: Union[str, None] = None):
     return {"item_id": item_id, "q": q}
 
-@app.get("/games/wheel_of_fortune", response_class=)
+@app.get("/games/wheel_of_fortune", response_class=HTMLResponse)
 def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
+    return FileResponse('index.html')
