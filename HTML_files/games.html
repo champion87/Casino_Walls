@@ -7,7 +7,8 @@
     <body onload="display_coin_amount()">
         <h1>This is the main game screen please chose a game</h1>
         <p id="coins">coin count: </p>
-        <button onclick="location.href='/games/wheel_of_fortune/';">Go to wheel of fortune</button>
+        <button onclick="go_to_page('/games/wheel_of_fortune/');">Go to wheel of fortune</button>
+        <button onclick="go_to_page('/games/black_jack/');">Go to black jack</button>
         <script>
             async function display_coin_amount(){
                 const key_res = await fetch('/get_my_api_key/');
@@ -16,6 +17,17 @@
                 let coin_amount = await coin_res.text();
                 document.getElementById("coins").textContent = "coin amount: " + coin_amount.slice(1, -1);
             }
+
+            async function go_to_page(page_address){
+                let api_key;
+                let go_to = page_address + '?api-key=';
+                const res = await fetch('/get_my_api_key/')
+                api_key = await res.text();
+                go_to += api_key.slice(1, -1);
+                console.log(go_to);
+                location.href = go_to;
+            }
+
         </script>
     </body>
 </html>
