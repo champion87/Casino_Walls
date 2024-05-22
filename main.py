@@ -15,6 +15,8 @@ SYMBOLS = {
     "hearts" : "♥",
     "spades" : "♠",
 }
+from card_game import *
+
 
 # class card_t:
 #     symbol 
@@ -23,6 +25,19 @@ API_KEYS = []
 KEYS_TO_COINS = {}
 app = FastAPI()
 
+# api_key |-> User
+USERS = {}
+
+NO_GAME = None
+
+class User:
+    def __init__(self, name):
+        self.name = name
+        self.coins = 100
+        self.black_jack = NO_GAME
+        self.wheel = NO_GAME
+
+        
 
 def api_key_query(api_key=Cookie()):
     return api_key
@@ -59,23 +74,30 @@ def read_item(key_passed: bool = Security(get_api_key)):
 def read_item(key_passed: bool = Security(get_api_key)):
     return FileResponse('HTML_files/black_jack.html')
 
-@app.get("/games/black_jack/start_game")
 def read_item():
-    pass
+    return FileResponse('HTML_files/black_jack.html')
+
+@app.get("/register_user_3")
+def register_demo():
+    USERS["3"] = User("Lidor")
+
+@app.get("/games/black_jack/start_game")
+def play_BJ():
+    api_key = "3" # TODO
+    USERS[api_key].black_jack = BlackJack()
+    return USERS[api_key].black_jack.
+    # TODO take money
+    
 
 @app.get("/games/black_jack/draw")
 def BJ_draw(api_key):
+    api_key = "3" # TODO
+    USERS[api_key].black_jack = BlackJack()
     return {"card": "A♠"}
 
 @app.get("/games/black_jack/fold")
 def read_item():
     pass
-
-
-@app.get("/get_my_api_key/")
-async def read_my_api_key(request : Request):
-    client_ip = request.client.host
-    return API_KEYS[client_ip]
 
 @app.get("/get_coin_amount/")
 async def get_coin_amount(api_key: string = Security(get_api_key)):

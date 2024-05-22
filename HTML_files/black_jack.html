@@ -9,12 +9,9 @@
     <p>Wanna draw another card?</p>
     <button onclick="choose('yes')">YES</button>
     <button onclick="choose('no')">NO</button>
-    <!-- 1 is for 'yes', 0 is for 'no' -->
 
     <p>Your Hand:</p>
     <p id="hand"></p>
-    <p id="test" onclick="die()">hey</p>
-
 </body>
 
 </html>
@@ -24,8 +21,6 @@
     var my_cards = ["test"]
 
     async function startGame() {
-        draw_card();
-        draw_card();
     }
 
     function choose(choice) {
@@ -41,15 +36,12 @@
         }
     }
 
-    function die() {
-        document.getElementById("test").style.display = 'none';
-    }
-
     // GETs and uploads the new card. Doesn't check game rules.
     async function draw_card()
     {
         response = await fetch("/games/black_jack/draw");
         json = await response.json();
+
         my_cards.push(json.card);
         document.getElementById("hand").innerHTML = my_cards.toString();
     }
