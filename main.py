@@ -4,6 +4,15 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from starlette.responses import FileResponse
 
+SYMBOLS = {
+    "clubs" : "♣",
+    "diamonds" : "♦",
+    "hearts" : "♥",
+    "spades" : "♠",
+}
+
+class card_t:
+    symbol
 
 app = FastAPI()
 
@@ -30,8 +39,8 @@ def read_item():
     pass
 
 @app.get("/games/black_jack/draw")
-def read_item():
-    return {"card": "I'ma random card"}
+def BJ_draw(api_key):
+    return {"card": "A♠"}
 
 @app.get("/games/black_jack/fold")
 def read_item():
