@@ -25,15 +25,15 @@ def read_item():
 def read_item():
     return FileResponse('HTML_files/black_jack.html')
 
-@app.get("/games/black_jack/start_game", response_class=HTMLResponse)
+@app.get("/games/black_jack/start_game")
 def read_item():
     pass
 
-@app.get("/games/black_jack/draw", response_class=HTMLResponse)
+@app.get("/games/black_jack/draw")
 def read_item():
-    pass
+    return {"card": "I'ma random card"}
 
-@app.get("/games/black_jack/fold", response_class=HTMLResponse)
+@app.get("/games/black_jack/fold")
 def read_item():
     pass
 
