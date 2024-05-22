@@ -38,7 +38,7 @@ def key_gen():
     result_str = ''.join(random.choice(string.ascii_letters + string.digits) for i in range(20))
     return result_str
 
-def un_authrized_handler(a, b):
+def un_anuthrized_handler(a, b):
     return RedirectResponse(status_code=302, url='/')
 
 
@@ -109,4 +109,4 @@ async def create_guest_acount(response : Response):
     response.set_cookie(key="api_key", value=my_api_key)
     return {"status" : "ok"}
 
-app.add_exception_handler(401, un_authrized_handler)
+app.add_exception_handler(401, un_anuthrized_handler)
