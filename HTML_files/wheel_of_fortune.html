@@ -9,17 +9,14 @@
 <body onload="start()">
     <h1>Welcome to the wheel of fortune</h1>
 
-
-
-
-
     <!--  <form action="/games/wheel_of_fortune/spin_wheel">  
     -->
     <label for="bet_percentage">Choose the percentage of your money you would like to bet:<br></label>
     <button onclick="open_rules()" id="open">open rules</button>
-    <button onclick="close_rules()" id="close">close rules</button>
-    <p id="text">Spinning the wheel will cost you 5 coins. You will recieve back a random amount of coins between 0 and
-        10. Good luck!</p><br><br>
+    <button onclick="close_rules()" id="close">close rules</button><br>
+    <p id="text">Spinning the wheel will cost you some percentage of your money. You will recieve back a random amount
+        of coins between 0 and
+        double the amount of your bet. Good luck!</p><br><br>
     <select name="bet_percentage" id="bet_percentage">
         <option value="1">1%</option>
         <option value="5">5%</option>
@@ -39,9 +36,8 @@
     <!-- </form> -->
 
 
-
-
     <button onclick="spin_wheel()" id="spin">spin the wheel!</button>
+    <p id="bet_money_text"></p>
     <p id="prize_text"></p>
     <p id="current_coins_text"></p>
 
@@ -71,15 +67,16 @@
 
     async function spin_wheel() {
         bet_percentage = document.getElementById('bet_percentage').value
-        //console.log(bet_percentage)
+
         response = await fetch("/games/wheel_of_fortune/spin_wheel/" + bet_percentage);
         json = await response.json();
 
         prize = json.prize
         coins = json.coins
+        bet_money = json.bet_money
+        document.getElementById('bet_money_text').innerHTML = 'You bet ' + bet_money + " coins"
         document.getElementById('prize_text').innerHTML = 'Your prize is ' + prize + " coins"
         document.getElementById('current_coins_text').innerHTML = 'You currently have a total of ' + coins + " coins"
-
 
     }
 

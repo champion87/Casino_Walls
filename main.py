@@ -74,17 +74,13 @@ async def read_root(request: Request):
     return FileResponse("HTML_files/root_page.html")
 
 
-async def read_root():
-    return FileResponse("HTML_files/root_page.html")
-
-
 @app.get("/games/", response_class=HTMLResponse)
 async def read_games(key_passed: bool = Security(get_api_key)):
     return FileResponse("HTML_files/games.html")
 
 
 @app.get("/games/wheel_of_fortune/", response_class=HTMLResponse)
-def read_item():
+def read_item(key_passed: bool = Security(get_api_key)):
     register_demo()  # DELETE
     return FileResponse("HTML_files/wheel_of_fortune.html")
 
@@ -93,24 +89,20 @@ def read_item():
 def generate_random_prize(bet_percentage):
     api_key = "3"
     bet_percentage = int(bet_percentage)
-    possible_prizes_list = [0.1, 1.9, 0.3, 1.7, 0.5, 0, 1.5, 0.7, 0.9, 1.1]
+    if bet_percentage < 0 or bet_percentage > 100:
+        return {"prize": 0, "coins": USERS[api_key].coins, "bet_money": 0}
+    possible_prizes_list = [0.1, 3.9, 0.3, 1.7, 0.5, 0, 1.5, 0.7, 1.3, 0.9, 1.1]
     # make it less uniform and more close to a normal distribution, maybe using sum of bernulli random variables
 
-    prize = math.floor(bet_percentage * random.choice(possible_prizes_list))
-    USERS[api_key].coins += prize - bet_percentage
-    return {"prize": prize, "coins": USERS[api_key].coins}
-
-
-def read_item(key_passed: bool = Security(get_api_key)):
-    return FileResponse("HTML_files/wheel_of_fortune.html")
+    current_money = USERS[api_key].coins
+    bet_money = (bet_percentage * current_money) // 100
+    prize = math.floor(bet_money * random.choice(possible_prizes_list))
+    USERS[api_key].coins += prize - bet_money
+    return {"prize": prize, "coins": USERS[api_key].coins, "bet_money": bet_money}
 
 
 @app.get("/games/black_jack/", response_class=HTMLResponse)
 def read_item(key_passed: bool = Security(get_api_key)):
-    return FileResponse("HTML_files/black_jack.html")
-
-
-def read_item():
     return FileResponse("HTML_files/black_jack.html")
 
 
@@ -144,33 +136,16 @@ async def read_games(api_key: str = Security(get_api_key)):
     return FileResponse("HTML_files/games.html")
 
 
-@app.get("/get_my_api_key/")
-async def read_my_api_key(request: Request):
-    client_ip = request.client.host
-    return API_KEYS[client_ip]
-
-
-@app.get("/get_coin_amount/{key}")
-async def get_coin_amount(key):
-    return str(KEYS_TO_COINS[key])
-
-
 @app.get("/get_coin_amount/")
 async def get_coin_amount(api_key: string = Security(get_api_key)):
     return str(KEYS_TO_COINS[api_key])
 
 
 @app.get("/create_guest_acount/")
-async def create_guest_acount(request: Request):
-    client_ip = request.client.host
-
-
 async def create_guest_acount(response: Response):
     my_api_key = key_gen()
     API_KEYS.append(my_api_key)
     KEYS_TO_COINS[my_api_key] = 100
-    return my_api_key
-
     response.set_cookie(key="api_key", value=my_api_key)
     return {"status": "ok"}
 
