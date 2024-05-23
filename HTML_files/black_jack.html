@@ -24,6 +24,8 @@
         response = await fetch("/games/black_jack/start_game");
         json = await response.json();
 
+        console.log(json)
+
         my_cards = json.hand
 
         document.getElementById("hand").innerHTML = my_cards.toString();

@@ -8,7 +8,15 @@ from fastapi.exceptions import HTTPException
 import random
 import string
 import card_game
+import logging
+import uvicorn
 
+
+logger = logging.getLogger('uvicorn.error')
+logger.setLevel(logging.DEBUG)
+
+def LOG(msg):
+    logger.debug(msg)
 
 # class card_t:
 #     symbol 
@@ -54,6 +62,7 @@ def get_api_key(
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root():
+    LOG("Let's get it started in here!")
     return FileResponse('HTML_files/root_page.html')
 
 @app.get("/games/", response_class=HTMLResponse)
@@ -70,28 +79,36 @@ def read_item(key_passed: str = Security(get_api_key)):
 
 
 @app.get("/register_user_3")
-def register_demo():
-    USERS["3"] = User("Lidor")
+def register_user_3():
+    USERS["3"] = User("Lidor", "1234")
     return {"hello" : "world"}
 
+def register_demo():
+    USERS["3"] = User("Lidor", "1234")
+    return {"hello" : "world"}
+
+
 def end_game():
-    print("BJ game ended!")
+    LOG("BJ game ended!")
     # TODO take money
 
 @app.get("/games/black_jack/start_game")
 def play_BJ():
+    register_demo()
     api_key = "3" # TODO
-    USERS[api_key].black_jack = card_game.BlackJack()
-    if USERS[api_key].black_jack.is_overdraft():
-        end_game()
-    return USERS[api_key].black_jack.to_json()
+    # USERS[api_key].black_jack = card_game.BlackJack()
+    # if USERS[api_key].black_jack.is_overdraft():
+    #     end_game()
+    return {'hand': ['3♥', '6♦'], 'sum': 9, 'end_game': False}
+    # return USERS[api_key].black_jack.to_json()
 
 @app.get("/games/black_jack/draw")
 def BJ_draw(api_key):
-    api_key = "3" # TODO
-    USERS[api_key].black_jack.draw()
-    if USERS[api_key].black_jack.is_overdraft():
-        end_game()
+    LOG("draw")
+    # api_key = "3" # TODO
+    # USERS[api_key].black_jack.draw()
+    # if USERS[api_key].black_jack.is_overdraft():
+    #     end_game()
     return USERS[api_key].black_jack.to_json()
 
 @app.get("/games/black_jack/fold")
