@@ -1,6 +1,6 @@
 from typing import Union
 from fastapi.responses import HTMLResponse, RedirectResponse
-from fastapi import HTTPException, status, Security, FastAPI, Request, Cookie, Response
+from fastapi import HTTPException, status, Security, FastAPI, Request, Cookie, Response, Form
 from pydantic import BaseModel
 from starlette.responses import FileResponse
 from fastapi.security import APIKeyHeader, APIKeyQuery
@@ -15,6 +15,7 @@ import card_game
 
 API_KEYS = []
 KEYS_TO_COINS = {}
+USERNAME_TO_PASSWORD = {}
 app = FastAPI()
 
 # api_key |-> User
@@ -23,8 +24,9 @@ USERS = {}
 NO_GAME = None
 
 class User:
-    def __init__(self, name):
+    def __init__(self, name, password):
         self.name = name
+        self.password = password
         self.coins = 100
         self.black_jack = NO_GAME
         self.wheel = NO_GAME
@@ -38,15 +40,15 @@ def key_gen():
     result_str = ''.join(random.choice(string.ascii_letters + string.digits) for i in range(20))
     return result_str
 
-def un_anuthrized_handler(a, b):
+def un_unauthorized_handler(a, b):
     return RedirectResponse(status_code=302, url='/')
 
 
 def get_api_key(
-    api_key_query: str = Security(api_key_query),
-) -> bool:
-    if api_key_query in API_KEYS:
-        return api_key_query
+    api_key: str = Security(api_key_query),
+) -> str:
+    if api_key in API_KEYS:
+        return api_key
     raise HTTPException(status_code=401, detail="no valid token")
     
 
@@ -55,15 +57,15 @@ async def read_root():
     return FileResponse('HTML_files/root_page.html')
 
 @app.get("/games/", response_class=HTMLResponse)
-async def read_games(key_passed: bool = Security(get_api_key)):
+async def read_games(key_passed: str = Security(get_api_key)):
     return FileResponse('HTML_files/games.html')
 
 @app.get("/games/wheel_of_fortune/", response_class=HTMLResponse)
-def read_item(key_passed: bool = Security(get_api_key)):
+def read_item(key_passed: str = Security(get_api_key)):
     return FileResponse('HTML_files/wheel_of_fortune.html')
 
 @app.get("/games/black_jack/", response_class=HTMLResponse)
-def read_item(key_passed: bool = Security(get_api_key)):
+def read_item(key_passed: str = Security(get_api_key)):
     return FileResponse('HTML_files/black_jack.html')
 
 
@@ -98,15 +100,27 @@ def read_item():
 
 @app.get("/get_coin_amount/")
 async def get_coin_amount(api_key: string = Security(get_api_key)):
-    return str(KEYS_TO_COINS[api_key])
+    return str(USERS[api_key].coins)
 
 @app.get("/create_guest_acount/")
 async def create_guest_acount(response : Response):
+    new_user : User = User("guest", "")
     my_api_key = key_gen()
     API_KEYS.append(my_api_key)
-    KEYS_TO_COINS[my_api_key] = 100
+    USERS[my_api_key] = new_user
 
     response.set_cookie(key="api_key", value=my_api_key)
     return {"status" : "ok"}
 
-app.add_exception_handler(401, un_anuthrized_handler)
+@app.post("/create_acount/")
+async def create_acount(response : Response, username : str = Form(), password : str = Form()):
+    new_user : User = User(username, password)
+    USERNAME_TO_PASSWORD[username] = password
+    my_api_key = key_gen()
+    API_KEYS.append(my_api_key)
+    USERS[my_api_key] = new_user
+
+    response.set_cookie(key="api_key", value=my_api_key)
+    return {"status" : "ok"}
+
+app.add_exception_handler(401, un_unauthorized_handler)

@@ -7,12 +7,20 @@
     <body>
         <h1>Welcome to Casino walls</h1>
         <p>Here you can play games</p>
-        <button onclick="sign_as_guest('/games/')">Sign in as guest</button> 
+        <button onclick="sign_as_guest('/games/')">Sign in as guest</button>
         
+        <form action="/create_acount/" target="_blank" method="post">
+            <label for="username">username:</label><br>
+            <input type="text" id="username" name="username"><br>
+            <label for="password">password:</label><br>
+            <input type="password" id="password" name="password" ><br><br>
+            <input type="submit" onclick="location.href='/games/';" value="create acount">
+        </form> 
+
         <script>
             async function sign_as_guest(page_address){
-                const res = await fetch('/create_guest_acount/')
-                location.href = page_address
+                const res = await fetch('/create_guest_acount/');
+                location.href = page_address;
             }
         </script>
     </body>
