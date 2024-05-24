@@ -1,4 +1,8 @@
-from typing import Union
+from __future__ import annotations
+
+from typing import Union, Dict
+
+
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi import HTTPException, status, Security, FastAPI, Request, Cookie, Response, Form
 from pydantic import BaseModel
@@ -27,7 +31,6 @@ USERNAME_TO_PASSWORD = {}
 app = FastAPI()
 
 # api_key |-> User
-USERS = {}
 
 NO_GAME = None
 
@@ -36,9 +39,10 @@ class User:
         self.name = name
         self.password = password
         self.coins = 100
-        self.black_jack = NO_GAME
+        self.black_jack : card_game.BlackJack = NO_GAME
         self.wheel = NO_GAME
 
+USERS : Dict[str:User] = {}
         
 
 def api_key_query(api_key=Cookie()):
@@ -98,9 +102,9 @@ def BJ_play(): # TODO for Daniel: do we need the 'key_passed: str = Security(get
     LOG("Let's play BJ!")
     api_key = "3" # TODO
     USERS[api_key].black_jack = card_game.BlackJack()
+    USERS[api_key].black_jack.start
     if USERS[api_key].black_jack.is_overdraft():
         end_game()
-    # return {'hand': ['3♥', '6♦'], 'sum': 9, 'end_game': False}
     return USERS[api_key].black_jack.to_json()
 
 @app.get("/games/black_jack/draw")

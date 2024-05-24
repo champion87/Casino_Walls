@@ -47,11 +47,23 @@ CARD_VALUES = {
     1 : "A" ,
 }
 
+class GameStatus(Enum):
+    ONGOING = 1
+    NO_GAME = 2
+
 class BlackJack:
-    def __init__(self):
+    def __init__(self, players=None):
+        self.deck = None
+        self.hand = None
+        self.status = GameStatus.NO_GAME
+        self.players = players
+        
+    def start_game(self):
+        self.status = GameStatus.ONGOING
         self.deck = Deck()
         self.hand = Hand(self.deck)
         self.hand.draw_to_hand().draw_to_hand() # 2 initial cards in BJ
+        
         
     @property
     def BJ_sum(self):
