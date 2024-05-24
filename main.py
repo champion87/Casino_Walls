@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Union, Dict
+from typing import Dict
 
 
 from fastapi.responses import HTMLResponse, RedirectResponse
@@ -14,6 +14,7 @@ import string
 import card_game
 import logging
 import uvicorn
+from user import User
 
 
 logger = logging.getLogger('uvicorn.error')
@@ -31,26 +32,6 @@ USERNAME_TO_PASSWORD = {}
 app = FastAPI()
 
 
-NO_GAME = None
-
-class User:
-    def __init__(self, name, password):
-        self.name = name
-        self.password = password
-        self.coins = 100
-        self.black_jack : card_game.BlackJack = NO_GAME
-        self.wheel = NO_GAME
-        
-    # @return True if can pay the fee, False otherwise
-    def decrease_coins(self, fee) -> bool:
-        if self.coins < fee:
-            return False
-        else:
-            self.coins -= fee
-            return True
-        
-    def increase_coins(self, fee):
-        self.coins += fee
 
 # api_key |-> User
 USERS : Dict[str:User] = {}
@@ -118,7 +99,7 @@ def BJ_play(): # TODO for Daniel: do we need the 'key_passed: str = Security(get
     USERS[api_key].black_jack = card_game.BlackJack()
     bj = USERS[api_key].black_jack
     
-    bj.start_game()
+    bj.start_game([api_key])
     
     if bj.is_overdraft():
         BJ_end_game(bj)
