@@ -30,7 +30,6 @@ KEYS_TO_COINS = {}
 USERNAME_TO_PASSWORD = {}
 app = FastAPI()
 
-# api_key |-> User
 
 NO_GAME = None
 
@@ -42,6 +41,7 @@ class User:
         self.black_jack : card_game.BlackJack = NO_GAME
         self.wheel = NO_GAME
 
+# api_key |-> User
 USERS : Dict[str:User] = {}
         
 
@@ -92,34 +92,53 @@ def register_demo():
     return {"hello" : "world"}
 
 
-def end_game():
+def BJ_end_game(bj):
     LOG("BJ game ended!")
+    bj.status = card_game.GameStatus.NO_GAME
     # TODO take money
 
 @app.get("/games/black_jack/start_game")
 def BJ_play(): # TODO for Daniel: do we need the 'key_passed: str = Security(get_api_key)' argument here too?
-    register_demo()
     LOG("Let's play BJ!")
+    
+    register_demo()
     api_key = "3" # TODO
+    
     USERS[api_key].black_jack = card_game.BlackJack()
-    USERS[api_key].black_jack.start
-    if USERS[api_key].black_jack.is_overdraft():
-        end_game()
-    return USERS[api_key].black_jack.to_json()
+    bj = USERS[api_key].black_jack
+    
+    bj.start_game()
+    
+    if bj.is_overdraft():
+        BJ_end_game(bj)
+    return bj.to_json()
 
 @app.get("/games/black_jack/draw")
 def BJ_draw():
     LOG("draw")
     api_key = "3" # TODO
-    USERS[api_key].black_jack.draw()
-    if USERS[api_key].black_jack.is_overdraft():
-        end_game()
-    # return {'hand': ['3♥', '6♦'], 'sum': 9, 'end_game': False}
-    return USERS[api_key].black_jack.to_json()
+    bj = USERS[api_key].black_jack
+    
+    if card_game.GameStatus.NO_GAME == bj.status:
+        return bj.to_json()
+    
+    bj.draw()
+    if bj.is_overdraft():
+        BJ_end_game(bj)
+    return bj.to_json()
 
 @app.get("/games/black_jack/fold")
 def BJ_fold():
-    pass
+    LOG("fold")
+    api_key = "3" # TODO
+    bj = USERS[api_key].black_jack
+    
+    if card_game.GameStatus.NO_GAME == bj.status:
+        return bj.to_json()
+    
+    BJ_end_game(bj)
+
+    return bj.to_json()
 
 @app.get("/get_coin_amount/")
 async def get_coin_amount(api_key: string = Security(get_api_key)):

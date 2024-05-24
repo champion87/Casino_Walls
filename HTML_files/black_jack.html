@@ -10,6 +10,7 @@
     <button onclick="choose('yes')">YES</button>
     <button onclick="choose('no')">NO</button>
 
+    <p id="score"></p>
     <p>Your Hand:</p>
     <p id="hand"></p>
     <strong id="game_over_text1">GAME OVER!</strong>
@@ -22,6 +23,8 @@
 <script>
 
     var my_cards = ["test"]
+    var is_game_over = true
+    var score = 0
 
     async function startGame() {
         hide_game_over()
@@ -32,21 +35,29 @@
         console.log(json)
 
         update_hand(json.hand)
+        update_score(json.sum)
+        is_game_over = json.end_game
     }
 
     function update_hand(new_hand) {
         document.getElementById("hand").innerHTML = new_hand.toString();
     }
 
+    function update_score(new_score)
+    {
+        score = new_score
+        document.getElementById("score").innerHTML = "Score: " + score  
+    }
+
     function choose(choice) {
+        if (is_game_over) { return; }
+
         console.log('Hello World', choice);
         if (choice == 'yes') {
             draw_card();
         }
         else {
-            fetch("/games/black_jack/fold")
-                .then(response => response.json())
-                .then(data => { console.log(data.card) });
+            fold();
         }
     }
 
@@ -61,9 +72,16 @@
     }
 
     function game_over(visability = "inline") {
-        document.getElementById("game_over_text1").style.display = visability;
-        document.getElementById("game_over_text2").style.display = visability;
         IDs_of_game_over_elements.forEach(id => {document.getElementById(id).style.display = visability;})
+    }
+
+    async function fold() {
+        response = await fetch("/games/black_jack/fold");
+        json = await response.json();
+
+        console.log(json)
+
+        game_over()
     }
 
     // GETs and uploads the new card. Doesn't check game rules.
@@ -71,7 +89,10 @@
         response = await fetch("/games/black_jack/draw");
         json = await response.json();
 
+        console.log(json)
+
         update_hand(json.hand)
+        update_score(json.sum)
 
         if (json.end_game) {
             game_over()
