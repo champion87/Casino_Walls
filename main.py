@@ -70,11 +70,11 @@ async def read_games(key_passed: str = Security(get_api_key)):
     return FileResponse('HTML_files/games.html')
 
 @app.get("/games/wheel_of_fortune/", response_class=HTMLResponse)
-def read_item(key_passed: str = Security(get_api_key)):
+def read_wheel_of_fortune(key_passed: str = Security(get_api_key)):
     return FileResponse('HTML_files/wheel_of_fortune.html')
 
 @app.get("/games/black_jack/", response_class=HTMLResponse)
-def read_item(key_passed: str = Security(get_api_key)):
+def read_black_jack(key_passed: str = Security(get_api_key)):
     return FileResponse('HTML_files/black_jack.html')
 
 
@@ -93,26 +93,28 @@ def end_game():
     # TODO take money
 
 @app.get("/games/black_jack/start_game")
-def play_BJ():
+def BJ_play(): # TODO for Daniel: do we need the 'key_passed: str = Security(get_api_key)' argument here too?
     register_demo()
+    LOG("Let's play BJ!")
     api_key = "3" # TODO
-    # USERS[api_key].black_jack = card_game.BlackJack()
-    # if USERS[api_key].black_jack.is_overdraft():
-    #     end_game()
-    return {'hand': ['3♥', '6♦'], 'sum': 9, 'end_game': False}
-    # return USERS[api_key].black_jack.to_json()
+    USERS[api_key].black_jack = card_game.BlackJack()
+    if USERS[api_key].black_jack.is_overdraft():
+        end_game()
+    # return {'hand': ['3♥', '6♦'], 'sum': 9, 'end_game': False}
+    return USERS[api_key].black_jack.to_json()
 
 @app.get("/games/black_jack/draw")
-def BJ_draw(api_key):
+def BJ_draw():
     LOG("draw")
-    # api_key = "3" # TODO
-    # USERS[api_key].black_jack.draw()
-    # if USERS[api_key].black_jack.is_overdraft():
-    #     end_game()
+    api_key = "3" # TODO
+    USERS[api_key].black_jack.draw()
+    if USERS[api_key].black_jack.is_overdraft():
+        end_game()
+    # return {'hand': ['3♥', '6♦'], 'sum': 9, 'end_game': False}
     return USERS[api_key].black_jack.to_json()
 
 @app.get("/games/black_jack/fold")
-def read_item():
+def BJ_fold():
     pass
 
 @app.get("/get_coin_amount/")

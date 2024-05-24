@@ -12,6 +12,9 @@
 
     <p>Your Hand:</p>
     <p id="hand"></p>
+    <strong id="game_over_text1">GAME OVER!</strong>
+    <p id="game_over_text2">Press the button to play again</p>
+    <button id="reply_button">Play Again</button>
 </body>
 
 </html>
@@ -21,14 +24,18 @@
     var my_cards = ["test"]
 
     async function startGame() {
+        hide_game_over()
+
         response = await fetch("/games/black_jack/start_game");
         json = await response.json();
 
         console.log(json)
 
-        my_cards = json.hand
+        update_hand(json.hand)
+    }
 
-        document.getElementById("hand").innerHTML = my_cards.toString();
+    function update_hand(new_hand) {
+        document.getElementById("hand").innerHTML = new_hand.toString();
     }
 
     function choose(choice) {
@@ -36,22 +43,39 @@
         if (choice == 'yes') {
             draw_card();
         }
-        else
-        {
+        else {
             fetch("/games/black_jack/fold")
                 .then(response => response.json())
                 .then(data => { console.log(data.card) });
         }
     }
 
+    var IDs_of_game_over_elements = [
+        "game_over_text1",
+        "game_over_text2",
+        "reply_button",
+    ]
+
+    function hide_game_over() {
+        game_over("none")
+    }
+
+    function game_over(visability = "inline") {
+        document.getElementById("game_over_text1").style.display = visability;
+        document.getElementById("game_over_text2").style.display = visability;
+        IDs_of_game_over_elements.forEach(id => {document.getElementById(id).style.display = visability;})
+    }
+
     // GETs and uploads the new card. Doesn't check game rules.
-    async function draw_card()
-    {
+    async function draw_card() {
         response = await fetch("/games/black_jack/draw");
         json = await response.json();
 
-        my_cards.push(json.card);
-        document.getElementById("hand").innerHTML = my_cards.toString();
+        update_hand(json.hand)
+
+        if (json.end_game) {
+            game_over()
+        }
     }
 
 </script>
