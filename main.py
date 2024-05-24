@@ -40,6 +40,14 @@ class User:
         self.coins = 100
         self.black_jack : card_game.BlackJack = NO_GAME
         self.wheel = NO_GAME
+        
+    # @return True if can pay the fee, False otherwise
+    def take_coins(self, fee) -> bool:
+        if self.coins < fee:
+            return False
+        else:
+            self.coins -= fee
+            return True
 
 # api_key |-> User
 USERS : Dict[str:User] = {}
