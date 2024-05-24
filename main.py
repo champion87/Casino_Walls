@@ -42,12 +42,15 @@ class User:
         self.wheel = NO_GAME
         
     # @return True if can pay the fee, False otherwise
-    def take_coins(self, fee) -> bool:
+    def decrease_coins(self, fee) -> bool:
         if self.coins < fee:
             return False
         else:
             self.coins -= fee
             return True
+        
+    def increase_coins(self, fee):
+        self.coins += fee
 
 # api_key |-> User
 USERS : Dict[str:User] = {}
