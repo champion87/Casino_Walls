@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Dict
+from typing import Dict, Union
 
 
 from fastapi.responses import HTMLResponse, RedirectResponse
@@ -26,32 +26,31 @@ def LOG(msg):
 # class card_t:
 #     symbol 
 
-API_KEYS = []
-KEYS_TO_COINS = {}
-USERNAME_TO_PASSWORD = {}
 app = FastAPI()
 
-
+# Username |-> User
+USERNAME_TO_USER : Dict[str:User]= {}
 
 # api_key |-> User
 USERS : Dict[str:User] = {}
         
 
-def api_key_query(api_key=Cookie()):
+def api_key_query(api_key : Union[str, None] = Cookie(None)):
+    #LOG("this is the api key: " + api_key)
     return api_key
 
 def key_gen():
     result_str = ''.join(random.choice(string.ascii_letters + string.digits) for i in range(20))
     return result_str
 
-def un_unauthorized_handler(a, b):
+def unauthorized_handler(a, b):
     return RedirectResponse(status_code=302, url='/')
-
 
 def get_api_key(
     api_key: str = Security(api_key_query),
 ) -> str:
-    if api_key in API_KEYS:
+    #print("those are the keys: ", list(USERS.keys()))
+    if api_key in USERS.keys():
         return api_key
     raise HTTPException(status_code=401, detail="no valid token")
     
@@ -62,15 +61,15 @@ async def read_root():
     return FileResponse('HTML_files/root_page.html')
 
 @app.get("/games/", response_class=HTMLResponse)
-async def read_games(key_passed: str = Security(get_api_key)):
+async def read_games(response: Response, api_key: str = Security(get_api_key)):
     return FileResponse('HTML_files/games.html')
 
 @app.get("/games/wheel_of_fortune/", response_class=HTMLResponse)
-def read_wheel_of_fortune(key_passed: str = Security(get_api_key)):
+def read_wheel_of_fortune(api_key: str = Security(get_api_key)):
     return FileResponse('HTML_files/wheel_of_fortune.html')
 
 @app.get("/games/black_jack/", response_class=HTMLResponse)
-def read_black_jack(key_passed: str = Security(get_api_key)):
+def read_black_jack(api_key: str = Security(get_api_key)):
     return FileResponse('HTML_files/black_jack.html')
 
 
@@ -91,6 +90,9 @@ def BJ_end_game(bj):
 
 @app.get("/games/black_jack/start_game")
 def BJ_play(): # TODO for Daniel: do we need the 'key_passed: str = Security(get_api_key)' argument here too?
+    # ANSWER for Lidor: that function means that unloged users cant access the page.
+    # the return value of the function is the api key of the user that accessed that page
+    # if you write: BJ_play(api_key: str = Security(get_api_key)). api_key is the users api key
     LOG("Let's play BJ!")
     
     register_demo()
@@ -133,28 +135,50 @@ def BJ_fold():
     return bj.to_json()
 
 @app.get("/get_coin_amount/")
-async def get_coin_amount(api_key: string = Security(get_api_key)):
+async def get_coin_amount(api_key: str = Security(get_api_key)):
     return str(USERS[api_key].coins)
 
 @app.get("/create_guest_acount/")
 async def create_guest_acount(response : Response):
     new_user : User = User("guest", "")
     my_api_key = key_gen()
-    API_KEYS.append(my_api_key)
     USERS[my_api_key] = new_user
 
     response.set_cookie(key="api_key", value=my_api_key)
     return {"status" : "ok"}
 
-@app.post("/create_acount/")
-async def create_acount(response : Response, username : str = Form(), password : str = Form()):
+@app.get("/create_acount/")
+async def create_acount(response : Response, username : str, password : str):
     new_user : User = User(username, password)
-    USERNAME_TO_PASSWORD[username] = password
+    USERNAME_TO_USER[username] = new_user
     my_api_key = key_gen()
-    API_KEYS.append(my_api_key)
     USERS[my_api_key] = new_user
+
+    response.set_cookie(key="api_key", value=my_api_key)
+    LOG("sent cookie")
+    return {"status" : "ok"}
+
+@app.get("/login/")
+async def login(response : Response, username : str, password : str):
+    if (username not in USERNAME_TO_USER.keys()):
+        raise HTTPException(status_code=401, detail="invalid credentials")
+    
+    if (USERNAME_TO_USER[username].password != password):
+        print("incorrect password")
+        raise HTTPException(status_code=401, detail="invalid credentials")
+    
+    my_api_key = key_gen()
+    USERS[my_api_key] = USERNAME_TO_USER[username]
 
     response.set_cookie(key="api_key", value=my_api_key)
     return {"status" : "ok"}
 
-app.add_exception_handler(401, un_unauthorized_handler)
+@app.get("/logout/")
+async def logout(response : Response, api_key: str = Security(get_api_key)):
+    
+    USERS.pop(api_key)
+
+    response.delete_cookie(key="api_key")
+    return {"status" : "ok"}
+
+app.add_exception_handler(401, unauthorized_handler)

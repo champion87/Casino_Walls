@@ -5,22 +5,32 @@
         </title>
     </head>
     <body>
+        <iframe name="hiddenFrame" hidden id="hiddenFrame"></iframe>
         <h1>Welcome to Casino walls</h1>
         <p>Here you can play games</p>
         <button onclick="sign_as_guest('/games/')">Sign in as guest</button>
         
-        <form action="/create_acount/" target="_blank" method="post">
+        <form method="get" id="form" target="hiddenFrame">
             <label for="username">username:</label><br>
             <input type="text" id="username" name="username"><br>
             <label for="password">password:</label><br>
             <input type="password" id="password" name="password" ><br><br>
-            <input type="submit" onclick="location.href='/games/';" value="create acount">
+            <input type="submit" onclick="form_action('/create_acount/', '/games/');" value="create acount">
+            <input type="submit" onclick="form_action('/login/', '/games/');" value="login">
         </form> 
 
         <script>
             async function sign_as_guest(page_address){
                 const res = await fetch('/create_guest_acount/');
                 location.href = page_address;
+            }
+
+            async function form_action(action, page_address){
+                console.log("going to do something");
+                let username = document.getElementById("username");
+                let password = document.getElementById("password");
+                const res = await fetch(action + '?username=' + username + '&password=' + password);
+                window.location.href = page_address;
             }
         </script>
     </body>

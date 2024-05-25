@@ -9,11 +9,17 @@
         <p id="coins">coin count: </p>
         <button onclick="location.href = '/games/wheel_of_fortune/';">Go to wheel of fortune</button>
         <button onclick="location.href = '/games/black_jack/';">Go to black jack</button>
+        <button onclick="logout();">logout</button>
         <script>
             async function display_coin_amount(){
                 const coin_res = await fetch('/get_coin_amount/');
                 let coin_amount = await coin_res.text();
                 document.getElementById("coins").textContent = "coin amount: " + coin_amount.slice(1, -1);
+            }
+
+            async function logout(){
+                await fetch('/logout/');
+                location.href = '/';
             }
 
         </script>
