@@ -8,15 +8,7 @@ from fastapi.exceptions import HTTPException
 import random
 import math
 import string
-
-
-SYMBOLS = {
-    "clubs": "♣",
-    "diamonds": "♦",
-    "hearts": "♥",
-    "spades": "♠",
-}
-from card_game import *
+import card_game
 
 SYMBOLS = {
     "clubs": "♣",
@@ -91,7 +83,7 @@ def generate_random_prize(bet_percentage):
     bet_percentage = int(bet_percentage)
     if bet_percentage < 0 or bet_percentage > 100:
         return {"prize": 0, "coins": USERS[api_key].coins, "bet_money": 0}
-    possible_prizes_list = [0.1, 3.9, 0.3, 1.7, 0.5, 0, 1.5, 0.7, 1.3, 0.9, 1.1]
+    possible_prizes_list = [0.1, 1.9, 0.3, 1.7, 0.5, 0, 1.5, 0.7, 1.3, 0.9, 1.1]
     # make it less uniform and more close to a normal distribution, maybe using sum of bernulli random variables
 
     current_money = USERS[api_key].coins
@@ -109,21 +101,30 @@ def read_item(key_passed: bool = Security(get_api_key)):
 @app.get("/register_user_3")
 def register_demo():
     USERS["3"] = User("Lidor")
+    return {"hello": "world"}
+
+
+def end_game():
+    print("BJ game ended!")
+    # TODO take money
 
 
 @app.get("/games/black_jack/start_game")
 def play_BJ():
     api_key = "3"  # TODO
-    USERS[api_key].black_jack = BlackJack()
-    # return USERS[api_key].black_jack.
-    # TODO take money
+    USERS[api_key].black_jack = card_game.BlackJack()
+    if USERS[api_key].black_jack.is_overdraft():
+        end_game()
+    return USERS[api_key].black_jack.to_json()
 
 
 @app.get("/games/black_jack/draw")
 def BJ_draw(api_key):
     api_key = "3"  # TODO
-    USERS[api_key].black_jack = BlackJack()
-    return {"card": "A♠"}
+    USERS[api_key].black_jack.draw()
+    if USERS[api_key].black_jack.is_overdraft():
+        end_game()
+    return USERS[api_key].black_jack.to_json()
 
 
 @app.get("/games/black_jack/fold")

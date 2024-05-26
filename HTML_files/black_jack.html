@@ -21,6 +21,12 @@
     var my_cards = ["test"]
 
     async function startGame() {
+        response = await fetch("/games/black_jack/start_game");
+        json = await response.json();
+
+        my_cards = json.hand
+
+        document.getElementById("hand").innerHTML = my_cards.toString();
     }
 
     function choose(choice) {
