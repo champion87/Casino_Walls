@@ -147,26 +147,24 @@ async def create_guest_acount(response : Response):
     response.set_cookie(key="api_key", value=my_api_key)
     return {"status" : "ok"}
 
-@app.get("/create_acount/")
-async def create_acount(response : Response, username : str, password : str):
+@app.post("/create_acount/")
+async def create_acount(response : Response, username : str = Form(), password : str = Form):
     new_user : User = User(username, password)
     USERNAME_TO_USER[username] = new_user
     my_api_key = key_gen()
     USERS[my_api_key] = new_user
 
     response.set_cookie(key="api_key", value=my_api_key)
-    LOG("sent cookie")
     return {"status" : "ok"}
 
-@app.get("/login/")
-async def login(response : Response, username : str, password : str):
+@app.post("/login/")
+async def login(response : Response, username : str = Form(), password : str = Form):
     if (username not in USERNAME_TO_USER.keys()):
-        raise HTTPException(status_code=401, detail="invalid credentials")
+        return {"status" : "not ok"}
     
     if (USERNAME_TO_USER[username].password != password):
-        print("incorrect password")
-        raise HTTPException(status_code=401, detail="invalid credentials")
-    
+        return {"status" : "not ok"}
+        
     my_api_key = key_gen()
     USERS[my_api_key] = USERNAME_TO_USER[username]
 

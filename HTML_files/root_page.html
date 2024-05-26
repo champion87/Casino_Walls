@@ -5,18 +5,17 @@
         </title>
     </head>
     <body>
-        <iframe name="hiddenFrame" hidden id="hiddenFrame"></iframe>
         <h1>Welcome to Casino walls</h1>
         <p>Here you can play games</p>
         <button onclick="sign_as_guest('/games/')">Sign in as guest</button>
         
-        <form method="get" id="form" target="hiddenFrame">
+        <form id="form">
             <label for="username">username:</label><br>
             <input type="text" id="username" name="username"><br>
             <label for="password">password:</label><br>
             <input type="password" id="password" name="password" ><br><br>
-            <input type="submit" onclick="form_action('/create_acount/', '/games/');" value="create acount">
-            <input type="submit" onclick="form_action('/login/', '/games/');" value="login">
+            <input type="button" onclick="form_action('/create_acount/', '/games/');" value="create acount">
+            <input type="button" onclick="form_action('/login/', '/games/');" value="login">
         </form> 
 
         <script>
@@ -26,11 +25,15 @@
             }
 
             async function form_action(action, page_address){
-                console.log("going to do something");
-                let username = document.getElementById("username");
-                let password = document.getElementById("password");
-                const res = await fetch(action + '?username=' + username + '&password=' + password);
-                window.location.href = page_address;
+                let form = document.getElementById("form");
+                const res = await fetch(action, {
+                    method: 'POST',
+                    body: new URLSearchParams(new FormData(form))
+                }).then(response => response.json());
+                console.log(res.status);
+                if (res.status == 'ok'){
+                    location.href = page_address;
+                }
             }
         </script>
     </body>
