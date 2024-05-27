@@ -1,6 +1,19 @@
-from typing import Union
+from __future__ import annotations
+
+from typing import Dict, Union
+
+
 from fastapi.responses import HTMLResponse, RedirectResponse
-from fastapi import HTTPException, status, Security, FastAPI, Request, Cookie, Response
+from fastapi import (
+    HTTPException,
+    status,
+    Security,
+    FastAPI,
+    Request,
+    Cookie,
+    Response,
+    Form,
+)
 from pydantic import BaseModel
 from starlette.responses import FileResponse
 from fastapi.security import APIKeyHeader, APIKeyQuery
@@ -9,6 +22,9 @@ import random
 import math
 import string
 import card_game
+import logging
+import uvicorn
+from user import User
 
 SYMBOLS = {
     "clubs": "♣",
@@ -17,28 +33,28 @@ SYMBOLS = {
     "spades": "♠",
 }
 
+logger = logging.getLogger("uvicorn.error")
+logger.setLevel(logging.DEBUG)
+
+
+def LOG(msg):
+    logger.debug(msg)
+
+
 # class card_t:
 #     symbol
 
-API_KEYS = []
-KEYS_TO_COINS = {}
 app = FastAPI()
 
+# Username |-> User
+USERNAME_TO_USER: Dict[str:User] = {}
+
 # api_key |-> User
-USERS = {}
-
-NO_GAME = None
+USERS: Dict[str:User] = {}
 
 
-class User:
-    def __init__(self, name):
-        self.name = name
-        self.coins = 100
-        self.black_jack = NO_GAME
-        self.wheel = NO_GAME
-
-
-def api_key_query(api_key=Cookie()):
+def api_key_query(api_key: Union[str, None] = Cookie(None)):
+    # LOG("this is the api key: " + api_key)
     return api_key
 
 
@@ -49,15 +65,16 @@ def key_gen():
     return result_str
 
 
-def un_authrized_handler(a, b):
+def unauthorized_handler(a, b):
     return RedirectResponse(status_code=302, url="/")
 
 
 def get_api_key(
-    api_key_query: str = Security(api_key_query),
-) -> bool:
-    if api_key_query in API_KEYS:
-        return api_key_query
+    api_key: str = Security(api_key_query),
+) -> str:
+    # print("those are the keys: ", list(USERS.keys()))
+    if api_key in USERS.keys():
+        return api_key
     raise HTTPException(status_code=401, detail="no valid token")
 
 
@@ -104,32 +121,64 @@ def register_demo():
     return {"hello": "world"}
 
 
-def end_game():
-    print("BJ game ended!")
+def register_demo():
+    USERS["3"] = User("Lidor", "1234")
+    return {"hello": "world"}
+
+
+def BJ_end_game(bj):
+    LOG("BJ game ended!")
+    bj.status = card_game.GameStatus.NO_GAME
     # TODO take money
 
 
 @app.get("/games/black_jack/start_game")
-def play_BJ():
+def BJ_play():  # TODO for Daniel: do we need the 'key_passed: str = Security(get_api_key)' argument here too?
+    # ANSWER for Lidor: that function means that unloged users cant access the page.
+    # the return value of the function is the api key of the user that accessed that page
+    # if you write: BJ_play(api_key: str = Security(get_api_key)). api_key is the users api key
+    LOG("Let's play BJ!")
+
+    register_demo()
     api_key = "3"  # TODO
+
     USERS[api_key].black_jack = card_game.BlackJack()
-    if USERS[api_key].black_jack.is_overdraft():
-        end_game()
-    return USERS[api_key].black_jack.to_json()
+    bj = USERS[api_key].black_jack
+
+    bj.start_game([api_key])
+
+    if bj.is_overdraft():
+        BJ_end_game(bj)
+    return bj.to_json()
 
 
 @app.get("/games/black_jack/draw")
-def BJ_draw(api_key):
+def BJ_draw():
+    LOG("draw")
     api_key = "3"  # TODO
-    USERS[api_key].black_jack.draw()
-    if USERS[api_key].black_jack.is_overdraft():
-        end_game()
-    return USERS[api_key].black_jack.to_json()
+    bj = USERS[api_key].black_jack
+
+    if card_game.GameStatus.NO_GAME == bj.status:
+        return bj.to_json()
+
+    bj.draw()
+    if bj.is_overdraft():
+        BJ_end_game(bj)
+    return bj.to_json()
 
 
 @app.get("/games/black_jack/fold")
-def read_item():
-    pass
+def BJ_fold():
+    LOG("fold")
+    api_key = "3"  # TODO
+    bj = USERS[api_key].black_jack
+
+    if card_game.GameStatus.NO_GAME == bj.status:
+        return bj.to_json()
+
+    BJ_end_game(bj)
+
+    return bj.to_json()
 
 
 @app.get("/games/", response_class=HTMLResponse)
@@ -138,17 +187,55 @@ async def read_games(api_key: str = Security(get_api_key)):
 
 
 @app.get("/get_coin_amount/")
-async def get_coin_amount(api_key: string = Security(get_api_key)):
-    return str(KEYS_TO_COINS[api_key])
+async def get_coin_amount(api_key: str = Security(get_api_key)):
+    return str(USERS[api_key].coins)
 
 
 @app.get("/create_guest_acount/")
 async def create_guest_acount(response: Response):
+    new_user: User = User("guest", "")
     my_api_key = key_gen()
-    API_KEYS.append(my_api_key)
-    KEYS_TO_COINS[my_api_key] = 100
+    USERS[my_api_key] = new_user
+
     response.set_cookie(key="api_key", value=my_api_key)
     return {"status": "ok"}
 
 
-app.add_exception_handler(401, un_authrized_handler)
+@app.post("/create_acount/")
+async def create_acount(
+    response: Response, username: str = Form(), password: str = Form
+):
+    new_user: User = User(username, password)
+    USERNAME_TO_USER[username] = new_user
+    my_api_key = key_gen()
+    USERS[my_api_key] = new_user
+
+    response.set_cookie(key="api_key", value=my_api_key)
+    return {"status": "ok"}
+
+
+@app.post("/login/")
+async def login(response: Response, username: str = Form(), password: str = Form):
+    if username not in USERNAME_TO_USER.keys():
+        return {"status": "not ok"}
+
+    if USERNAME_TO_USER[username].password != password:
+        return {"status": "not ok"}
+
+    my_api_key = key_gen()
+    USERS[my_api_key] = USERNAME_TO_USER[username]
+
+    response.set_cookie(key="api_key", value=my_api_key)
+    return {"status": "ok"}
+
+
+@app.get("/logout/")
+async def logout(response: Response, api_key: str = Security(get_api_key)):
+
+    USERS.pop(api_key)
+
+    response.delete_cookie(key="api_key")
+    return {"status": "ok"}
+
+
+app.add_exception_handler(401, unauthorized_handler)
