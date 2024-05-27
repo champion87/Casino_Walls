@@ -9,27 +9,30 @@
 <body onload="start()">
     <h1>Welcome to the wheel of fortune</h1>
 
-    <!--  <form action="/games/wheel_of_fortune/spin_wheel">  
-    -->
+
     <label for="bet_percentage">Choose the percentage of your money you would like to bet:<br></label>
-    <button onclick="open_rules()" id="open">open rules</button>
-    <button onclick="close_rules()" id="close">close rules</button><br>
+    <button onclick="open_rules()" onmouseover="display('open','click to open the rules')"
+        onmouseout="display('open', '..............rules.............')"
+        id="open">..............rules.............</button>
+    <button onclick="close_rules()" onmouseover="display('close','click to close the rules')"
+        onmouseout="display('close', '..............rules.............')"
+        id="close">..............rules.............</button><br>
     <p id="text">Spinning the wheel will cost you some percentage of your money. You will recieve back a random amount
         of coins between 0 and
         double the amount of your bet. Good luck!</p><br><br>
     <select name="bet_percentage" id="bet_percentage">
-        <option value="1">1%</option>
-        <option value="5">5%</option>
-        <option value="10">10%</option>
-        <option value="20">20%</option>
-        <option value="30">30%</option>
-        <option value="40">40%</option>
-        <option value="50">50%</option>
-        <option value="60">60%</option>
-        <option value="70">70%</option>
-        <option value="80">80%</option>
-        <option value="90">90%</option>
-        <option value="100">100%</option>
+        <option id="1" value="1">1%</option>
+        <option id="5" value="5">5%</option>
+        <option id="10" value="10">10%</option>
+        <option id="20" value="20">20%</option>
+        <option id="30" value="30">30%</option>
+        <option id="40" value="40">40%</option>
+        <option id="50" value="50">50%</option>
+        <option id="60" value="60">60%</option>
+        <option id="70" value="70">70%</option>
+        <option id="80" value="80">80%</option>
+        <option id="90" value="90">90%</option>
+        <option id="100" value="100">100%</option>
 
     </select>
     <!-- <input type="submit" value="spin the wheel!"> -->
@@ -45,10 +48,26 @@
 </body>
 <script>
     //var RULES_MESSAGE = "The rules of the game are blaa blaa blaaaaaaaaaaa";
+    function f() {
+        display("spin", "tessssssst")
+    }
     function start() {
         document.getElementById('open').style.display = "inline"
         document.getElementById('close').style.display = "none"
         document.getElementById('text').style.display = "none"
+        coins = 100
+        display('1', '1% (' + Math.floor(coins / 100) + ' coins)')
+        display('5', '5% (' + Math.floor(5 * coins / 100) + ' coins)')
+        display('10', '10% (' + Math.floor(10 * coins / 100) + ' coins)')
+        display('20', '20% (' + Math.floor(20 * coins / 100) + ' coins)')
+        display('30', '30% (' + Math.floor(30 * coins / 100) + ' coins)')
+        display('40', '40% (' + Math.floor(40 * coins / 100) + ' coins)')
+        display('50', '50% (' + Math.floor(50 * coins / 100) + ' coins)')
+        display('60', '60% (' + Math.floor(60 * coins / 100) + ' coins)')
+        display('70', '70% (' + Math.floor(70 * coins / 100) + ' coins)')
+        display('80', '80% (' + Math.floor(80 * coins / 100) + ' coins)')
+        display('90', '90% (' + Math.floor(90 * coins / 100) + ' coins)')
+        display('100', '100% (' + Math.floor(100 * coins / 100) + ' coins)')
     }
     function open_rules() {
         document.getElementById('open').style.display = 'none'
@@ -65,9 +84,14 @@
 
 
 
+    function display(id, text) {
+        document.getElementById(id).innerHTML = text
+    }
+
+
+
     async function spin_wheel() {
         bet_percentage = document.getElementById('bet_percentage').value
-
         response = await fetch("/games/wheel_of_fortune/spin_wheel/" + bet_percentage);
         json = await response.json();
 
@@ -77,6 +101,19 @@
         document.getElementById('bet_money_text').innerHTML = 'You bet ' + bet_money + " coins"
         document.getElementById('prize_text').innerHTML = 'Your prize is ' + prize + " coins"
         document.getElementById('current_coins_text').innerHTML = 'You currently have a total of ' + coins + " coins"
+
+        display('1', '1% (' + Math.floor(coins / 100) + ' coins)')
+        display('5', '5% (' + Math.floor(5 * coins / 100) + ' coins)')
+        display('10', '10% (' + Math.floor(10 * coins / 100) + ' coins)')
+        display('20', '20% (' + Math.floor(20 * coins / 100) + ' coins)')
+        display('30', '30% (' + Math.floor(30 * coins / 100) + ' coins)')
+        display('40', '40% (' + Math.floor(40 * coins / 100) + ' coins)')
+        display('50', '50% (' + Math.floor(50 * coins / 100) + ' coins)')
+        display('60', '60% (' + Math.floor(60 * coins / 100) + ' coins)')
+        display('70', '70% (' + Math.floor(70 * coins / 100) + ' coins)')
+        display('80', '80% (' + Math.floor(80 * coins / 100) + ' coins)')
+        display('90', '90% (' + Math.floor(90 * coins / 100) + ' coins)')
+        display('100', '100% (' + Math.floor(100 * coins / 100) + ' coins)')
 
     }
 
