@@ -1,6 +1,8 @@
 from enum import Enum
 import itertools
 import random
+from typing import Dict, List
+from my_log import LOG
  
 class Symbol(Enum):
     CLUBS = 1
@@ -52,35 +54,53 @@ class GameStatus(Enum):
     NO_GAME = 2
 
 class BlackJack:
-    def __init__(self, players=None):
+    def __init__(self, api_keys:List[str], prize=0):
         self.deck = None
-        self.hand = None
+        self.hands : Dict[str:Hand]  = {} # api_key : Hand
+        self.is_finished : Dict[str:bool]  = {} # api_key : Hand
         self.status = GameStatus.NO_GAME
-        self.players = players
-        
+        self.player_keys = api_keys
+    
+    
     def start_game(self):
         self.status = GameStatus.ONGOING
         self.deck = Deck()
-        self.hand = Hand(self.deck)
-        self.hand.draw_to_hand().draw_to_hand() # 2 initial cards in BJ
+        for key in self.player_keys:
+            self.hands[key] = Hand(self.deck)
+            self.is_finished[key] = False
+            self.hands[key].draw_to_hand().draw_to_hand() # 2 initial cards in BJ
         
-        
-    @property
-    def BJ_sum(self):
-        return self.hand.get_BJ_sum()
+    def is_overdraft(self, api_key:str):
+        return self.hands[api_key].is_overdraft()
     
-    def is_overdraft(self):
-        return self.BJ_sum > 21 # BJ max hand value
+    # @return True iff all hands are done
+    def is_game_over(self):
+        for out in self.is_finished:
+            if not out:
+                return False
+        return True    
+    
+    def get_player_json(self, api_key:str):
+        return {
+            "hand" : self.hands[api_key].to_list_of_str(),
+            "sum" : self.hands[api_key].get_BJ_sum(),
+            "finish_state" : self.hands[api_key].is_overdraft()
+            }
     
     def to_json(self):
         return {
-            "hand" : self.hand.to_list_of_str(),
-            "sum" : self.BJ_sum,
+            "hands" : [hand.to_list_of_str() for hand in self.hands],
+            "sums" : [hand.get_BJ_sum() for hand in self.hands],
+            "finish_statuses" : [hand.is_overdraft for hand in self.hands],
             "end_game" : self.is_overdraft()
             }
         
-    def draw(self):
-        self.hand.draw_to_hand()
+    def draw(self, api_key:str):
+        self.hands[api_key].draw_to_hand()
+        if self.hands[api_key].is_overdraft():
+            self.is_finished[api_key] = True
+        # else:
+            # self.is_finished[api_key] = False
     
 
 class Card:
@@ -137,10 +157,14 @@ class Hand:
         
         self.cards.append(from_deck.draw_card())
         return self
-        
+    
     def get_BJ_sum(self):
         return sum(card.get_BJ_value() for card in self.cards)
         return 69 # TODO Aces
+    
+    def is_overdraft(self):
+        return self.get_BJ_sum() > 21 # BJ max hand value
+    
     
     def to_list_of_str(self):
         return [str(card) for card in self.cards]

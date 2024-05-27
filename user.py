@@ -1,6 +1,6 @@
 import card_game
 
-NO_GAME = None
+NO_GAME = 69
 
 class User:
     def __init__(self, name, password):

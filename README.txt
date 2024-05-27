@@ -17,3 +17,5 @@ http://127.0.0.1:8000/items/5?q=somequery
 
 For docs brose at:
 http://127.0.0.1:8000/docs
+
+http://127.0.0.1:8000/

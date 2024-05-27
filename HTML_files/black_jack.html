@@ -5,7 +5,7 @@
     <title> BLACK JACK </title>
 </head>
 
-<body onload="startGame()">
+<body onload="setup()">
     <p>Wanna draw another card?</p>
     <button onclick="choose('yes')">YES</button>
     <button onclick="choose('no')">NO</button>
@@ -26,17 +26,19 @@
     var is_game_over = true
     var score = 0
 
-    async function startGame() {
+    async function setup() {
         hide_game_over()
 
-        response = await fetch("/games/black_jack/start_game");
+        // /games/black_jack/
+
+        response = await fetch("/games/black_jack/first_turn");
         json = await response.json();
 
         console.log(json)
 
         update_hand(json.hand)
         update_score(json.sum)
-        is_game_over = json.end_game
+        is_game_over = json.finish_state
     }
 
     function update_hand(new_hand) {
@@ -94,7 +96,7 @@
         update_hand(json.hand)
         update_score(json.sum)
 
-        if (json.end_game) {
+        if (json.finish_state) {
             game_over()
         }
     }
