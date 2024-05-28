@@ -15,7 +15,8 @@
     <p id="hand"></p>
     <strong id="game_over_text1">GAME OVER!</strong>
     <p id="game_over_text2">Press the button to play again</p>
-    <button id="reply_button">Play Again</button>
+    <button id="reply_button" onclick="play_again();">Play Again</button>
+    <button id="lobby_button" onclick="back_to_lobby();">GO Back To Lobby1</button>
 </body>
 
 </html>
@@ -67,6 +68,7 @@
         "game_over_text1",
         "game_over_text2",
         "reply_button",
+        "lobby_button"
     ]
 
     function hide_game_over() {
@@ -99,6 +101,16 @@
         if (json.finish_state) {
             game_over()
         }
+    }
+
+    async function play_again()
+    {
+
+    }
+
+    async function back_to_lobby()
+    {
+        
     }
 
 </script>

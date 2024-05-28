@@ -8,24 +8,24 @@
 <body>
     <h1>♥♠BlackJack Lobby1♣♦</h1>
     <p>Start a game?</p>
-    <!-- <button onclick="InitGame(5)">"Poor Chicken (5 coins)"</button>
+    <button onclick="InitGame(5)">"Poor Chicken (5 coins)"</button>
     <button onclick="InitGame(25)">"Warm Up... (25 coins)"</button>
     <button onclick="InitGame(100)">"Let's Go! (100 coins)"</button>
-    <button onclick="InitGame(500)">"Play Big$ (500 coins)"</button> -->
+    <button onclick="InitGame(500)">"Play Big$ (500 coins)"</button>
 
-    <button onclick="location.href = '/games/black_jack/start_game_lobby1/5'">"Poor Chicken (5 coins)"</button>
+    <!-- <button onclick="location.href = '/games/black_jack/start_game_lobby1/5'">"Poor Chicken (5 coins)"</button>
     <button onclick="location.href = '/games/black_jack/start_game_lobby1/25'">"Warm Up... (25 coins)"</button>
     <button onclick="location.href = '/games/black_jack/start_game_lobby1/100'">"Let's Go! (100 coins)"</button>
-    <button onclick="location.href = '/games/black_jack/start_game_lobby1/500'">"Play Big$ (500 coins)"</button>
+    <button onclick="location.href = '/games/black_jack/start_game_lobby1/500'">"Play Big$ (500 coins)"</button> -->
 </body>
 
 </html>
 
 <script>
     async function InitGame(fee) {
-        location.href = "/games/black_jack/start_game_lobby1/" + fee;
-
         response = await fetch("/games/black_jack/start_game_lobby1/" + fee);
+        location.href = "/games/black_jack/game";
+
     }
 
 

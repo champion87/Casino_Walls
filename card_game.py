@@ -61,8 +61,14 @@ class BlackJack:
         self.status = GameStatus.NO_GAME
         self.player_keys = api_keys
     
+    # @return List of apikeys of the winners
+    def end_game(self):
+        self.status = GameStatus.NO_GAME
+        # winner_api_key
+        # max_hand
     
     def start_game(self):
+        LOG("In start_game")
         self.status = GameStatus.ONGOING
         self.deck = Deck()
         for key in self.player_keys:
@@ -75,7 +81,9 @@ class BlackJack:
     
     # @return True iff all hands are done
     def is_game_over(self):
-        for out in self.is_finished:
+        
+        LOG("finished:" + str(self.is_finished))
+        for out in self.is_finished.values():
             if not out:
                 return False
         return True    
@@ -99,6 +107,9 @@ class BlackJack:
         self.hands[api_key].draw_to_hand()
         if self.hands[api_key].is_overdraft():
             self.is_finished[api_key] = True
+            
+        LOG(self.hands)
+        LOG("heelo")
         # else:
             # self.is_finished[api_key] = False
     
