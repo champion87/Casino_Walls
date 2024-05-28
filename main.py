@@ -98,7 +98,7 @@ def generate_random_prize(bet_percentage):
     return {"prize": prize, "coins": USERS[api_key].coins, "bet_money": bet_money}
 
 
-@app.get("/games/black_jack/", response_class=HTMLResponse)
+@app.get("/games/black_jack/lobby1", response_class=HTMLResponse)
 def read_black_jack(key_passed: str = Security(get_api_key)):
     api_key = "3" # TODO
     # register_demo()
@@ -135,7 +135,7 @@ def BJ_start_game_lobby(fee: int): # TODO for Daniel: do we need the 'key_passed
     
     for key in LOBBY1:
         USERS[key].black_jack = bj
-
+        USERS[key].decrease_coins(fee) #TODO this won't decrease ANY coins if the player doesn't have any. Ignoring this problem for now
         asdf.append(bj)
         
     LOG("LOOK HERE!")    
