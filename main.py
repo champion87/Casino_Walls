@@ -61,6 +61,31 @@ def get_api_key(
         return api_key
     raise HTTPException(status_code=401, detail="no valid token")
 
+#####################
+### ADVERTISEMENT ###    
+#####################
+
+@app.get("/ad", response_class=HTMLResponse)
+def ad_demo():
+    LOG("addddddd\n")
+    return FileResponse('HTML_files/advertisement.html')
+
+@app.get("/video.mp4", response_class=HTMLResponse)
+def get_video():
+    LOG("looking for the video\n")
+    return FileResponse('HTML_files/video.mp4')
+
+@app.get("/ads_styles.css", response_class=HTMLResponse)
+def get_video():
+    LOG("looking for the css\n")
+    return FileResponse('HTML_files/styles.css')
+
+
+
+
+
+
+
 
 ######################
 ### GAMES AND MENU ###    
