@@ -60,9 +60,23 @@ class BlackJack:
         self.is_finished : Dict[str:bool]  = {} # api_key : Hand
         self.status = GameStatus.NO_GAME
         self.player_keys = api_keys
+        self.prize = prize
     
+    # @return List of apikeys of the winners and the prize
+    def end_game(self):
+        self.status = GameStatus.NO_GAME
+        max_score = 0
+        
+        for hand in self.hands.values():
+            max_score = max(max_score, hand.get_BJ_score())
+            
+        winners = [api_key for api_key in self.player_keys if self.hands[api_key].get_BJ_score() == max_score]
+        
+        LOG("done BJ.end_game()")
+        return winners, self.prize
     
     def start_game(self):
+        LOG("In start_game")
         self.status = GameStatus.ONGOING
         self.deck = Deck()
         for key in self.player_keys:
@@ -75,7 +89,9 @@ class BlackJack:
     
     # @return True iff all hands are done
     def is_game_over(self):
-        for out in self.is_finished:
+        
+        LOG("finished:" + str(self.is_finished))
+        for out in self.is_finished.values():
             if not out:
                 return False
         return True    
@@ -99,6 +115,9 @@ class BlackJack:
         self.hands[api_key].draw_to_hand()
         if self.hands[api_key].is_overdraft():
             self.is_finished[api_key] = True
+            
+        LOG(self.hands)
+        LOG("heelo")
         # else:
             # self.is_finished[api_key] = False
     
@@ -161,6 +180,9 @@ class Hand:
     def get_BJ_sum(self):
         return sum(card.get_BJ_value() for card in self.cards)
         return 69 # TODO Aces
+    
+    def get_BJ_score(self):
+        return self.get_BJ_sum() if not self.is_overdraft() else 0
     
     def is_overdraft(self):
         return self.get_BJ_sum() > 21 # BJ max hand value

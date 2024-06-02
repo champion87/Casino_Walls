@@ -26,7 +26,7 @@ from my_log import LOG
 API_KEYS = []
 KEYS_TO_COINS = {}
 USERNAME_TO_PASSWORD = {}
-USERS: Dict[str:User] = {}  # api_key |-> User
+USERS: Dict[str:User] = {"3": User("lidor", "1234")}  # api_key |-> User
 LOBBY1: List[User] = []
 USERNAME_TO_USER: Dict[str:User] = {}
 
@@ -64,6 +64,29 @@ def get_api_key(
     raise HTTPException(status_code=401, detail="no valid token")
 
 
+#####################
+### ADVERTISEMENT ###
+#####################
+
+
+@app.get("/ad", response_class=HTMLResponse)
+def ad_demo():
+    LOG("addddddd\n")
+    return FileResponse("HTML_files/advertisement.html")
+
+
+@app.get("/video.mp4", response_class=HTMLResponse)
+def get_video():
+    LOG("looking for the video\n")
+    return FileResponse("HTML_files/video.mp4")
+
+
+@app.get("/ads_styles.css", response_class=HTMLResponse)
+def get_video():
+    LOG("looking for the css\n")
+    return FileResponse("HTML_files/styles.css")
+
+
 ######################
 ### GAMES AND MENU ###
 ######################
@@ -81,7 +104,7 @@ async def read_games(key_passed: bool = Security(get_api_key)):
 
 @app.get("/games/wheel_of_fortune/", response_class=HTMLResponse)
 def read_item(key_passed: bool = Security(get_api_key)):
-    register_demo()  # DELETE
+    # register_demo()  # DELETE
     return FileResponse("HTML_files/wheel_of_fortune.html")
 
 
@@ -107,9 +130,10 @@ def generate_random_prize(bet_percentage):
     return {"prize": prize, "coins": USERS[api_key].coins, "bet_money": bet_money}
 
 
-@app.get("/games/black_jack/", response_class=HTMLResponse)
+@app.get("/games/black_jack/lobby1", response_class=HTMLResponse)
 def read_black_jack(key_passed: str = Security(get_api_key)):
     api_key = "3"  # TODO
+    # register_demo()
 
     LOBBY1.append(api_key)
 
@@ -123,8 +147,8 @@ def read_black_jack(key_passed: str = Security(get_api_key)):
 
 def BJ_end_game(bj):
     LOG("BJ game ended!")
-    bj.status = card_game.GameStatus.NO_GAME
-    # TODO take money
+    bj.end_game()
+    # TODO give money
 
 
 def is_enough_money(players: List[str], cost):
@@ -138,19 +162,21 @@ def is_enough_money(players: List[str], cost):
 asdf = []
 
 
-@app.get("/games/black_jack/start_game_lobby1/{fee}", response_class=HTMLResponse)
+@app.get("/games/black_jack/start_game_lobby1/{fee}")
 def BJ_start_game_lobby(
     fee: int,
 ):  # TODO for Daniel: do we need the 'key_passed: str = Security(get_api_key)' argument here too?
     LOG("BJ lobby 1!" + str(fee))
 
-    register_demo()
     api_key = "3"  # TODO
 
     bj = card_game.BlackJack(LOBBY1, fee)
 
     for key in LOBBY1:
         USERS[key].black_jack = bj
+        USERS[key].decrease_coins(
+            fee
+        )  # TODO this won't decrease ANY coins if the player doesn't have any. Ignoring this problem for now
         asdf.append(bj)
 
     LOG("LOOK HERE!")
@@ -162,15 +188,23 @@ def BJ_start_game_lobby(
     # LOG(bj.hands)
     # LOG(bj)
 
-    return FileResponse("HTML_files/black_jack.html")
+    LOG("started game")
+
+    return {"hello": "world"}
+
+    # return FileResponse('HTML_files/black_jack.html')
     # return FileResponse('HTML_files/lol.html')
+
+
+@app.get("/games/black_jack/game", response_class=HTMLResponse)
+def get_game():
+    return FileResponse("HTML_files/black_jack.html")
 
 
 @app.get("/games/black_jack/first_turn")
 def BJ_play():  # TODO for Daniel: do we need the 'key_passed: str = Security(get_api_key)' argument here too?
     LOG("Let's play BJ!")
 
-    register_demo()
     api_key = "3"  # TODO
 
     LOG(USERS)
@@ -183,6 +217,7 @@ def BJ_play():  # TODO for Daniel: do we need the 'key_passed: str = Security(ge
     if bj.is_overdraft(api_key):
         pass
     if bj.is_game_over():
+        LOG("called endgame")
         BJ_end_game(bj)
     return bj.get_player_json(api_key)
 
@@ -193,6 +228,8 @@ def BJ_draw():
     api_key = "3"  # TODO
     bj = USERS[api_key].black_jack
 
+    LOG(bj.status)
+
     if card_game.GameStatus.NO_GAME == bj.status:
         return bj.get_player_json(api_key)
 
@@ -201,6 +238,8 @@ def BJ_draw():
         pass
     if bj.is_game_over():
         BJ_end_game(bj)
+        LOG("called endgame")
+
     return bj.get_player_json(api_key)
 
 
