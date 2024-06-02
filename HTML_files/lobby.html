@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title> Lobby2 </title>
+
+
+
+
+
+    <style>
+        #player-list {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        #player-list li {
+            margin: 5px 0;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+
+
+
+
+
+<body onload="fetch_players()">
+    <h1>♥♠Lobby2♣♦</h1>
+    <button onclick="f1()">Sleep</button>
+    <button onclick="f2()">Log</button>
+
+    <h1>Current Lobby Players</h1>
+    <ul id="player-list">
+        <!-- Player names will be dynamically inserted here -->
+    </ul>
+
+</body>
+
+</html>
+
+<script>
+    playerList = []
+
+    async function fetch_players() {
+        while (true) {
+            console.log("trying fetch\n")
+            response = await fetch("/players");
+            console.log("fetched players\n")
+
+            json = await response.json();
+            playerList = json["players"]
+        }
+        location.href = "/lol";
+    }
+
+    function displayPlayers() {
+        const playerListElement = document.getElementById('player-list');
+        playerListElement.innerHTML = '';  // Clear any existing players
+
+        playerList.forEach(player => {
+            const li = document.createElement('li');
+            li.textContent = player;
+            playerListElement.appendChild(li);
+        });
+    }
+
+    async function f1() {
+        response = await fetch("/sleeptest");
+        location.href = "/lol";
+    }
+
+    async function f2() {
+        console.log("hello world\n")
+    }
+
+
+
+</script>

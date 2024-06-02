@@ -1,4 +1,6 @@
 from __future__ import annotations
+import asyncio
+from time import sleep
 from typing import Dict, List, Union
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi import (
@@ -28,6 +30,7 @@ KEYS_TO_COINS = {}
 USERNAME_TO_PASSWORD = {}
 USERS : Dict[str:User] = {'3' : User("lidor" ,"1234")} # api_key |-> User
 LOBBY1 : List[User] = []
+LOBBY2 : List[User] = []
 USERNAME_TO_USER: Dict[str:User] = {}
 
 
@@ -82,10 +85,40 @@ def get_video():
 
 
 
+##############################
+### LOBBYS AND MULTIPLAYER ###    
+##############################
+player_added_event = asyncio.Event()
 
+@app.get("/join_lobby2")
+def join_lobby2(key_passed: str = Security(get_api_key)):
+    LOBBY2.append(USERS[key_passed])
+    return {}
 
+@app.get("/lobby2", response_class=HTMLResponse)
+def read_lobby(key_passed: str = Security(get_api_key)):
+    
+    LOBBY2.append(key_passed)
+    LOG(key_passed)
+    
+    return FileResponse('HTML_files/lobby.html')
 
+@app.get("/sleeptest")
+def test_async(key_passed: str = Security(get_api_key)):
+    player_added_event.set()
+    
+    return {}
 
+@app.get("/players")
+def players(key_passed: str = Security(get_api_key)):
+    player_added_event.wait()
+    LOG("done waiting\n")
+    return {"players" : LOBBY2}
+
+@app.get("/lol")
+def test_page(key_passed: str = Security(get_api_key),response_class=HTMLResponse ):
+    
+    return FileResponse('HTML_files/lol.html')
 
 ######################
 ### GAMES AND MENU ###    
