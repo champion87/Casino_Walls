@@ -8,6 +8,8 @@
 
 <body onload="start()">
     <h1>Welcome to the wheel of fortune</h1>
+    <p id="coin_amount">coin amount:</p>
+    <img src="coinpic.png" alt="coins">
 
 
     <label for="bet_percentage">Choose the percentage of your money you would like to bet:<br></label>
@@ -17,8 +19,8 @@
     <button onclick="close_rules()" onmouseover="display('close','click to close the rules')"
         onmouseout="display('close', '..............rules.............')"
         id="close">..............rules.............</button><br>
-    <p id="text">Spinning the wheel will cost you some percentage of your money. You will recieve back a random amount
-        of coins between 0 and
+    <p id="text">Spinning the wheel will cost you some percentage of your money.<br> You will recieve back a random
+        amount of coins between 0 and<br>
         double the amount of your bet. Good luck!</p><br><br>
     <select name="bet_percentage" id="bet_percentage">
         <option id="1" value="1">1%</option>
@@ -47,7 +49,7 @@
 
 </body>
 <script>
-    //var RULES_MESSAGE = "The rules of the game are blaa blaa blaaaaaaaaaaa";
+    const percentage_arr = [1, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
     function f() {
         display("spin", "tessssssst")
     }
@@ -56,18 +58,12 @@
         document.getElementById('close').style.display = "none"
         document.getElementById('text').style.display = "none"
         coins = 100
-        display('1', '1% (' + Math.floor(coins / 100) + ' coins)')
-        display('5', '5% (' + Math.floor(5 * coins / 100) + ' coins)')
-        display('10', '10% (' + Math.floor(10 * coins / 100) + ' coins)')
-        display('20', '20% (' + Math.floor(20 * coins / 100) + ' coins)')
-        display('30', '30% (' + Math.floor(30 * coins / 100) + ' coins)')
-        display('40', '40% (' + Math.floor(40 * coins / 100) + ' coins)')
-        display('50', '50% (' + Math.floor(50 * coins / 100) + ' coins)')
-        display('60', '60% (' + Math.floor(60 * coins / 100) + ' coins)')
-        display('70', '70% (' + Math.floor(70 * coins / 100) + ' coins)')
-        display('80', '80% (' + Math.floor(80 * coins / 100) + ' coins)')
-        display('90', '90% (' + Math.floor(90 * coins / 100) + ' coins)')
-        display('100', '100% (' + Math.floor(100 * coins / 100) + ' coins)')
+
+        for (const n of percentage_arr) {
+            display(String(n), String(n) + '% (' + Math.floor(n * coins / 100) + ' coins)')
+        }
+
+        display('coin_amount', "coin amount: " + get_coins() + " coins")
     }
     function open_rules() {
         document.getElementById('open').style.display = 'none'
@@ -100,21 +96,26 @@
         bet_money = json.bet_money
         document.getElementById('bet_money_text').innerHTML = 'You bet ' + bet_money + " coins"
         document.getElementById('prize_text').innerHTML = 'Your prize is ' + prize + " coins"
-        document.getElementById('current_coins_text').innerHTML = 'You currently have a total of ' + coins + " coins"
+        display('current_coins_text', 'You currently have a total of ' + coins + " coins")
+        display('coin_amount', 'coin amount: ' + coins + ' coins')
 
-        display('1', '1% (' + Math.floor(coins / 100) + ' coins)')
-        display('5', '5% (' + Math.floor(5 * coins / 100) + ' coins)')
-        display('10', '10% (' + Math.floor(10 * coins / 100) + ' coins)')
-        display('20', '20% (' + Math.floor(20 * coins / 100) + ' coins)')
-        display('30', '30% (' + Math.floor(30 * coins / 100) + ' coins)')
-        display('40', '40% (' + Math.floor(40 * coins / 100) + ' coins)')
-        display('50', '50% (' + Math.floor(50 * coins / 100) + ' coins)')
-        display('60', '60% (' + Math.floor(60 * coins / 100) + ' coins)')
-        display('70', '70% (' + Math.floor(70 * coins / 100) + ' coins)')
-        display('80', '80% (' + Math.floor(80 * coins / 100) + ' coins)')
-        display('90', '90% (' + Math.floor(90 * coins / 100) + ' coins)')
-        display('100', '100% (' + Math.floor(100 * coins / 100) + ' coins)')
 
+        for (const n of percentage_arr) {
+            display(String(n), String(n) + '% (' + Math.floor(n * coins / 100) + ' coins)')
+        }
+
+
+        //coin_amount = get_coins()
+        //display('coin_amount', "coin amount: " + coin_amount + " coins")
+
+    }
+
+
+    async function get_coins() {
+        response = await fetch("/games/wheel_of_fortune/get_coins");
+        json = await response.json();
+        coin_amount = json.coins
+        return coin_amount
     }
 
 </script>
