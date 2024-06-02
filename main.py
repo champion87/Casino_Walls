@@ -26,7 +26,6 @@ import my_log
 from my_log import LOG
 
 API_KEYS = []
-KEYS_TO_COINS = {}
 USERNAME_TO_PASSWORD = {}
 USERS : Dict[str:User] = {'3' : User("lidor" ,"1234")} # api_key |-> User
 LOBBY1 : List[User] = []
@@ -34,17 +33,18 @@ LOBBY2 : List[User] = []
 USERNAME_TO_USER: Dict[str:User] = {}
 
 
-app = FastAPI()        
-        
-        
+app = FastAPI()
+
+
 #####################
-### KEYS AND AUTH ###    
+### KEYS AND AUTH ###
 #####################
-        
+
+
 def api_key_query(api_key: Union[str, None] = Cookie(None)):
     # LOG("this is the api key: " + api_key)
     return api_key
-    
+
 
 def key_gen():
     result_str = "".join(
@@ -56,6 +56,7 @@ def key_gen():
 def unauthorized_handler(a, b):
     return RedirectResponse(status_code=302, url="/")
 
+
 def get_api_key(
     api_key: str = Security(api_key_query),
 ) -> str:
@@ -64,19 +65,23 @@ def get_api_key(
         return api_key
     raise HTTPException(status_code=401, detail="no valid token")
 
+
 #####################
-### ADVERTISEMENT ###    
+### ADVERTISEMENT ###
 #####################
+
 
 @app.get("/ad", response_class=HTMLResponse)
 def ad_demo():
     LOG("addddddd\n")
-    return FileResponse('HTML_files/advertisement.html')
+    return FileResponse("HTML_files/advertisement.html")
+
 
 @app.get("/video.mp4", response_class=HTMLResponse)
 def get_video():
     LOG("looking for the video\n")
-    return FileResponse('HTML_files/video.mp4')
+    return FileResponse("HTML_files/video.mp4")
+
 
 @app.get("/ads_styles.css", response_class=HTMLResponse)
 def get_video():
@@ -121,8 +126,9 @@ def test_page(key_passed: str = Security(get_api_key),response_class=HTMLRespons
     return FileResponse('HTML_files/lol.html')
 
 ######################
-### GAMES AND MENU ###    
+### GAMES AND MENU ###
 ######################
+
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
@@ -138,6 +144,12 @@ async def read_games(key_passed: bool = Security(get_api_key)):
 def read_item(key_passed: bool = Security(get_api_key)):
     # register_demo()  # DELETE
     return FileResponse("HTML_files/wheel_of_fortune.html")
+
+
+@app.get("/games/wheel_of_fortune/get_coins")
+def get_coins():
+    api_key = "3"
+    return {"coins": USERS[api_key].coins}
 
 
 @app.get("/games/wheel_of_fortune/spin_wheel/{bet_percentage}")
@@ -158,80 +170,88 @@ def generate_random_prize(bet_percentage):
 
 @app.get("/games/black_jack/lobby1", response_class=HTMLResponse)
 def read_black_jack(key_passed: str = Security(get_api_key)):
-    api_key = "3" # TODO
+    api_key = "3"  # TODO
     # register_demo()
-    
+
     LOBBY1.append(api_key)
-    
-    return FileResponse('HTML_files/black_jack_lobby.html')
+
+    return FileResponse("HTML_files/black_jack_lobby.html")
 
 
 ##################
 ### BLACK JACK ###
 ##################
 
+
 def BJ_end_game(bj):
     LOG("BJ game ended!")
     bj.end_game()
     # TODO give money
-    
-def is_enough_money(players:List[str], cost):
+
+
+def is_enough_money(players: List[str], cost):
     for api_key in players:
         if USERS[api_key].coins < cost:
             return False
-        
+
     return True
 
+
 asdf = []
+
+
 @app.get("/games/black_jack/start_game_lobby1/{fee}")
-def BJ_start_game_lobby(fee: int): # TODO for Daniel: do we need the 'key_passed: str = Security(get_api_key)' argument here too?
+def BJ_start_game_lobby(
+    fee: int,
+):  # TODO for Daniel: do we need the 'key_passed: str = Security(get_api_key)' argument here too?
     LOG("BJ lobby 1!" + str(fee))
-    
-    api_key = "3" # TODO
-        
+
+    api_key = "3"  # TODO
+
     bj = card_game.BlackJack(LOBBY1, fee)
-    
+
     for key in LOBBY1:
         USERS[key].black_jack = bj
-        USERS[key].decrease_coins(fee) #TODO this won't decrease ANY coins if the player doesn't have any. Ignoring this problem for now
+        USERS[key].decrease_coins(
+            fee
+        )  # TODO this won't decrease ANY coins if the player doesn't have any. Ignoring this problem for now
         asdf.append(bj)
-        
-    LOG("LOOK HERE!")    
+
+    LOG("LOOK HERE!")
     LOG(USERS[api_key].black_jack)
     LOG(asdf)
-        
+
     bj.start_game()
     # LOG(bj.player_keys)
     # LOG(bj.hands)
     # LOG(bj)
-    
+
     LOG("started game")
-    
+
     return {"hello": "world"}
-    
+
     # return FileResponse('HTML_files/black_jack.html')
     # return FileResponse('HTML_files/lol.html')
-    
+
+
 @app.get("/games/black_jack/game", response_class=HTMLResponse)
 def get_game():
-    return FileResponse('HTML_files/black_jack.html')
-    
+    return FileResponse("HTML_files/black_jack.html")
 
 
 @app.get("/games/black_jack/first_turn")
-def BJ_play(): # TODO for Daniel: do we need the 'key_passed: str = Security(get_api_key)' argument here too?
+def BJ_play():  # TODO for Daniel: do we need the 'key_passed: str = Security(get_api_key)' argument here too?
     LOG("Let's play BJ!")
-    
-    api_key = "3" # TODO
-    
+
+    api_key = "3"  # TODO
+
     LOG(USERS)
     LOG(USERS[api_key])
     LOG(USERS[api_key].black_jack)
     LOG(asdf)
 
-    
     bj = USERS[api_key].black_jack
-    
+
     if bj.is_overdraft(api_key):
         pass
     if bj.is_game_over():
@@ -239,17 +259,18 @@ def BJ_play(): # TODO for Daniel: do we need the 'key_passed: str = Security(get
         BJ_end_game(bj)
     return bj.get_player_json(api_key)
 
+
 @app.get("/games/black_jack/draw")
 def BJ_draw():
     LOG("draw")
-    api_key = "3" # TODO
+    api_key = "3"  # TODO
     bj = USERS[api_key].black_jack
-    
+
     LOG(bj.status)
-    
+
     if card_game.GameStatus.NO_GAME == bj.status:
         return bj.get_player_json(api_key)
-    
+
     bj.draw(api_key)
     if bj.is_overdraft(api_key):
         pass
@@ -259,15 +280,16 @@ def BJ_draw():
 
     return bj.get_player_json(api_key)
 
+
 @app.get("/games/black_jack/fold")
 def BJ_fold():
     LOG("fold")
-    api_key = "3" # TODO
+    api_key = "3"  # TODO
     bj = USERS[api_key].black_jack
-    
+
     if card_game.GameStatus.NO_GAME == bj.status:
         return bj.get_player_json(api_key)
-    
+
     BJ_end_game(bj)
 
     return bj.get_player_json(api_key)
@@ -276,6 +298,7 @@ def BJ_fold():
 ########################
 ### USER AND ACCOUNT ###
 ########################
+
 
 @app.get("/register_user_3")
 def register_demo():
@@ -286,6 +309,7 @@ def register_demo():
 def register_demo():
     USERS["3"] = User("Lidor", "1234")
     return {"hello": "world"}
+
 
 @app.get("/get_coin_amount/")
 async def get_coin_amount(api_key: str = Security(get_api_key)):
