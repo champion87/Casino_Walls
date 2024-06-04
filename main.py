@@ -34,6 +34,8 @@ LOBBY1 : List[User] = []
 LOBBY2 : List[User] = []
 USERNAME_TO_USER: Dict[str:User] = {}
 
+player_added_event = asyncio.Event()
+
 
 app = FastAPI()
 
@@ -93,11 +95,12 @@ def get_video():
 ##############################
 ### LOBBYS AND MULTIPLAYER ###    
 ##############################
-player_added_event = asyncio.Event()
 
 @app.get("/join_lobby2")
 def join_lobby2(key_passed: str = Security(get_api_key)):
     LOBBY2.append(USERS[key_passed])
+    player_added_event.set()
+    
     return {}
 
 @app.get("/lobby2", response_class=HTMLResponse)
@@ -115,8 +118,10 @@ def test_async(key_passed: str = Security(get_api_key)):
     return {}
 
 @app.get("/players")
-def players(key_passed: str = Security(get_api_key)):
-    player_added_event.wait()
+async def players(key_passed: str = Security(get_api_key)):
+    player_added_event.clear()
+    await player_added_event.wait()
+    LOG(player_added_event.is_set())
     LOG("done waiting\n")
     return {"players" : LOBBY2}
 
