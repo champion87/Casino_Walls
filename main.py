@@ -17,6 +17,7 @@ from pydantic import BaseModel
 from starlette.responses import FileResponse
 from fastapi.security import APIKeyHeader, APIKeyQuery
 from fastapi.exceptions import HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 import random
 import math
 import string
@@ -36,6 +37,29 @@ player_added_event = asyncio.Event()
 
 
 app = FastAPI()
+
+#############
+### REACT ###
+#############
+
+origins = [
+    "http://localhost:3000",
+    "localhost:3000"
+]
+
+
+app.add_middleware(
+        CORSMiddleware,
+        allow_origins=origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"]
+)
+
+@app.get("/app")
+def react_demo():
+    LOG("react!\n")
+    return FileResponse("frontend\src\index.js")
 
 
 #####################
