@@ -11,6 +11,8 @@
         <button onclick="location.href = '/games/black_jack/lobby1';">Go to black jack</button>
         <button onclick="location.href = '/lobby2';">Try Lobby 2</button>
         <button onclick="logout();">logout</button>
+        <button onclick="claim_coins()">claim free coins every hour!!!!</button>
+        <p id="coin_status"></p>
         <script>
             async function display_coin_amount(){
                 const coin_res = await fetch('/get_coin_amount/');
@@ -21,6 +23,19 @@
             async function logout(){
                 await fetch('/logout/');
                 location.href = '/';
+            }
+
+            async function claim_coins(){
+                coin_status = document.getElementById("coin_status");
+                var got_coins = await fetch('/games/claim_coins/').then(response => response.json());
+                if (got_coins.claimed == 'true'){
+                    coin_status.textContent = "claimed coins next available in 60 minutes";
+                }
+                else{
+                    console.log(got_coins.available_in);
+                    coin_status.textContent = "already claimed next available in " + got_coins.available_in + " minutes";
+                }
+                display_coin_amount();
             }
 
         </script>
