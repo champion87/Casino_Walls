@@ -1,4 +1,5 @@
 import card_game
+import datetime
 
 NO_GAME = 69
 
@@ -9,6 +10,7 @@ class User:
         self.coins = 100
         self.black_jack : card_game.BlackJack = NO_GAME
         self.wheel = NO_GAME
+        self.last_claimed = datetime.datetime.min
         
     # @return True if can pay the fee, False otherwise
     def decrease_coins(self, fee) -> bool:
