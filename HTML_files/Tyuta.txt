@@ -1,0 +1,162 @@
+<html>
+
+<head>
+    <title>
+        Wheel of fortune
+    </title>
+</head>
+
+<body onload="start()">
+    <h1>Welcome to the wheel of fortune</h1>
+    <!-- <p>hi</p> -->
+    <p id="coin_amount">coin amount:</p>
+    <img src="/images/coinpic.png" alt="coins" height="32px" width="32px">
+
+
+    <label for="bet_percentage">Choose the percentage of your money you would like to bet:<br></label>
+    <button onclick="open_rules()" onmouseover="display('open','click to open the rules')"
+        onmouseout="display('open', '..............rules.............')"
+        id="open">..............rules.............</button>
+    <button onclick="close_rules()" onmouseover="display('close','click to close the rules')"
+        onmouseout="display('close', '..............rules.............')"
+        id="close">..............rules.............</button><br>
+    <p id="text">Spinning the wheel will cost you some percentage of your money.<br> You will recieve back a random
+        amount of coins between 0 and<br>
+        double the amount of your bet. Good luck!</p><br><br>
+    <select name="bet_percentage" id="bet_percentage">
+        <option id="1" value="1">1%</option>
+        <option id="5" value="5">5%</option>
+        <option id="10" value="10">10%</option>
+        <option id="20" value="20">20%</option>
+        <option id="30" value="30">30%</option>
+        <option id="40" value="40">40%</option>
+        <option id="50" value="50">50%</option>
+        <option id="60" value="60">60%</option>
+        <option id="70" value="70">70%</option>
+        <option id="80" value="80">80%</option>
+        <option id="90" value="90">90%</option>
+        <option id="100" value="100">100%</option>
+
+    </select>
+
+    <button onclick="spin_wheel()" id="spin">spin the wheel!</button>
+    <p id="bet_money_text"></p>
+    <p id="prize_text"></p>
+    <p id="current_coins_text"></p>
+
+
+
+    <input type="range" min="0" max="100" value="0" class="slider" id="slider">
+    <p id="gamble">Gamble: 0 coins</p><br><br>
+    <button id="b" onclick="test_text()">costumize bet</button><br><br>
+    <input type="text" id="a1"><br><br>
+    <button id="spinButton" onclick="test_display()">spin the wheel!</button>
+
+    <p id="gamble_text"></p>
+
+
+</body>
+<script>
+    var a1 = document.getElementById("a1")
+    var slider = document.getElementById("slider")
+    var output = document.getElementById("gamble");
+    output.innerHTML = "Gamble " + slider.value + " coins";
+    //document.getElementById("b").innerHTML = "Gamble " + slider.value + " coins";
+    async function bet_amount() {
+        coins = await get_coins();
+        return Math.floor(coins / 100 * slider.value)
+    }
+
+
+    async function test_display() {
+        bet = await bet_amount()
+        display("gamble_text", bet)
+    }
+
+
+    function test_text() {
+        a1.style.display = "inline"
+    }
+
+    slider.oninput = async function () {
+        bet = await bet_amount()
+        output.innerHTML = "Gamble " + bet + " coins";
+        //document.getElementById("b").innerHTML = "Gamble " + bet + " coins";
+        a1.innerHTML = bet
+
+    }
+
+
+
+    const percentage_arr = [1, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
+    function f() {
+        display("spin", "tessssssst")
+    }
+    async function start() {
+        document.getElementById('open').style.display = "inline"
+        document.getElementById('close').style.display = "none"
+        document.getElementById('text').style.display = "none"
+        coins = await get_coins();
+
+        for (const n of percentage_arr) {
+            display(String(n), String(n) + '% (' + Math.floor(n * coins / 100) + ' coins)')
+        }
+        display('coin_amount', "coin amount: " + coins + " coins")
+        a1.style.display = "none"
+    }
+    function open_rules() {
+        document.getElementById('open').style.display = 'none'
+        document.getElementById('close').style.display = 'inline'
+        document.getElementById('text').style.display = 'inline'
+
+    }
+
+    function close_rules() {
+        document.getElementById('open').style.display = 'inline'
+        document.getElementById('close').style.display = 'none'
+        document.getElementById('text').style.display = 'none'
+    }
+
+
+
+    function display(id, text) {
+        document.getElementById(id).innerHTML = text
+    }
+
+
+
+    async function spin_wheel() {
+        bet_percentage = document.getElementById('bet_percentage').value
+        response = await fetch("/games/wheel_of_fortune/spin_wheel/" + bet_percentage);
+        json = await response.json();
+
+        prize = json.prize
+        coins = json.coins
+        bet_money = json.bet_money
+        document.getElementById('bet_money_text').innerHTML = 'You bet ' + bet_money + " coins"
+        document.getElementById('prize_text').innerHTML = 'Your prize is ' + prize + " coins"
+        display('current_coins_text', 'You currently have a total of ' + coins + " coins")
+        display('coin_amount', 'coin amount: ' + coins + ' coins')
+
+
+        for (const n of percentage_arr) {
+            display(String(n), String(n) + '% (' + Math.floor(n * coins / 100) + ' coins)')
+        }
+
+
+        //coin_amount = get_coins()
+        //display('coin_amount', "coin amount: " + coin_amount + " coins")
+
+    }
+
+
+    async function get_coins() {
+        response = await fetch("/games/wheel_of_fortune/get_coins");
+        json = await response.json();
+        coin_amount = json.coins
+        return coin_amount
+    }
+
+</script>
+
+</html>
