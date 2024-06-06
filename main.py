@@ -2,7 +2,7 @@ from __future__ import annotations
 import asyncio
 from time import sleep
 from typing import Dict, List, Union
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, StreamingResponse
 from fastapi import (
     HTTPException,
     status,
@@ -27,9 +27,9 @@ from my_log import LOG
 
 API_KEYS = []
 USERNAME_TO_PASSWORD = {}
-USERS : Dict[str:User] = {'3' : User("lidor" ,"1234")} # api_key |-> User
-LOBBY1 : List[User] = []
-LOBBY2 : List[User] = []
+USERS: Dict[str:User] = {"3": User("lidor", "1234")}  # api_key |-> User
+LOBBY1: List[User] = []
+LOBBY2: List[User] = []
 USERNAME_TO_USER: Dict[str:User] = {}
 
 
@@ -86,44 +86,49 @@ def get_video():
 @app.get("/ads_styles.css", response_class=HTMLResponse)
 def get_video():
     LOG("looking for the css\n")
-    return FileResponse('HTML_files/styles.css')
-
+    return FileResponse("HTML_files/styles.css")
 
 
 ##############################
-### LOBBYS AND MULTIPLAYER ###    
+### LOBBYS AND MULTIPLAYER ###
 ##############################
 player_added_event = asyncio.Event()
+
 
 @app.get("/join_lobby2")
 def join_lobby2(key_passed: str = Security(get_api_key)):
     LOBBY2.append(USERS[key_passed])
     return {}
 
+
 @app.get("/lobby2", response_class=HTMLResponse)
 def read_lobby(key_passed: str = Security(get_api_key)):
-    
+
     LOBBY2.append(key_passed)
     LOG(key_passed)
-    
-    return FileResponse('HTML_files/lobby.html')
+
+    return FileResponse("HTML_files/lobby.html")
+
 
 @app.get("/sleeptest")
 def test_async(key_passed: str = Security(get_api_key)):
     player_added_event.set()
-    
+
     return {}
+
 
 @app.get("/players")
 def players(key_passed: str = Security(get_api_key)):
     player_added_event.wait()
     LOG("done waiting\n")
-    return {"players" : LOBBY2}
+    return {"players": LOBBY2}
+
 
 @app.get("/lol")
-def test_page(key_passed: str = Security(get_api_key),response_class=HTMLResponse ):
-    
-    return FileResponse('HTML_files/lol.html')
+def test_page(key_passed: str = Security(get_api_key), response_class=HTMLResponse):
+
+    return FileResponse("HTML_files/lol.html")
+
 
 ######################
 ### GAMES AND MENU ###
@@ -141,24 +146,27 @@ async def read_games(key_passed: bool = Security(get_api_key)):
 
 
 @app.get("/games/wheel_of_fortune/", response_class=HTMLResponse)
-def read_item(key_passed: bool = Security(get_api_key)):
+def read_item(api_key: str = Security(get_api_key)):
     # register_demo()  # DELETE
     return FileResponse("HTML_files/wheel_of_fortune.html")
 
 
 @app.get("/games/wheel_of_fortune/get_coins")
-def get_coins():
-    api_key = "3"
+def get_coins(api_key: str = Security(get_api_key)):
     return {"coins": USERS[api_key].coins}
 
 
+@app.get("/images/coinpic.png", response_class=StreamingResponse)
+def send_coinpic(api_key: str = Security(get_api_key)):
+    return FileResponse("HTML_files/coinpic.png")
+
+
 @app.get("/games/wheel_of_fortune/spin_wheel/{bet_percentage}")
-def generate_random_prize(bet_percentage):
-    api_key = "3"
+def generate_random_prize(bet_percentage, api_key: str = Security(get_api_key)):
     bet_percentage = int(bet_percentage)
     if bet_percentage < 0 or bet_percentage > 100:
         return {"prize": 0, "coins": USERS[api_key].coins, "bet_money": 0}
-    possible_prizes_list = [0.1, 1.9, 0.3, 1.7, 0.5, 0, 1.5, 0.7, 1.3, 0.9, 1.1]
+    possible_prizes_list = [0.1, 19, 0.3, 1.7, 0.5, 0, 1.5, 0.7, 1.3, 0.9, 1.1]
     # make it less uniform and more close to a normal distribution, maybe using sum of bernulli random variables
 
     current_money = USERS[api_key].coins
@@ -301,11 +309,6 @@ def BJ_fold():
 
 
 @app.get("/register_user_3")
-def register_demo():
-    USERS["3"] = User("Lidor")
-    return {"hello": "world"}
-
-
 def register_demo():
     USERS["3"] = User("Lidor", "1234")
     return {"hello": "world"}

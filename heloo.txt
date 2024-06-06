@@ -1,17 +1,53 @@
 <!DOCTYPE html>
 <html>
 <body>
-<h1>My First JavaScript</h1>
 
-<button type="button"
-onclick="document.getElementById('demo').innerHTML = Date()">
-Click me to display Date and Time.</button>
 
-<button type="button"
-onclick="document.getElementById('demo').innerHTML = ''">
-Close.</button>
 
-<p id="demo">hi</p>
+<input type="range" min="0" max="100" value="0" class="slider" id="slider">
+<button id="b" onclick="f()">click</button>
+<p id="demo">Gamble: 0 coins</p>
+<p id="text"></p>
+
+
+<script>
+
+var slider = document.getElementById("slider")
+var output = document.getElementById("demo");
+output.innerHTML = "Gamble " + slider.value + " coins";
+
+function get_coins(){
+	return 200
+}
+
+
+function bet_amount(){
+	return 
+}
+
+slider.oninput = function() {
+	bet = bet_amount()
+  output.innerHTML = "Gamble " + bet + " coins";
+
+}
+
+function bet_amount(){
+	return Math.floor(get_coins() / 100 * slider.value)	
+}
+
+function f(){
+    display("text", bet_amount())
+}
+
+function display(id, text) {
+  document.getElementById(id).innerHTML = text
+}
+</script>
 
 </body>
-</html> 
+</html>
+
+
+<!--<div class="slidecontainer">
+  <input type="range" min="1" max="100" value="50" class="slider" id="myRange">
+</div>-->
