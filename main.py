@@ -17,6 +17,7 @@ from pydantic import BaseModel
 from starlette.responses import FileResponse
 from fastapi.security import APIKeyHeader, APIKeyQuery
 from fastapi.exceptions import HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 import random
 import math
 import string
@@ -24,6 +25,8 @@ import card_game
 from user import User
 import my_log
 from my_log import LOG
+import datetime
+
 
 API_KEYS = []
 USERNAME_TO_PASSWORD = {}
@@ -32,8 +35,33 @@ LOBBY1: List[User] = []
 LOBBY2: List[User] = []
 USERNAME_TO_USER: Dict[str:User] = {}
 
+player_added_event = asyncio.Event()
+
 
 app = FastAPI()
+
+#############
+### REACT ###
+#############
+
+origins = [
+    "http://localhost:3000",
+    "localhost:3000"
+]
+
+
+app.add_middleware(
+        CORSMiddleware,
+        allow_origins=origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"]
+)
+
+@app.get("/app")
+def react_demo():
+    LOG("react!\n")
+    return FileResponse("frontend\src\index.js")
 
 
 #####################
@@ -42,7 +70,6 @@ app = FastAPI()
 
 
 def api_key_query(api_key: Union[str, None] = Cookie(None)):
-    # LOG("this is the api key: " + api_key)
     return api_key
 
 
@@ -60,7 +87,6 @@ def unauthorized_handler(a, b):
 def get_api_key(
     api_key: str = Security(api_key_query),
 ) -> str:
-    # print("those are the keys: ", list(USERS.keys()))
     if api_key in USERS.keys():
         return api_key
     raise HTTPException(status_code=401, detail="no valid token")
@@ -92,12 +118,13 @@ def get_video():
 ##############################
 ### LOBBYS AND MULTIPLAYER ###
 ##############################
-player_added_event = asyncio.Event()
 
 
 @app.get("/join_lobby2")
 def join_lobby2(key_passed: str = Security(get_api_key)):
     LOBBY2.append(USERS[key_passed])
+    player_added_event.set()
+    
     return {}
 
 
@@ -118,8 +145,10 @@ def test_async(key_passed: str = Security(get_api_key)):
 
 
 @app.get("/players")
-def players(key_passed: str = Security(get_api_key)):
-    player_added_event.wait()
+async def players(key_passed: str = Security(get_api_key)):
+    player_added_event.clear()
+    await player_added_event.wait()
+    LOG(player_added_event.is_set())
     LOG("done waiting\n")
     return {"players": LOBBY2}
 
@@ -317,6 +346,21 @@ def register_demo():
 @app.get("/get_coin_amount/")
 async def get_coin_amount(api_key: str = Security(get_api_key)):
     return str(USERS[api_key].coins)
+
+@app.get("/games/claim_coins/")
+async def claim_coins(api_key: str = Security(get_api_key)):
+    current_time = datetime.datetime.today()
+    time_difference = current_time - USERS[api_key].last_claimed
+    LOG(current_time)
+    LOG(USERS[api_key].last_claimed)
+    if(time_difference.seconds < 3600 and time_difference.days == 0):
+        available_in = 60 - int(time_difference.seconds / 60)
+        LOG(available_in)
+        return {"available_in" : available_in, "claimed" : "false"}
+    
+    USERS[api_key].last_claimed = current_time
+    USERS[api_key].coins += 50
+    return {"available_in" : 60, "claimed" : "true"}
 
 
 @app.get("/create_guest_acount/")

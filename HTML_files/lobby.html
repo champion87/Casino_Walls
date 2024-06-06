@@ -28,7 +28,7 @@
 
 
 <body onload="fetch_players()">
-    <h1>♥♠Lobby2♣♦</h1>
+    <h1>♥♠Lobby20♣♦</h1>
     <button onclick="f1()">Sleep</button>
     <button onclick="f2()">Log</button>
 
@@ -52,6 +52,8 @@
 
             json = await response.json();
             playerList = json["players"]
+            console.log(playerList)
+            displayPlayers()
         }
         location.href = "/lol";
     }
@@ -69,7 +71,7 @@
 
     async function f1() {
         response = await fetch("/sleeptest");
-        location.href = "/lol";
+        /// location.href = "/lol";
     }
 
     async function f2() {
