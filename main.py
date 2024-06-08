@@ -46,7 +46,9 @@ app = FastAPI()
 
 origins = [
     "http://localhost:3000",
-    "localhost:3000"
+    "localhost:3000",
+    "http://localhost:3000/games",
+    "localhost:3000/games"
 ]
 
 
@@ -54,7 +56,7 @@ app.add_middleware(
         CORSMiddleware,
         allow_origins=origins,
         allow_credentials=True,
-        allow_methods=["*"],
+        allow_methods=["GET", "POST"],
         allow_headers=["*"]
 )
 
@@ -87,6 +89,7 @@ def unauthorized_handler(a, b):
 def get_api_key(
     api_key: str = Security(api_key_query),
 ) -> str:
+    LOG(api_key)
     if api_key in USERS.keys():
         return api_key
     raise HTTPException(status_code=401, detail="no valid token")
@@ -368,8 +371,8 @@ async def create_guest_acount(response: Response):
     new_user: User = User("guest", "")
     my_api_key = key_gen()
     USERS[my_api_key] = new_user
-
-    response.set_cookie(key="api_key", value=my_api_key)
+    LOG('got here')
+    response.set_cookie(key="api_key", value=my_api_key, samesite='none', secure=True)
     return {"status": "ok"}
 
 
@@ -382,7 +385,7 @@ async def create_acount(
     my_api_key = key_gen()
     USERS[my_api_key] = new_user
 
-    response.set_cookie(key="api_key", value=my_api_key)
+    response.set_cookie(key="api_key", value=my_api_key, samesite='none', secure=True)
     return {"status": "ok"}
 
 
@@ -397,7 +400,7 @@ async def login(response: Response, username: str = Form(), password: str = Form
     my_api_key = key_gen()
     USERS[my_api_key] = USERNAME_TO_USER[username]
 
-    response.set_cookie(key="api_key", value=my_api_key)
+    response.set_cookie(key="api_key", value=my_api_key, samesite='none', secure=True)
     return {"status": "ok"}
 
 
