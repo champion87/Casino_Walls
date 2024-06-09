@@ -83,7 +83,7 @@ def key_gen():
 
 
 def unauthorized_handler(a, b):
-    return RedirectResponse(status_code=302, url="/")
+    return RedirectResponse(status_code=302, url="/unauthorized")
 
 
 def get_api_key(
@@ -94,6 +94,13 @@ def get_api_key(
         return api_key
     raise HTTPException(status_code=401, detail="no valid token")
 
+@app.get("/unauthorized")
+def unauthorized_access():
+    return {"loggedIn" : "False"}
+
+@app.get("/isLoggedIn")
+def isLoggedIn(api_key :str = Security(get_api_key)):
+    return {"loggedIn" : "True"}
 
 #####################
 ### ADVERTISEMENT ###
