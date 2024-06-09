@@ -1,23 +1,54 @@
 import {
   React, 
-  useEffect} from 'react';
+  useEffect,
+  useState} from 'react';
 import {
   BrowserRouter as Router,
   Routes,
   Route,
-  useNavigate
+  useNavigate,
  } from "react-router-dom";
 import './App.css';
+import PrivateRoute from './components/PrivateRoute';
+import Games from './pages/games';
 import {BlackJack} from './pages/black_jack.jsx'
 
 function App() {
+  const [loggedIn, setLoggedIn] = useState(0);
+  const didBlurSubscription = this.props.navigation.addListener(
+    'willBlur',
+    payload => {
+      isLoggedIn();
+    }
+  );
+  
+  async function isLoggedIn()
+  {
+    var res = await fetch('http://127.0.0.1:8000/isLoggedIn/', {
+      mode: 'cors',
+      credentials: 'include'
+    }).then(response => response.json());
+    console.log(res.loggedIn);
+    setLoggedIn(res.loggedIn);
+  }
+
+  useEffect(() => {
+    console.log(loggedIn);
+    isLoggedIn();
+  }, []);
+
+  if(loggedIn != "True" && loggedIn != "False")
+    return null;
+
   return(
     <div className='App'>
       <Router>
         <Routes>
-          <Route path="/games" Component={Games} /> 
-          <Route path="/" Component={RootPage} /> 
-          <Route path="/bj" Component={BlackJack} /> 
+          <Route element={<PrivateRoute isAuthenticated={loggedIn} />}>
+            <Route path="/games" Component={Games} exact/>
+            <Route path="/bj" Component={BlackJack} />
+          </Route>
+          <Route path="/" Component={RootPage} />          
         </Routes>
       </Router>
     </div>
@@ -68,58 +99,6 @@ function RootPage(){
   );
 }
 
-function Games() {
-  const navigate = useNavigate();
 
-  async function display_coin_amount(){
-    const coin_res = await fetch('http://127.0.0.1:8000/get_coin_amount/', {
-      mode: "cors",
-      credentials: "include"
-    });
-    let coin_amount = await coin_res.text();
-    document.getElementById("coins").textContent = "coin amount: " + coin_amount.slice(1, -1);
-  }
-  
-  async function logout(){
-    await fetch('http://127.0.0.1:8000/logout/',{
-      mode: "cors",
-      credentials: "include"
-    });
-    navigate('/')
-  }
-
-  async function claim_coins(){
-    var coin_status = document.getElementById("coin_status");
-    var got_coins = await fetch('http://127.0.0.1:8000/games/claim_coins/',{
-      mode: "cors",
-      credentials: "include"
-    }).then(response => response.json());
-    if (got_coins.claimed == 'true'){
-        coin_status.textContent = "claimed coins next available in 60 minutes";
-    }
-    else{
-        console.log(got_coins.available_in);
-        coin_status.textContent = "already claimed next available in " + got_coins.available_in + " minutes";
-    }
-    display_coin_amount();
-  }
-
-  useEffect(() => {
-    display_coin_amount();
-  }, []);
-
-  return(
-    <div onLoad={display_coin_amount}>
-      <h1>This is the main game screen please chose a game</h1>
-        <p id="coins">coin count: </p>
-        <button onClick="location.href = '/games/wheel_of_fortune/';">Go to wheel of fortune</button>
-        <button onClick="location.href = '/games/black_jack/lobby1';">Go to black jack</button>
-        <button onClick="location.href = '/lobby2';">Try Lobby 2</button>
-        <button onClick={logout}>logout</button>
-        <button onClick={claim_coins}>claim free coins every hour!!!!</button>
-        <p id="coin_status"></p>
-    </div>
-  )
-}
 
 export default App;
