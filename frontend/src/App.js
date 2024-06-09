@@ -11,6 +11,7 @@ import {
 import './App.css';
 import PrivateRoute from './components/PrivateRoute';
 import Games from './pages/games';
+import {BlackJack} from './pages/black_jack.jsx'
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(0);
@@ -44,9 +45,10 @@ function App() {
       <Router>
         <Routes>
           <Route element={<PrivateRoute isAuthenticated={loggedIn} />}>
-            <Route path="/games" Component={Games} exact/> 
+            <Route path="/games" Component={Games} exact/>
+            <Route path="/bj" Component={BlackJack} />
           </Route>
-          <Route path="/" Component={RootPage} />
+          <Route path="/" Component={RootPage} />          
         </Routes>
       </Router>
     </div>
