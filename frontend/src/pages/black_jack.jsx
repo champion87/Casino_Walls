@@ -1,3 +1,6 @@
+import { useEffect, useState } from "react";
+import App from "../App";
+
 export function BlackJack() {
 
     // var my_cards = ["test"]
@@ -94,6 +97,21 @@ export function BlackJack() {
         alert('You clicked me!');
     }
 
+    const [hand, setHand] = useState([]);
+
+    
+
+    useEffect(() => {
+
+        fetch("http://127.0.0.1:8000/games/black_jack/first_turn").then(response => {
+            response.json().then(json => {
+                setHand(json.hand)
+
+            });
+
+        });
+    },
+        [])
 
     return (
         <>
@@ -105,7 +123,10 @@ export function BlackJack() {
 
             <p id="score"></p>
             <p>Your Hand:</p>
-            <p id="hand"></p>
+            <div style={{ columnGap: 8, display: "flex", flexDirection: "row", justifyContent: "center" }}>
+                {hand.map(item => (
+                    <div>{item}</div>
+                ))}</div>
             <strong id="game_over_text1">GAME OVER!</strong>
             <p id="game_over_text2">Press the button to play again</p>
             {/* <button id="reply_button" onClick="play_again();">Play Again</button> */}

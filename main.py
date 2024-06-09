@@ -208,7 +208,7 @@ def generate_random_prize(bet_percentage, api_key: str = Security(get_api_key)):
     return {"prize": prize, "coins": USERS[api_key].coins, "bet_money": bet_money}
 
 
-@app.get("/games/black_jack/lobby1", response_class=HTMLResponse)
+@app.get("/games/black_jack/lobby1", response_class=HTMLResponse) #TODO 
 def read_black_jack(key_passed: str = Security(get_api_key)):
     api_key = "3"  # TODO
     # register_demo()
@@ -277,6 +277,11 @@ def BJ_start_game_lobby(
 @app.get("/games/black_jack/game", response_class=HTMLResponse)
 def get_game():
     return FileResponse("HTML_files/black_jack.html")
+
+
+@app.get("/games/black_jack/get_status")
+def get_status(api_key: str = Security(get_api_key)):
+    return USERS[api_key].black_jack.get_player_json()
 
 
 @app.get("/games/black_jack/first_turn")
