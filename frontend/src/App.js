@@ -8,6 +8,7 @@ import {
   useNavigate
  } from "react-router-dom";
 import './App.css';
+import {BlackJack} from './pages/black_jack.jsx'
 
 function App() {
   return(
@@ -16,6 +17,7 @@ function App() {
         <Routes>
           <Route path="/games" Component={Games} /> 
           <Route path="/" Component={RootPage} /> 
+          <Route path="/bj" Component={BlackJack} /> 
         </Routes>
       </Router>
     </div>
