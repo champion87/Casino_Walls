@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import App from "../App";
+import { useParams } from "react-router-dom";
 
-export function BlackJack() {
+export const BlackJackPage = () => {
 
     // var my_cards = ["test"]
     // var is_game_over = true
@@ -100,11 +101,12 @@ export function BlackJack() {
     const [hand, setHand] = useState([]);
 
     
-
+    const {game_key} = useParams();
     useEffect(() => {
 
-        fetch("http://127.0.0.1:8000/games/black_jack/first_turn").then(response => {
+        fetch(`http://127.0.0.1:8000/api/games/${game_key}/blackjack/get_state`).then(response => {
             response.json().then(json => {
+                console.log(json)
                 setHand(json.hand)
 
             });
