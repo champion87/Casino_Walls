@@ -10,9 +10,10 @@ import {
   useNavigate,
 } from "react-router-dom";
 import './App.css';
-import {PrivateRoute, UserContextProvider, LoginPage} from './components/PrivateRoute';
-import {HomePage} from './components/HomePage.js';
+import {PrivateRoute, UserContextProvider} from './components/PrivateRoute';
+import {HomePage} from './pages/HomePage.js';
 import {GamesLobbyPage} from './pages/games';
+import {LoginPage} from './pages/Login.js';
 import { BlackJackPage } from './pages/black_jack.jsx'
 
 

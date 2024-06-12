@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends
-
+import datetime
 from .auth import get_user_name
 
 router = APIRouter()
@@ -8,7 +8,7 @@ COINS = {}
 last_claimed= {}
 @router.get('/')
 def get_coins(user_name: str = Depends(get_user_name)):
-    return { "coins": COINS.setdefault(api_key, 100)}
+    return { "coins": COINS.setdefault(user_name, 100)}
 
 @router.post("/claim")
 async def claim_coins(user_name: str = Depends(get_user_name)):
@@ -19,5 +19,5 @@ async def claim_coins(user_name: str = Depends(get_user_name)):
         return {"available_in" : available_in, "claimed" : "false"}
     
     last_claimed[user_name] = current_time
-    coins[user_name] += 50
+    COINS[user_name] += 50
     return {"available_in" : 60, "claimed" : "true"}

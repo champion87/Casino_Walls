@@ -1,7 +1,16 @@
 from fastapi import APIRouter, Cookie, Security, Response, Form, Depends
 from fastapi.exceptions import HTTPException
 from typing import Dict, Union
-
+from fastapi import (
+    HTTPException,
+    Security,
+    Cookie,
+    Response,
+    Form,
+)
+from fastapi.exceptions import HTTPException
+import random
+import string
 from ..utils.my_log import LOG
 router = APIRouter()
 
@@ -58,9 +67,8 @@ def get_user(user_name :str = Depends(get_user_name)):
 
 @router.get("/create_guest_acount/")
 async def create_guest_acount(response: Response):
-    new_user: User = User("guest", "")
     my_api_key = key_gen()
-    USERS[my_api_key] = new_user
+    API_KEYS[my_api_key] = "guest"
     LOG('got here')
     response.set_cookie(key="api_key", value=my_api_key, samesite='none', secure=True)
     return {"status": "ok"}
@@ -70,10 +78,9 @@ async def create_guest_acount(response: Response):
 async def create_acount(
     response: Response, username: str = Form(), password: str = Form
 ):
-    new_user: User = User(username, password)
-    USERNAME_TO_USER[username] = new_user
+    USERNAME_TO_PASSWORD[username] = password
     my_api_key = key_gen()
-    USERS[my_api_key] = new_user
+    API_KEYS[my_api_key] = username
 
     response.set_cookie(key="api_key", value=my_api_key, samesite='none', secure=True)
     return {"status": "ok"}
@@ -81,14 +88,14 @@ async def create_acount(
 
 @router.post("/login/")
 async def login(response: Response, username: str = Form(), password: str = Form):
-    if username not in USERNAME_TO_USER.keys():
+    if username not in USERNAME_TO_PASSWORD.keys():
         return {"status": "not ok"}
 
-    if USERNAME_TO_USER[username].password != password:
+    if USERNAME_TO_PASSWORD[username] != password:
         return {"status": "not ok"}
 
     my_api_key = key_gen()
-    USERS[my_api_key] = USERNAME_TO_USER[username]
+    API_KEYS[my_api_key] = username
 
     response.set_cookie(key="api_key", value=my_api_key, samesite='none', secure=True)
     return {"status": "ok"}
@@ -97,7 +104,7 @@ async def login(response: Response, username: str = Form(), password: str = Form
 @router.get("/logout/")
 async def logout(response: Response, api_key: str = Security(get_api_key)):
 
-    USERS.pop(api_key)
+    API_KEYS.pop(api_key)
 
     response.delete_cookie(key="api_key")
     return {"status": "ok"}
