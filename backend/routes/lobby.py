@@ -1,17 +1,11 @@
 from fastapi import APIRouter
 from typing import List, Dict
-from ...logics.card_game import Game
-from ...logics.lobby import Lobby
+from ..logics.card_game import Game
+from ..logics.lobby import Lobby
 
 router = APIRouter()
 
 
-LOBBY1: List[str] = []
-LOBBY2: List[str] = []
-
-# 
-GAMES: Dict[str, Game] = {}
-LOBBIES: Dict[str, Game] = {}
 
 @router.post("/join_lobby")
 def join_lobby2(key_passed: str = Security(get_api_key)):

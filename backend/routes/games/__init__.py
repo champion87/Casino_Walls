@@ -2,8 +2,8 @@ from fastapi import APIRouter
 
 router = APIRouter()
 
-from .lobby import router as lobby_router
-router.include_router(lobby_router, prefix='/lobby')
+# from ..lobby import router as lobby_router
+# router.include_router(lobby_router, prefix='/lobby')
 
 from .blackjack import router as blackjack_router
 router.include_router(blackjack_router, prefix='/{game_key}/blackjack')
