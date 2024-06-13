@@ -1,0 +1,72 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #2d2d2d;
+    color: #ffffff;
+  }
+  
+  .game-container {
+    text-align: center;
+    background-color: #3b3b3b;
+    padding: 20px;
+    border-radius: 10px;
+  }
+  
+  .cards {
+    display: flex;
+    justify-content: center;
+    margin: 10px 0;
+  }
+  
+  .card {
+    width: 50px;
+    height: 75px;
+    background-color: #ffffff;
+    color: #000000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 5px;
+    border-radius: 5px;
+    text-align: center;
+    line-height: 1.5;
+  }
+  
+  .controls button {
+    margin: 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+  }
+  
+  .controls button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+  
+  #hit-button {
+    background-color: #4caf50;
+    color: white;
+  }
+  
+  #stand-button {
+    background-color: #f44336;
+    color: white;
+  }
+  
+  #new-game-button {
+    background-color: #008cba;
+    color: white;
+  }
+  
+  .message {
+    margin-top: 20px;
+    font-size: 18px;
+  }
+  
