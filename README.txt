@@ -1,3 +1,20 @@
+Notes on Guy's revision:
+
+Backend utilities routing:
+    instead of @app now we have @router.
+    There's router logic at __init__.py.
+    Use names like @router.get("/join_lobby2"), which will  be 
+    translated to the full name
+
+    add 'router = APIRouter()' at every file, at import it
+    at __init__.py.
+
+    
+
+
+
+
+
 Startup:
 
 >>> pip install fastapi
