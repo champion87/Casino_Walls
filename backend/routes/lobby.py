@@ -1,15 +1,15 @@
-from fastapi import APIRouter
 from typing import List, Dict
 from ..logics.card_game import Game
-from ..logics.lobby import Lobby
-
+from ..logics.game_lobby import Lobby, get_lobby
+from .auth import get_user_name
+from fastapi import APIRouter, Depends
 router = APIRouter()
 
-
+@router.get()
 
 @router.post("/join_lobby")
-def join_lobby2(key_passed: str = Security(get_api_key)):
-    LOBBY2.append(USERS[key_passed])
+def join_lobby2(lobby: Lobby = Depends(get_lobby), username: str = Depends(get_user_name)):
+    lobby.add(username)
     player_added_event.set()
     
     return {}
