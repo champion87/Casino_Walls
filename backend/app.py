@@ -21,7 +21,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import random
 import math
 import string
-from .utils.my_log import LOG
+from utils.my_log import LOG
 import datetime
 
 
@@ -50,14 +50,16 @@ def create_app():
     )
 
 
-    from .routes.auth import router as auth_router
+    from routes.auth import router as auth_router
     app_.include_router(auth_router, prefix='/api/auth')
 
+    from routes.lobbies import router as lobbies_router
+    app_.include_router(lobbies_router, prefix='/api/{lobby_key}/lobbies')
 
-    from .routes.games import router as games_router
+    from routes.games import router as games_router
     app_.include_router(games_router, prefix='/api/games')
 
-    from .routes.coins import router as coins_router
+    from routes.coins import router as coins_router
     app_.include_router(coins_router, prefix='/api/coins')
 
     return app_

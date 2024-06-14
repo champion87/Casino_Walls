@@ -11,7 +11,7 @@ from fastapi import (
 from fastapi.exceptions import HTTPException
 import random
 import string
-from ..utils.my_log import LOG
+from utils.my_log import LOG
 router = APIRouter()
 
 
