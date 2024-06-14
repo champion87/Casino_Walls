@@ -11,6 +11,9 @@ class Lobby(BaseModel):
         
     def add(self, user: str):
         self.usernames.append(user)
+        
+    def get_players(self):
+        return self.usernames
 
 LOBBIES: Dict[str, Lobby] = {}
 
