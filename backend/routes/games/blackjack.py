@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
-from ...logics.card_game import get_game, Game
-from ..auth import get_user_name
+from logics.card_game import get_game, Game
+from auth import get_user_name
 router = APIRouter()
 
 

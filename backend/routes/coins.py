@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 import datetime
-from .auth import get_user_name
+from auth import get_user_name
 
 router = APIRouter()
 

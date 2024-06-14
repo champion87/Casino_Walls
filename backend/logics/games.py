@@ -3,9 +3,9 @@ import itertools
 import random
 from typing import Dict, List
 from fastapi.params import Path, Query
-from game import Game
-from card_game import BlackJack
-from ..utils.my_log import LOG
+from logics.game import Game
+from logics.card_game import BlackJack
+from utils.my_log import LOG
 
 SESSIONS : Dict[str : Game] = {"id" : Game()}
 

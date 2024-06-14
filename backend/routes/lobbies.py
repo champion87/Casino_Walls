@@ -1,9 +1,9 @@
 from typing import List, Dict
 import asyncio
-from ..logics.game import Game
-from ..logics.games import get_game
-from ..logics.game_lobby import Lobby, get_lobby
-from .auth import get_user_name
+from logics.game import Game
+from logics.games import get_game
+from logics.game_lobby import Lobby, get_lobby
+from auth import get_user_name
 from fastapi import APIRouter, Depends
 
 router = APIRouter()

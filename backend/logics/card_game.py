@@ -4,8 +4,8 @@ import random
 from typing import Dict, List
 from fastapi.params import Path
 from pydantic import BaseModel
-from ..utils.my_log import LOG
-from .game import Game
+from utils.my_log import LOG
+from logics.game import Game
  
 
 
