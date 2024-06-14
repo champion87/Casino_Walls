@@ -53,6 +53,8 @@ def create_app():
     from .routes.auth import router as auth_router
     app_.include_router(auth_router, prefix='/api/auth')
 
+    from .routes.lobbies import router as lobbies_router
+    app_.include_router(lobbies_router, prefix='/api/{lobby_key}/lobbies')
 
     from .routes.games import router as games_router
     app_.include_router(games_router, prefix='/api/games')
