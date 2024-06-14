@@ -40,11 +40,11 @@ export const LoginPage = () => {
 
   return (  
     <div>
-      <main className="bg-[#690d0d] h-screen flex items-center justify-center p-10">
-        <div className="grid w-full h-full grid-cols-1 bg-white box-anim md:grid-cols-2">
-          <div className="bg-[#961212] text-white flex items-center justify-center flex-col">
+      <main className="bg-[#690d0d] h-screen items-center p-10">
+        <div className="grid w-full h-full grid-cols-2">
+          <div className="bg-[#961212] flex items-center justify-center flex-col rounded-l-3xl">
             <div className="my-4">
-              <h1 className="text-3xl font-semibold text-yellow-400">Welcome to Casino Walls</h1>
+              <h1 className="text-3xl font-bold text-yellow-400">Welcome to Casino Walls</h1>
               <p className="mt-2 text-xs text-slate-400">
               Please create an account or log in
               </p>
@@ -85,7 +85,7 @@ export const LoginPage = () => {
             </p>
           </div>
             <img
-              className="size-full object-bottom"
+              className="size-full object-bottom rounded-r-3xl"
               src={casino}
               alt="bg-image"
             />
