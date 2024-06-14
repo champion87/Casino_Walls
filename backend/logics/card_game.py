@@ -6,6 +6,7 @@ from fastapi.params import Path
 from pydantic import BaseModel
 from utils.my_log import LOG
 from logics.game import Game
+from routes.lobbies import Lobby
  
 
 
@@ -62,12 +63,12 @@ class GameStatus(Enum):
     NO_GAME = 2
 
 class BlackJack(Game):
-    def __init__(self, api_keys:List[str], prize=0):
+    def __init__(self, lobby: Lobby, prize=0):
         self.deck = None
         self.hands : Dict[str:Hand]  = {} # api_key : Hand
         self.is_finished : Dict[str:bool]  = {} # api_key : Hand
         self.status = GameStatus.NO_GAME
-        self.player_keys = api_keys
+        self.lobby = lobby
         self.prize = prize
     
     # @return List of apikeys of the winners and the prize
@@ -78,7 +79,7 @@ class BlackJack(Game):
         for hand in self.hands.values():
             max_score = max(max_score, hand.get_BJ_score())
             
-        winners = [api_key for api_key in self.player_keys if self.hands[api_key].get_BJ_score() == max_score]
+        winners = [username for username in self.lobby.get_players() if self.hands[username].get_BJ_score() == max_score]
         
         LOG("done BJ.end_game()")
         return winners, self.prize
@@ -87,13 +88,13 @@ class BlackJack(Game):
         LOG("In start_game")
         self.status = GameStatus.ONGOING
         self.deck = Deck()
-        for key in self.player_keys:
-            self.hands[key] = Hand(self.deck)
-            self.is_finished[key] = False
-            self.hands[key].draw_to_hand().draw_to_hand() # 2 initial cards in BJ
+        for username in self.lobby.get_players():
+            self.hands[username] = Hand(self.deck)
+            self.is_finished[username] = False
+            self.hands[username].draw_to_hand().draw_to_hand() # 2 initial cards in BJ
         
-    def is_overdraft(self, api_key:str):
-        return self.hands[api_key].is_overdraft()
+    def is_overdraft(self, username:str):
+        return self.hands[username].is_overdraft()
     
     # @return True iff all hands are done
     def is_game_over(self):
@@ -104,11 +105,11 @@ class BlackJack(Game):
                 return False
         return True    
     
-    def get_player_json(self, api_key:str):
+    def get_player_json(self, username:str):
         return {
-            "hand" : self.hands[api_key].to_list_of_str(),
-            "sum" : self.hands[api_key].get_BJ_sum(),
-            "finish_state" : self.hands[api_key].is_overdraft()
+            "hand" : self.hands[username].to_list_of_str(),
+            "sum" : self.hands[username].get_BJ_sum(),
+            "finish_state" : self.hands[username].is_overdraft()
             }
     
     def to_json(self):
@@ -119,10 +120,10 @@ class BlackJack(Game):
             "end_game" : self.is_overdraft()
             }
         
-    def draw(self, api_key:str):
-        self.hands[api_key].draw_to_hand()
-        if self.hands[api_key].is_overdraft():
-            self.is_finished[api_key] = True
+    def draw(self, username:str):
+        self.hands[username].draw_to_hand()
+        if self.hands[username].is_overdraft():
+            self.is_finished[username] = True
             
         LOG(self.hands)
         LOG("heelo")
