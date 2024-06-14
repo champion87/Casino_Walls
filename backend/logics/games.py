@@ -7,9 +7,9 @@ from logics.game import Game
 from logics.card_game import BlackJack
 from utils.my_log import LOG
 
-SESSIONS : Dict[str : Game] = {"id" : Game()}
+SESSIONS : Dict[str , Game] = {"id" : Game()}
 
-GAMES : Dict[str : Game] = {
+GAMES : Dict[str , Game] = {
     "blackjack" : BlackJack
 }
 
