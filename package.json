@@ -1,6 +1,8 @@
 {
   "dependencies": {
+    "@radix-ui/react-slot": "^1.0.2",
     "axios": "^1.7.2",
+    "lucide-react": "^0.395.0",
     "react-router-dom": "^6.23.1"
   }
 }
