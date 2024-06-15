@@ -20,7 +20,7 @@ const Lobby = () => {
 
   const joinLobby = async () => {
     // TODO general lobby; not only 2.
-    await axios.post(`http://127.0.0.1:8000/api/2/lobbies/${playerName}/join_lobby`);
+    await axios.post(`http://127.0.0.1:8000/api/2/lobbies/join_lobby`);
     setWaiting(true);
   };
 

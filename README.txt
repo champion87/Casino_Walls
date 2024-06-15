@@ -21,6 +21,8 @@ Startup:
 >>> pip install uvicorn
 >>> npm i axios
 >>> npm i react-router-dom
+>>> npm install lucide-react
+>>> npm install @radix-ui/react-slot
 >>> and many more...
 
 React helpful links:

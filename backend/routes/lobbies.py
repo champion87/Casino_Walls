@@ -61,9 +61,9 @@ def get_unused_id(data):
 # TODO don't allow user to be in many lobbies
 
 # For example
-# http://127.0.0.1:8000/api/2/lobbies/idan/join_lobby
-@router.post("/{username}/join_lobby")
-def join_lobby(lobby: Lobby = Depends(get_lobby), username = Path()): #  = Depends(get_user_name)
+# http://127.0.0.1:8000/api/2/lobbies/join_lobby
+@router.post("/join_lobby")
+def join_lobby(lobby: Lobby = Depends(get_lobby), username = Depends(get_user_name)):
     
     lobby.add(username)
     player_added_event.set()
