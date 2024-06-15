@@ -15,6 +15,7 @@ import {HomePage} from './pages/HomePage.js';
 import {GamesLobbyPage} from './pages/games';
 import {LoginPage} from './pages/Login.js';
 import { BlackJackPage } from './pages/black_jack.jsx'
+import Lobby from './pages/lobby_gpt.js';
 
 
 
@@ -26,6 +27,7 @@ const App = () => {
       <Router>
         <Routes>
           <Route path="/login" element={<LoginPage/>} />
+          <Route path="/lobby" element={<Lobby/>} />
           <Route element={<PrivateRoute />}>
             <Route exact path="/" element={<HomePage/>}  />
             <Route path="games/:game_key?" element={<GamesLobbyPage/>}>

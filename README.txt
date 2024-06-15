@@ -19,6 +19,9 @@ Startup:
 
 >>> pip install fastapi
 >>> pip install uvicorn
+>>> npm i axios
+>>> npm i react-router-dom
+>>> and many more...
 
 React helpful links:
 https://react.dev/learn/add-react-to-an-existing-project
@@ -28,12 +31,15 @@ Component libraries:
 https://v2.chakra-ui.com/
 npm i @chakra-ui/react @emotion/react @emotion/styled framer-motion
 
-For logs:
+For logs at backend:
 Use the function LOG(msg), then run:
 >>> uvicorn main:app --log-level debug --reload
 
 To run without logs:
 >>> fastapi dev main.py
+
+Frontend:
+>>> npm start
 
 
 For query brose at:
