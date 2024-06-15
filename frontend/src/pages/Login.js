@@ -4,7 +4,6 @@ import { userContext } from "../components/PrivateRoute"
 import { Button } from '../components/ui/button';
 import { Label } from '../components/ui/label';
 import { Input } from '../components/ui/input';
-import { Image } from 'lucide-react';
 import styles from "../app/globals.css";
 import casino from "../Images/casino.png"
 
