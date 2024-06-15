@@ -70,7 +70,7 @@ def join_lobby(lobby: Lobby = Depends(get_lobby), username = Path()): #  = Depen
     
     return {}
 
-
+# http://127.0.0.1:8000/api/2/lobbies/current_players
 @router.get("/current_players")
 def players(lobby: Lobby = Depends(get_lobby)):
     return {"players": lobby.get_players()}
