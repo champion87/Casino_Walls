@@ -6,7 +6,7 @@ from fastapi.params import Path
 from pydantic import BaseModel
 from utils.my_log import LOG
 from logics.game import Game
-from routes.lobbies import Lobby
+from logics.lobby import Lobby
  
 
 

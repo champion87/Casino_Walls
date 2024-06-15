@@ -1,9 +1,9 @@
 from typing import List, Dict
 from fastapi.params import Path, Query
-from pydantic import BaseModel, Field
 import asyncio
 from logics.game import Game
 from logics.games import get_game
+from logics.lobby import Lobby
 # from logics.game_lobby import Lobby, get_lobby
 from routes.auth import get_user_name, key_gen
 from fastapi import APIRouter, Depends
@@ -13,14 +13,7 @@ router = APIRouter()
 player_added_event = asyncio.Event()
 
 
-class Lobby(BaseModel):
-    usernames: List[str] = Field(default_factory=list)
 
-    def add(self, user: str):
-        self.usernames.append(user)
-        
-    def get_players(self):
-        return self.usernames
     
     
     
@@ -66,8 +59,11 @@ def get_unused_id(data):
 
 # TODO delete empty lobbies
 # TODO don't allow user to be in many lobbies
+
+# For example
+# http://127.0.0.1:8000/api/2/lobbies/idan/join_lobby
 @router.post("/{username}/join_lobby")
-def join_lobby2(lobby: Lobby = Depends(get_lobby), username = Path()): #  = Depends(get_user_name)
+def join_lobby(lobby: Lobby = Depends(get_lobby), username = Path()): #  = Depends(get_user_name)
     
     lobby.add(username)
     player_added_event.set()
