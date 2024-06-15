@@ -39,7 +39,7 @@ export const LoginPage = () => {
 
   return (  
     <div>
-      <main className="bg-[#690d0d] h-screen items-center p-10">
+      <div className="bg-[#690d0d] h-screen items-center p-10">
         <div className="grid w-full h-full grid-cols-2">
           <div className="bg-[#961212] flex items-center justify-center flex-col rounded-l-3xl">
             <div className="my-4">
@@ -89,7 +89,7 @@ export const LoginPage = () => {
               alt="bg-image"
             />
         </div>
-      </main>
+      </div>
       {/*<h1>Welcome to Casino walls</h1>
       <p>Please create an account or log in</p>
       <button onClick={() => sign_as_guest('/')}>Sign in as guest</button>
