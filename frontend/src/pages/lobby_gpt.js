@@ -32,12 +32,12 @@ const Lobby = () => {
   return (
     <div>
       <h1>Casino Lobby</h1>
-      <input
+      {/* <input
         type="text"
         value={playerName}
         onChange={(e) => setPlayerName(e.target.value)}
         placeholder="Enter your name"
-      />
+      /> */}
       <button onClick={joinLobby}>Join Lobby</button>
       <PlayerList players={players} />
       {players.length > 1 && (
