@@ -55,6 +55,7 @@ def get_user_name(
     api_key: str = Security(api_key_query),
 ) -> str:
     LOG(api_key)
+    # LOG(API_KEYS)
     if api_key in API_KEYS.keys():
         return API_KEYS[api_key]
     raise HTTPException(status_code=401, detail="no valid token")

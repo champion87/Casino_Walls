@@ -64,7 +64,16 @@ def get_unused_id(data):
 # http://127.0.0.1:8000/api/2/lobbies/join_lobby
 @router.post("/join_lobby")
 def join_lobby(lobby: Lobby = Depends(get_lobby), username = Depends(get_user_name)):
+    lobby.add(username)
+    player_added_event.set()
     
+    return {}
+
+
+# For example
+# http://127.0.0.1:8000/api/2/lobbies/create_lobby/?game_name=blackjack&prize=100
+@router.post("/create_lobby")
+def create_lobby(lobby: Lobby = Depends(get_lobby), username = Depends(get_user_name)):
     lobby.add(username)
     player_added_event.set()
     
@@ -82,14 +91,18 @@ async def wait_for_players(lobby: Lobby = Depends(get_lobby)):
     return {"players": lobby.get_players()}
 
 # For example
-# http://127.0.0.1:8000/api/2/lobbies/start_game/?game_name=blackjack&prize=100
+# http://127.0.0.1:8000/api/2/lobbies/start_game/
 @router.post("/start_game") 
-async def start_game(lobby: Lobby = Depends(get_lobby), game: type = Depends(get_game), prize: int | None = None):
+async def start_game(lobby: Lobby = Depends(get_lobby)):
     if game != None:
         id = get_unused_id(SESSIONS)
         SESSIONS[id] = game(lobby, prize)
         return {}
     
+    
+# @router.get("/start_game") 
+# async def start_game(lobby: Lobby = Depends(get_lobby), game: type = Depends(get_game), prize: int | None = None):
+#     LOG(kwargs)
         
     
     
