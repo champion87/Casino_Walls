@@ -18,7 +18,7 @@ export const HomePage = () => {
         navigate('/games');
     }
     return (
-    <div className="w-full h-full">
+    <div className="w-screen h-screen overflow-y-scroll bg-wall bg-cover">
         <div
         className="h-screen w-full overflow-hidden bg-cover bg-[url('../Images/possible_banner.png')] items-center pb-1 pt-10 px-10"
         alt="banner-image">
@@ -37,8 +37,8 @@ export const HomePage = () => {
             </div>
             <p className="text-7xl mt-5 font-serif text-yellow-400 animate-bounce">↓</p>
         </div>
-        <div className="bg-[#690d0d] size-full items-center pt-10 px-10">
-            <div className="bg-[#961212] flex items-center justify-center flex-col rounded-3xl">
+        <div className="size-full items-center pt-10 px-10">
+            <div className="bg-black inline-block items-center justify-center flex-col rounded-3xl">
                 <div className="my-4">
                     <h1 className="text-3xl font-bold text-yellow-400 mb-7">This is the Home Page of {userData.user}</h1>
                     <p className="text-2xl font-semibold text-yellow-400">our top played games:</p>
@@ -86,7 +86,10 @@ export const HomePage = () => {
                 
             </div>
             <div className="bg-[#961212] flex items-center justify-center flex-col text-yellow-300 rounded-3xl mt-10">
-                some reviews...
+                <p>some reviews...</p>
+                <p>some reviews...</p>
+                <p>some reviews...</p>
+                <p>some reviews...</p>
             </div>
             <div className="bg-[#961212] flex items-center justify-center flex-col text-yellow-300 rounded-t-3xl mt-10">
                 how to contact us
