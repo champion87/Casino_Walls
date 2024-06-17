@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+// import axios from 'axios';
 import PlayerList from '../components/PlayerList';
+import {call_api} from '../lib/utils'
 
 const Lobby = () => {
   const [playerName, setPlayerName] = useState('');
@@ -10,8 +11,9 @@ const Lobby = () => {
   useEffect(() => {
     if (waiting) {
       const interval = setInterval(async () => {
-        const response = await axios.get('http://127.0.0.1:8000/api/2/lobbies/current_players');
-        setPlayers(response.data.players);
+        const response = await call_api('api/2/lobbies/current_players', 'get');
+        const json = await response.json()
+        setPlayers(json.players);
       }, 1000);
 
       return () => clearInterval(interval);
@@ -20,24 +22,24 @@ const Lobby = () => {
 
   const joinLobby = async () => {
     // TODO general lobby; not only 2.
-    await axios.post(`http://127.0.0.1:8000/api/2/lobbies/join_lobby`);
+    await call_api('api/lobbies/2/join_lobby', 'post')
     setWaiting(true);
   };
 
   const startGame = async () => {
-    await axios.post('/api/start_game');
+    await call_api('api/start_game', 'post')
     // Handle the game start logic here
   };
 
   return (
     <div>
       <h1>Casino Lobby</h1>
-      <input
+      {/* <input
         type="text"
         value={playerName}
         onChange={(e) => setPlayerName(e.target.value)}
         placeholder="Enter your name"
-      />
+      /> */}
       <button onClick={joinLobby}>Join Lobby</button>
       <PlayerList players={players} />
       {players.length > 1 && (

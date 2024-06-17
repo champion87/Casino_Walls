@@ -10,6 +10,14 @@ Backend utilities routing:
     at __init__.py.
 
     
+!
+!
+!
+IMPORTANT!   -   Make sure to 'cd ./frontend' before installing new node packages
+!
+!
+!
+
 
 
 
@@ -23,6 +31,7 @@ Startup:
 >>> npm i react-router-dom
 >>> npm install lucide-react
 >>> npm install @radix-ui/react-slot
+>>> npm install -D tailwindcss
 >>> and many more...
 
 React helpful links:
@@ -31,7 +40,7 @@ https://medium.com/@dennisivy/fast-api-react-crud-app-with-harperdb-5834af537c23
 
 Component libraries:
 https://ui.shadcn.com/
-npx shadcn-ui@latest init
+npx shadcn-ui@latest init ### DO NOT RUN THIS!
 https://tailwindcss.com/
 npm install -D tailwindcss
 
