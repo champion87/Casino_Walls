@@ -22,7 +22,7 @@ const Lobby = () => {
 
   const joinLobby = async () => {
     // TODO general lobby; not only 2.
-    await call_api('api/2/lobbies/join_lobby', 'post')
+    await call_api('api/lobbies/2/join_lobby', 'post')
     setWaiting(true);
   };
 

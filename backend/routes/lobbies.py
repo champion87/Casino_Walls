@@ -7,13 +7,17 @@ from logics.lobby import Lobby
 # from logics.game_lobby import Lobby, get_lobby
 from routes.auth import get_user_name, key_gen
 from fastapi import APIRouter, Depends
+from fastapi.exceptions import HTTPException
 from utils.my_log import LOG
 
 router = APIRouter()
 player_added_event = asyncio.Event()
 
+create_lobby_router = APIRouter()
+router.include_router(create_lobby_router, prefix='/create_lobby')
 
-
+specific_lobby_router = APIRouter()
+router.include_router(create_lobby_router, prefix='/{lobby_key}')
     
     
     
@@ -40,6 +44,7 @@ def set_session(key, game):
 # TODO current default behavior is create new Lobby if not found
 def get_lobby(lobby_key: str = Path()):
     if lobby_key not in LOBBIES.keys():
+        return None
         LOBBIES[lobby_key] = Lobby()
     return LOBBIES[lobby_key]
 
@@ -62,8 +67,10 @@ def get_unused_id(data):
 
 # For example
 # http://127.0.0.1:8000/api/2/lobbies/join_lobby
-@router.post("/join_lobby")
+@specific_lobby_router.post("/join_lobby")
 def join_lobby(lobby: Lobby = Depends(get_lobby), username = Depends(get_user_name)):
+    if lobby == None:
+        raise HTTPException(status_code=422, detail="no such lobby")
     lobby.add(username)
     player_added_event.set()
     
@@ -71,20 +78,27 @@ def join_lobby(lobby: Lobby = Depends(get_lobby), username = Depends(get_user_na
 
 
 # For example
-# http://127.0.0.1:8000/api/2/lobbies/create_lobby/?game_name=blackjack&prize=100
-@router.post("/create_lobby")
-def create_lobby(lobby: Lobby = Depends(get_lobby), username = Depends(get_user_name)):
-    lobby.add(username)
-    player_added_event.set()
+# http://127.0.0.1:8000/api/2/lobbies/create_lobby/? ...
+
+def create_lobby():
+    # LOBBIES[lobby_key] = Lobby()
+    
     
     return {}
 
+# ?game_name=blackjack&prize=100
+from logics.card_game import BlackJack
+@create_lobby_router.post("/blackjack")
+def blackjack(prize: int, max_players: int, lobby: Lobby = Depends(get_lobby), username = Depends(get_user_name)):
+    bj = BlackJack(lobby, prize, max_players)
+    
+
 # http://127.0.0.1:8000/api/2/lobbies/current_players
-@router.get("/current_players")
+@specific_lobby_router.get("/current_players")
 def players(lobby: Lobby = Depends(get_lobby)):
     return {"players": lobby.get_players()}
 
-@router.get("/wait_for_players")
+@specific_lobby_router.get("/wait_for_players")
 async def wait_for_players(lobby: Lobby = Depends(get_lobby)):
     player_added_event.clear()
     await player_added_event.wait()
@@ -92,7 +106,7 @@ async def wait_for_players(lobby: Lobby = Depends(get_lobby)):
 
 # For example
 # http://127.0.0.1:8000/api/2/lobbies/start_game/
-@router.post("/start_game") 
+@specific_lobby_router.post("/start_game") 
 async def start_game(lobby: Lobby = Depends(get_lobby)):
     if game != None:
         id = get_unused_id(SESSIONS)
@@ -104,7 +118,6 @@ async def start_game(lobby: Lobby = Depends(get_lobby)):
 # async def start_game(lobby: Lobby = Depends(get_lobby), game: type = Depends(get_game), prize: int | None = None):
 #     LOG(kwargs)
         
-    
     
 
 

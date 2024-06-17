@@ -17,6 +17,7 @@ import {LoginPage} from './pages/Login.js';
 import { BlackJackPage } from './pages/black_jack.jsx'
 import BJ_GPT from './pages/bjgpt';
 import Lobby from './pages/lobby_gpt.js';
+import { BlackJackMainPage } from './pages/blackjack_main_page';
 
 
 
@@ -34,6 +35,8 @@ const App = () => {
 
           <Route element={<PrivateRoute />}>
             <Route exact path="/" element={<HomePage/>}  />
+            <Route path="/blackjack_main" element={<BlackJackMainPage/>} />
+
             <Route path="games/:game_key?" element={<GamesLobbyPage/>}>
               <Route path="blackjack" element={<BlackJackPage/>} />
             </Route>

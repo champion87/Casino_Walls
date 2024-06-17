@@ -63,7 +63,7 @@ class GameStatus(Enum):
     NO_GAME = 2
 
 class BlackJack(Game):
-    def __init__(self, lobby: Lobby, prize=0):
+    def __init__(self, lobby: Lobby, prize, max_players):
         self.deck = None
         self.hands : Dict[str:Hand]  = {} # api_key : Hand
         self.is_finished : Dict[str:bool]  = {} # api_key : Hand
