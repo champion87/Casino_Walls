@@ -74,10 +74,10 @@ async def create_guest_acount(response: Response):
     return {"status": "ok"}
 
 
-@router.post("/create_acount/")
-async def create_acount(
-    response: Response, username: str = Form(), password: str = Form
-):
+@router.post("/create_account/")
+async def create_account(
+    response: Response, username: str = Form(), password: str = Form()):
+    LOG(password)
     USERNAME_TO_PASSWORD[username] = password
     my_api_key = key_gen()
     API_KEYS[my_api_key] = username
@@ -87,11 +87,14 @@ async def create_acount(
 
 
 @router.post("/login/")
-async def login(response: Response, username: str = Form(), password: str = Form):
+async def login(response: Response, username: str = Form(), password: str = Form()):
     if username not in USERNAME_TO_PASSWORD.keys():
+        LOG("user doesn't exist")
         return {"status": "not ok"}
 
     if USERNAME_TO_PASSWORD[username] != password:
+        LOG("incorrect password")
+        LOG(password)
         return {"status": "not ok"}
 
     my_api_key = key_gen()

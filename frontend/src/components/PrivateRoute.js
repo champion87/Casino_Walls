@@ -5,7 +5,7 @@ import React, {
   createContext,
   useContext,
   useReducer }from 'react';
-import { Outlet, Navigate } from 'react-router-dom';
+import { Outlet, Navigate, useLocation } from 'react-router-dom';
 
 
 export const userContext = createContext({})
@@ -40,11 +40,12 @@ export const UserContextProvider = ({children}) => {
 
 export const PrivateRoute = ({}) => {
   const {userData} = useContext(userContext)
-  console.log(userData)
+  const location = useLocation();
+  console.log(userData);
   if (userData.loading) {
     return <div>loading...</div>
   }
-  return userData.user ? <Outlet/> : <Navigate to="/login"/>
+  return userData.user ? <Outlet/> : <Navigate to={'/login/?prevPath='+ location.pathname}/>
 }
 
 export const LoginPage = () => {

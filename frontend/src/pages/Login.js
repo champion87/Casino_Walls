@@ -1,39 +1,55 @@
-import {React, useContext} from 'react';
-import {useNavigate} from "react-router-dom";
+import {React, useContext, useState, useEffect} from 'react';
+import {useNavigate } from "react-router-dom";
 import { userContext } from "../components/PrivateRoute"
 import { Button } from '../components/ui/button';
 import { Label } from '../components/ui/label';
 import { Input } from '../components/ui/input';
 import styles from "../app/globals.css";
 import casino from "../Images/casino.png"
+import { LogIn } from 'lucide-react';
 
 
 export const LoginPage = () => {
   const navigate = useNavigate();
+  const searchParams = new URLSearchParams(document.location.search)
   const {userData, forceUpdate} = useContext(userContext);
+  const [pageState, setPageState] = useState('Login');
+  var nextPageState
 
 
   async function sign_as_guest(page_address) {
+    console.log(page_address);
     const res = await fetch('http://127.0.0.1:8000/api/auth/create_guest_acount/', {
       mode: 'cors',
       credentials: 'include'
     });
     await forceUpdate();
     console.log("going to log in")
-    navigate('/');
+    if (page_address)
+      navigate(page_address);
+    else
+      navigate('/')
   }
+
+  useEffect(() => {
+    setPageState("Login")
+    nextPageState = "Sign up"
+  }, []);
 
   async function form_action(action, page_address) {
     let form = document.getElementById("form");
+    const formData = new FormData(form);
+    console.log(Array.from(formData.entries()));
     const res = await fetch(action, {
       method: 'POST',
-      body: new URLSearchParams(new FormData(form),),
+      body: new URLSearchParams(formData),
       mode: 'cors',
       credentials: 'include'
     }).then(response => response.json());
     console.log(res.status);
     if (res.status === 'ok') {
-      navigate(page_address);
+      await forceUpdate();
+      page_address ? navigate(page_address) : navigate('/');
     }
   }
 
@@ -54,6 +70,7 @@ export const LoginPage = () => {
                 className="mt-2 mb-4 bg-transparent rounded-full"
                 type="username"
                 id="username"
+                name="username"
                 placeholder="Username"
               />
               <Label htmlFor="password" className="text-yellow-400">Password</Label>
@@ -61,18 +78,33 @@ export const LoginPage = () => {
                 className="mt-2 bg-transparent rounded-full"
                 type="password"
                 id="password"
+                name="password"
                 placeholder="Password"
               />
 
               <Button
-                type="submit"
+                type="button"
                 className="w-full mt-6 bg-black text-yellow-300 rounded-full hover:text-yellow-200"
+                onClick={() => form_action('http://127.0.0.1:8000/api/auth/' + ((pageState === "Login") ? "login" : "create_account") + "/", searchParams.get('prevPath'))}
               >
-                Login
+                {pageState}
               </Button>
+              <div className='flex flex-row items-center justify-center'>
+                <p className="text-xs text-slate-200">
+                {(pageState === "Login") ? "don't " : "already "} have an account  
+                </p>
+                <Button
+                  type="button"
+                  onClick={() => { (pageState === "Login") ? setPageState("Sign up") : setPageState("Login")}}
+                  className="text-xs p-1 text-yellow-300 hover:text-yellow-200 size-fit inline-block"
+                  variant="link"
+                >
+                  {(pageState === "Login") ? "sign up" : "Login"}
+                </Button> 
+              </div>
               <Button
               type="button"
-              onClick={() => sign_as_guest('/')}
+              onClick={() => sign_as_guest(searchParams.get('prevPath'))}
               className="w-full mt-6 bg-black text-yellow-300 rounded-full hover:text-yellow-200"
             >
               Sign in as guest
