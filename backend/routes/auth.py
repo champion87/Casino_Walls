@@ -69,7 +69,7 @@ def get_user(user_name :str = Depends(get_user_name)):
 @router.get("/create_guest_acount/")
 async def create_guest_acount(response: Response):
     my_api_key = key_gen()
-    API_KEYS[my_api_key] = "guest"
+    API_KEYS[my_api_key] = "guest" + str(len(API_KEYS))
     LOG('got here')
     response.set_cookie(key="api_key", value=my_api_key, samesite='none', secure=True)
     return {"status": "ok"}
@@ -78,7 +78,8 @@ async def create_guest_acount(response: Response):
 @router.post("/create_account/")
 async def create_account(
     response: Response, username: str = Form(), password: str = Form()):
-    LOG(password)
+    if(username in USERNAME_TO_PASSWORD.keys()):
+        return {"status": "username_taken"}
     USERNAME_TO_PASSWORD[username] = password
     my_api_key = key_gen()
     API_KEYS[my_api_key] = username

@@ -12,6 +12,7 @@ import '../App.css';
 import { userContext } from "../components/PrivateRoute"
 import { Button } from '../components/ui/button';
 import { Label } from '@radix-ui/react-label';
+import { call_api } from 'src/lib/utils';
 
 
 
@@ -19,6 +20,12 @@ export const GamesLobbyPage = () =>  {
   const {userData, forceUpdate} = useContext(userContext);
   const navigate = useNavigate();
   const [coinStatus, setCoinStatus] = useState(0);
+  const [coinAmount, setCoinAmount] = useState(0);
+
+  async function get_coins(){
+    const coin_res = await call_api("api/coins/", "GET").then(response => response.json());
+    setCoinAmount(parseInt(coin_res.coins));
+  }
   
   async function logout(){
     await fetch('http://127.0.0.1:8000/api/auth/logout/',{
@@ -32,19 +39,23 @@ export const GamesLobbyPage = () =>  {
   async function claim_coins(){
     var got_coins = await fetch('http://127.0.0.1:8000/api/coins/claim/',{
       mode: "cors",
-      credentials: "include"
+      credentials: "include",
+      method : "POST"
     }).then(response => response.json());
+    console.log(got_coins)
     if (got_coins.claimed == 'true'){
-        setCoinStatus("claimed coins next available in 60 minutes");
+      setCoinAmount(coinAmount + 50)
+      setCoinStatus("claimed coins next available in 60 minutes");
     }
     else{
-        setCoinStatus("already claimed next available in " + got_coins.available_in + " minutes");
+      setCoinStatus("already claimed next available in " + got_coins.available_in + " minutes");
     }
   }
 
 
   useEffect(() => {
     setCoinStatus("")
+    get_coins();
   }, []);
 
   const {game_key} = useParams();
@@ -55,12 +66,12 @@ export const GamesLobbyPage = () =>  {
   return(
     
     <div>
-      <div className="bg-[#690d0d] h-screen items-center p-10">
+      <div className="bg-[#690d0d] h-screen w-screen items-center p-10">
           <div className="bg-[#961212] flex items-center justify-center flex-col rounded-3xl">
             <div className="my-4">
               <h1 className="text-3xl font-bold text-yellow-400">This is the main game screen please choose a game</h1>
-              <p className="mt-2 text-xs text-yellow-200">
-                coin amount: {userData.coins}
+              <p className="mt-2 text-yellow-200">
+                coin amount: {coinAmount}
               </p>
             </div>
             <Button
