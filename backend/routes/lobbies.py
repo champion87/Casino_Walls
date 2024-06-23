@@ -11,15 +11,21 @@ from fastapi.exceptions import HTTPException
 from utils.my_log import LOG
 
 router = APIRouter()
+
+@router.get("/hey_yo")
+def test():
+    LOG(":WOW")
+
+
 player_added_event = asyncio.Event()
 
 create_lobby_router = APIRouter()
-router.include_router(create_lobby_router, prefix='/create_lobby')
 
 specific_lobby_router = APIRouter()
-router.include_router(create_lobby_router, prefix='/{lobby_key}')
     
-    
+@create_lobby_router.get("/hey_yo")
+def test():
+    LOG("WOW")
     
 ############
 ### DATA ###
@@ -80,19 +86,30 @@ def join_lobby(lobby: Lobby = Depends(get_lobby), username = Depends(get_user_na
 # For example
 # http://127.0.0.1:8000/api/2/lobbies/create_lobby/? ...
 
-def create_lobby():
+def create_lobby(username):
+    lobby = Lobby()
+    lobby.add(username)
+    
+    key = get_unused_id(LOBBIES)
+    
+    LOBBIES[key] = lobby
     # LOBBIES[lobby_key] = Lobby()
     
     
-    return {}
+    return lobby, key
 
-# ?game_name=blackjack&prize=100
+# /blackjack/?prize=100&max_players=4
 from logics.card_game import BlackJack
 @create_lobby_router.post("/blackjack")
-def blackjack(prize: int, max_players: int, lobby: Lobby = Depends(get_lobby), username = Depends(get_user_name)):
-    bj = BlackJack(lobby, prize, max_players)
+def blackjack(prize: int , max_players: int, username = Depends(get_user_name)):
+    lobby, key = create_lobby(username)
     
-
+    bj = BlackJack(lobby, prize, max_players)
+    LOG("created bj lobby wink wink!")
+    
+    # TODO return the key?
+    
+    
 # http://127.0.0.1:8000/api/2/lobbies/current_players
 @specific_lobby_router.get("/current_players")
 def players(lobby: Lobby = Depends(get_lobby)):
@@ -121,3 +138,6 @@ async def start_game(lobby: Lobby = Depends(get_lobby)):
     
 
 
+
+router.include_router(create_lobby_router, prefix='/create_lobby')
+router.include_router(specific_lobby_router, prefix='/{lobby_key}')

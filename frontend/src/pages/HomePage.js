@@ -24,7 +24,7 @@ export const HomePage = () => {
         alt="banner-image">
             <div className="grid w-full h-5/6 grid-cols-2">
                 <div className="flex items-center justify-center flex-col">
-                    <h className="text-8xl font-bold text-yellow-400 mb-7">Welcome to Casino Walls</h>
+                    <h1 className="text-8xl font-bold text-yellow-400 mb-7">Welcome to Casino Walls</h1>
                     <p className="text-2xl font-semibold text-yellow-400 mb-10">here you can play all kinds of gambling games</p>
                     <Button
                     type="button"

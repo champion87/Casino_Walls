@@ -2,6 +2,7 @@ from pydantic import BaseModel, Field
 from typing import List
 
 class Lobby(BaseModel):
+    # TODO 'creator' field
     usernames: List[str] = Field(default_factory=list)
 
     def add(self, user: str):
