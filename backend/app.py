@@ -27,7 +27,7 @@ import datetime
 
 def create_app():
 
-    app_ = FastAPI()
+    app_ = FastAPI(openapi_url="/api/openapi.json", docs_url="/api/docs")
 
     #############
     ### REACT ###
@@ -37,29 +37,31 @@ def create_app():
         "http://localhost:3000",
         "localhost:3000",
         "http://localhost:3000/games",
-        "localhost:3000/games"
+        "localhost:3000/games",
     ]
 
-
     app_.add_middleware(
-            CORSMiddleware,
-            allow_origins=origins,
-            allow_credentials=True,
-            allow_methods=["GET", "POST"],
-            allow_headers=["*"]
+        CORSMiddleware,
+        allow_origins=origins,
+        allow_credentials=True,
+        allow_methods=["GET", "POST"],
+        allow_headers=["*"],
     )
 
-
     from routes.auth import router as auth_router
-    app_.include_router(auth_router, prefix='/api/auth')
+
+    app_.include_router(auth_router, prefix="/api/auth")
 
     from routes.lobbies import router as lobbies_router
-    app_.include_router(lobbies_router, prefix='/api/{lobby_key}/lobbies')
+
+    app_.include_router(lobbies_router, prefix="/api/{lobby_key}/lobbies")
 
     from routes.games import router as games_router
-    app_.include_router(games_router, prefix='/api/games')
+
+    app_.include_router(games_router, prefix="/api/games")
 
     from routes.coins import router as coins_router
-    app_.include_router(coins_router, prefix='/api/coins')
+
+    app_.include_router(coins_router, prefix="/api/coins")
 
     return app_

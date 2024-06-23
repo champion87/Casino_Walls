@@ -1,29 +1,41 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Security, Depends
+from fastapi.responses import HTMLResponse, FileResponse, StreamingResponse
+from routes.auth import get_user_name
+import math
+import random
+from ..coins import COINS
 
 router = APIRouter()
 
 
+@router.get("spin_wheel_slider/{bet}")
+def generate_random_prize(bet, username=Depends(get_user_name)):
+    try:
+        bet = int(bet)
+    except:
+        return {"prize": 0, "coins": COINS[username], "bet_money": 0}
 
-# @router.get("/games/wheel_of_fortune/get_coins")
-# def get_coins(api_key: str = Security(get_api_key)):
-#     return {"coins": USERS[api_key].coins}
+    current_money = COINS[username]
+    if bet < 0 or bet > current_money:
+        return {"prize": 0, "coins": COINS[username], "bet_money": 0}
+    possible_prizes_list = [0.1, 1.9, 0.3, 1.7, 0.5, 0, 1.5, 0.7, 1.3, 0.9, 1.1]
+    # make it less uniform and more close to a normal distribution, maybe using sum of bernulli random variables
+
+    prize = math.floor(bet * random.choice(possible_prizes_list))
+    COINS[username] += prize - bet
+    return {"prize": prize, "coins": COINS[username], "bet": bet}
 
 
-# @app.get("/images/coinpic.png", response_class=StreamingResponse)
-# def send_coinpic(api_key: str = Security(get_api_key)):
-#     return FileResponse("HTML_files/coinpic.png")
+@router.get("get_coins")
+def get_coins(username=Depends(get_user_name)):
+    return {"coins": COINS[username]}
 
 
-# @app.get("/games/wheel_of_fortune/spin_wheel/{bet_percentage}")
-# def generate_random_prize(bet_percentage, api_key: str = Security(get_api_key)):
-#     bet_percentage = int(bet_percentage)
-#     if bet_percentage < 0 or bet_percentage > 100:
-#         return {"prize": 0, "coins": USERS[api_key].coins, "bet_money": 0}
-#     possible_prizes_list = [0.1, 19, 0.3, 1.7, 0.5, 0, 1.5, 0.7, 1.3, 0.9, 1.1]
-#     # make it less uniform and more close to a normal distribution, maybe using sum of bernulli random variables
+@router.get("/", response_class=HTMLResponse)
+def read_item(username=Depends(get_user_name)):
+    return FileResponse("/")  # HTML_files/wheel_of_fortune.html
 
-#     current_money = USERS[api_key].coins
-#     bet_money = (bet_percentage * current_money) // 100
-#     prize = math.floor(bet_money * random.choice(possible_prizes_list))
-#     USERS[api_key].coins += prize - bet_money
-#     return {"prize": prize, "coins": USERS[api_key].coins, "bet_money": bet_money}
+
+@router.get("/images/coinpic.png", response_class=StreamingResponse)
+def send_coinpic(username=Depends(get_user_name)):
+    return FileResponse("HTML_files/coinpic.png")
