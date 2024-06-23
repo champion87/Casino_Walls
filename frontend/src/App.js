@@ -26,21 +26,27 @@ import { Toaster } from './components/ui/toaster';
 const App = () => {
 
   return (
-  <div className='App'>
-    <Toaster/>
-    <UserContextProvider>
-      <Router>
-        <Routes>
-          <Route path="/login" element={<LoginPage/>} />
+    <div className='App'>
+      <Toaster />
+      <UserContextProvider>
+        <Router>
+          <Routes>
+            <Route path="/login" element={<LoginPage />} />
 
-          <Route path="/lobby" element={<Lobby/>} />
-          <Route path="/blackjack" element={<BJ_GPT/>} />
-          <Route element={<PrivateRoute />}>
-            <Route exact path="/" element={<HomePage/>}  />
-            <Route path="/blackjack_main" element={<BlackJackMainPage/>} />
+            <Route path="/lobby" element={<Lobby />} />
+            <Route path="/blackjack" element={<BJ_GPT />} />
+            <Route element={<PrivateRoute />}>
+              <Route exact path="/" element={<HomePage />} />
+              <Route path="/blackjack_main" element={<BlackJackMainPage />} />
 
-            <Route path="games/:game_key?" element={<GamesLobbyPage/>}>
-              <Route path="blackjack" element={<BlackJackPage/>} />
+              <Route element={<PrivateRoute />}>
+                <Route exact path="/" element={<HomePage />} />
+                <Route path="/blackjack_main" element={<BlackJackMainPage />} />
+                <Route path="games/:game_key?" element={<GamesLobbyPage />}>
+                  <Route path="blackjack" element={<BlackJackPage />} />
+                  <Route path="wheel_of_fortune" element={<Wheel_of_fortune />} />
+                </Route>
+              </Route>
             </Route>
           </Routes>
         </Router>
