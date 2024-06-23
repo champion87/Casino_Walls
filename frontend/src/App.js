@@ -18,6 +18,7 @@ import { BlackJackPage } from './pages/black_jack.jsx'
 import BJ_GPT from './pages/bjgpt';
 import Lobby from './pages/lobby_gpt.js';
 import { Wheel_of_fortune } from './pages/wheel_of_fortune';
+import { BlackJackMainPage } from './pages/blackjack_main_page';
 
 
 
