@@ -36,6 +36,7 @@ const App = () => {
 
             <Route element={<PrivateRoute />}>
               <Route exact path="/" element={<HomePage />} />
+              <Route path="/blackjack_main" element={<BlackJackMainPage/>} />
               <Route path="games/:game_key?" element={<GamesLobbyPage />}>
                 <Route path="blackjack" element={<BlackJackPage />} />
                 <Route path="wheel_of_fortune" element={<Wheel_of_fortune />} />
