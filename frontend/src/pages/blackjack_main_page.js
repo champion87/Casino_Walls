@@ -15,6 +15,8 @@ import { Button } from '../components/ui/button';
 import { OngoingLobby } from 'src/components/OngoingLobby';
 import { Label } from '@radix-ui/react-label';
 import { call_api } from 'src/lib/utils';
+// import ButtonWithRules from 'src/components/ButtonWithRules';
+import BJRulesButton from 'src/components/BJRulesButton';
 
 function test(param) {
   console.log(param)
@@ -22,6 +24,13 @@ function test(param) {
 }
 
 export const BlackJackMainPage = () => {
+  const navigate = useNavigate();
+
+  function play_bj() {
+
+    navigate("/bjGPT") // TODO change to the real route
+    
+  }
 
   async function create_lobby() {
     console.log("creating lobby, wink wink.")
@@ -60,6 +69,8 @@ export const BlackJackMainPage = () => {
           <div />
         </div>
         
+
+
         <div className="bg-[#961212] flex items-center justify-center flex-col rounded-l-3xl">
           <div className="my-4">
             <h1 className="text-3xl font-bold text-yellow-400">Create a New Lobby</h1>
@@ -73,7 +84,24 @@ export const BlackJackMainPage = () => {
           </Button>
 
         </div>
+
+        <div className="bg-[#961212] flex items-center justify-center flex-col rounded-l-3xl">
+          <div className="my-4">
+            <h1 className="text-3xl font-bold text-yellow-400">Single Player</h1>
+          </div>
+          <Button
+            type="button"
+            onClick={play_bj}
+            className="w-44 mt-6 bg-black text-yellow-300 rounded-full hover:text-yellow-200"
+          >
+            play_bj
+          </Button>
+
+        </div>
+
+
       </div>
+      <BJRulesButton/>
     </div>
   )
 }
