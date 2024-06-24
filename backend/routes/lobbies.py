@@ -105,6 +105,7 @@ def blackjack(prize: int , max_players: int, username = Depends(get_user_name)):
     lobby, key = create_lobby(username)
     
     bj = BlackJack(lobby, prize, max_players)
+    
     LOG("created bj lobby wink wink!")
     
     # TODO return the key?
