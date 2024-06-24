@@ -19,7 +19,6 @@ import BJ_GPT from './pages/bjgpt';
 import Lobby from './pages/lobby_gpt.js';
 import { Wheel_of_fortune } from './pages/wheel_of_fortune';
 import { BlackJackMainPage } from './pages/blackjack_main_page';
-import { Toaster } from './components/ui/toaster';
 
 
 
@@ -27,12 +26,10 @@ const App = () => {
 
   return (
     <div className='App'>
-      <Toaster />
       <UserContextProvider>
         <Router>
           <Routes>
             <Route path="/login" element={<LoginPage />} />
-            
 
             {/* TESTING */}
             <Route path="/lobby" element={<Lobby />} />
@@ -40,14 +37,12 @@ const App = () => {
             <Route path="/blackjack" element={<BlackJackPage />} />
             {/* TESTING */}
 
-
-            
             <Route element={<PrivateRoute />}>
               <Route exact path="/" element={<HomePage />} />
-              <Route path="/blackjack_main" element={<BlackJackMainPage />} />
-              <Route exact path="/games" element={<GamesLobbyPage />}>
-                <Route path="/games/blackjack" element={<BlackJackPage />} />
-                <Route path="/games/wheel_of_fortune" element={<Wheel_of_fortune />} />
+              <Route path="/blackjack_main" element={<BlackJackMainPage/>} />
+              <Route path="games/:game_key?" element={<GamesLobbyPage />}>
+                <Route path="blackjack" element={<BlackJackPage />} />
+                <Route path="wheel_of_fortune" element={<Wheel_of_fortune />} />
               </Route>
             </Route>
           </Routes>
