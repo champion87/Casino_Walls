@@ -77,14 +77,10 @@ class BlackJack(Game): # One time game
         
         
     def start_game(self):
-        # TODO start game.
-        # copied from start_game(). please check.
         self.status = GameStatus.ONGOING
 
         self.deck = Deck()
-        # LOG("STARTING GAME!")
         for username in self.lobby.get_players():
-            # LOG(f"{username=}")
             self.hands[username] = Hand(self.deck)
             self.is_finished[username] = False
             self.hands[username].draw_to_hand().draw_to_hand() # 2 initial cards in BJ

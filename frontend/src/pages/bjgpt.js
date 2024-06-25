@@ -66,11 +66,12 @@ function BJ_GPT() {
   }, []);
 
   async function startNewGame() {
+
     // let newDeck = createDeck();
     // let newDealerHand = [newDeck.pop(), newDeck.pop()]; // TODO
     // let newPlayerHand = [newDeck.pop(), newDeck.pop()];
 
-    // await call_api(`api/games/${game_key}/blackjack/draw`, "get")
+    await call_api(`api/games/${game_key}/blackjack/restart_game`, "post")
     let newPlayerHand = await getHand();
     // throw "THATS ENOUGH FOR NOW"
     // try {
