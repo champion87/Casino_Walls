@@ -8,7 +8,7 @@ from ..coins import COINS
 router = APIRouter()
 
 
-@router.get("spin_wheel_slider/{bet}")
+@router.get("/spin_wheel_slider/{bet}")
 def generate_random_prize(bet, username=Depends(get_user_name)):
     try:
         bet = int(bet)
@@ -26,7 +26,7 @@ def generate_random_prize(bet, username=Depends(get_user_name)):
     return {"prize": prize, "coins": COINS[username], "bet": bet}
 
 
-@router.get("get_coins")
+@router.get("/get_coins")
 def get_coins(username=Depends(get_user_name)):
     return {"coins": COINS[username]}
 
