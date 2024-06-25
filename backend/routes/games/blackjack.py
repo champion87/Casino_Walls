@@ -30,13 +30,16 @@ def get_hand(game:BlackJack = Depends(get_session), username: str = Depends(get_
 #     return game.get_player_json()
 
 @router.post('/draw')
-def BJ_draw(game:Game = Depends(get_session), user_name: str = Depends(get_user_name)):
+def BJ_draw(game:BlackJack = Depends(get_session), user_name: str = Depends(get_user_name)):
     LOG("draw")
+    game.draw(user_name) #TODO try except
 #     LOG(game.status)
 
 @router.post('/fold')
-def BJ_fold(game:Game = Depends(get_session), user_name: str = Depends(get_user_name)):
+def BJ_fold(game:BlackJack = Depends(get_session), user_name: str = Depends(get_user_name)):
     LOG("fold")
+    game.fold(user_name) #TODO try except
+    
 #     if card_game.GameStatus.NO_GAME == bj.status:
 #         return bj.get_player_json(api_key)
 

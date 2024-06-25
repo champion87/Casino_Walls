@@ -113,6 +113,10 @@ class BlackJack(Game): # One time game
     def is_overdraft(self, username:str):
         return self.hands[username].is_overdraft()
     
+    def check_game_over(self):
+        if self.is_game_over():
+            self.status = GameStatus.NO_GAME
+    
     # @return True iff all hands are done
     def is_game_over(self):
         
@@ -146,14 +150,17 @@ class BlackJack(Game): # One time game
             }
         
     def draw(self, username:str):
+        if self.is_finished[username]:
+            raise Exception(f"Player <{username}> is out! Can't draw a card!")
         self.hands[username].draw_to_hand()
         if self.hands[username].is_overdraft():
             self.is_finished[username] = True
-            
-        # LOG(self.hands)
-        # LOG("heelo")
-        # else:
-            # self.is_finished[api_key] = False
+    
+    def fold(self, username:str):
+        if self.is_finished[username]:
+            raise Exception(f"Player <{username}> is out! Can't fold!")
+        self.is_finished[username] = True
+       
     
 
 class Card:
