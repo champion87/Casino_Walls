@@ -41,7 +41,6 @@ export const UserContextProvider = ({children}) => {
 export const PrivateRoute = ({}) => {
   const {userData} = useContext(userContext)
   const location = useLocation();
-  console.log(userData);
   if (userData.loading) {
     return <div>loading...</div>
   }

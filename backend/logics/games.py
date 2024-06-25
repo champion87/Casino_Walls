@@ -8,14 +8,14 @@ from logics.card_game import BlackJack
 from utils.my_log import LOG
 
 
-GAMES : Dict[str , Game] = {
-    "blackjack" : BlackJack
-}
+# GAMES : Dict[str , Game] = {
+#     "blackjack" : BlackJack
+# }
 
 
 
 # @return None - if no such game was found at 'games::GAMES'
-def get_game(game_name: str = Query()):
-    LOG(f"got {game_name = }")
-    return GAMES.get(game_name, None)
+# def get_game(game_name: str = Query()):
+#     LOG(f"got {game_name = }")
+#     return GAMES.get(game_name, None)
 

@@ -32,6 +32,7 @@ Startup:
 >>> npm install lucide-react
 >>> npm install @radix-ui/react-slot
 >>> npm install -D tailwindcss
+>>> npm install @radix-ui/react-toast
 >>> and many more...
 
 React helpful links:

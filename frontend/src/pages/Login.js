@@ -7,9 +7,12 @@ import { Input } from '../components/ui/input';
 import styles from "../app/globals.css";
 import casino from "../Images/casino.png"
 import { LogIn } from 'lucide-react';
+import { useToast } from '../components/ui/use-toast';
+import { ToastAction } from '../components/ui/toast';
 
 
 export const LoginPage = () => {
+  const { toast } = useToast()
   const navigate = useNavigate();
   const searchParams = new URLSearchParams(document.location.search)
   const {userData, forceUpdate} = useContext(userContext);
@@ -47,6 +50,16 @@ export const LoginPage = () => {
       credentials: 'include'
     }).then(response => response.json());
     console.log(res.status);
+    if (res.status === 'username_taken'){
+      toast({
+        title: "Username already taken",
+        description: "Please pick another username",
+        className: "bg-black text-yellow-400", 
+        action: (
+          <ToastAction altText="Ok">Ok</ToastAction>
+        ),
+      });
+    }
     if (res.status === 'ok') {
       await forceUpdate();
       page_address ? navigate(page_address) : navigate('/');
@@ -55,9 +68,9 @@ export const LoginPage = () => {
 
   return (  
     <div>
-      <div className="bg-[#690d0d] h-screen items-center p-10">
+      <div className="bg-wall2 h-screen bg-cover items-center p-10">
         <div className="grid w-full h-full grid-cols-2">
-          <div className="bg-[#961212] flex items-center justify-center flex-col rounded-l-3xl">
+          <div className="bg-black flex items-center justify-center flex-col rounded-l-3xl">
             <div className="my-4">
               <h1 className="text-3xl font-bold text-yellow-400">Welcome to Casino Walls</h1>
               <p className="mt-2 text-xs text-slate-400">
@@ -67,7 +80,7 @@ export const LoginPage = () => {
             <form id="form">
               <Label htmlFor="username" className="text-yellow-400">Username</Label>
               <Input
-                className="mt-2 mb-4 bg-transparent rounded-full"
+                className="mt-2 mb-4 bg-transparent rounded-full text-white"
                 type="username"
                 id="username"
                 name="username"
@@ -75,7 +88,7 @@ export const LoginPage = () => {
               />
               <Label htmlFor="password" className="text-yellow-400">Password</Label>
               <Input
-                className="mt-2 bg-transparent rounded-full"
+                className="mt-2 bg-transparent rounded-full text-white"
                 type="password"
                 id="password"
                 name="password"
@@ -84,7 +97,7 @@ export const LoginPage = () => {
 
               <Button
                 type="button"
-                className="w-full mt-6 bg-black text-yellow-300 rounded-full hover:text-yellow-200"
+                className="w-full mt-6 bg-white text-black rounded-full hover:text-yellow-300"
                 onClick={() => form_action('http://127.0.0.1:8000/api/auth/' + ((pageState === "Login") ? "login" : "create_account") + "/", searchParams.get('prevPath'))}
               >
                 {pageState}
@@ -105,13 +118,14 @@ export const LoginPage = () => {
               <Button
               type="button"
               onClick={() => sign_as_guest(searchParams.get('prevPath'))}
-              className="w-full mt-6 bg-black text-yellow-300 rounded-full hover:text-yellow-200"
+              className="w-full mt-6 bg-white text-black rounded-full hover:text-yellow-300"
             >
               Sign in as guest
             </Button>
             </form>
-            
-            <p className="mt-4 text-xs text-slate-200">
+            <p className="mt-4 text-xs text-yellow-400">
+            </p>
+            <p className="mt-4 text-xs text-yellow-400">
               @2024 All rights reserved to arazim
             </p>
           </div>

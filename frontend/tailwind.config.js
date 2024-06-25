@@ -17,6 +17,9 @@ module.exports = {
       },
     },
     extend: {
+      fontFamily: {
+        Casino: "Casino",
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -73,7 +76,8 @@ module.exports = {
       },
       backgroundImage: {
         'wall': "url('../Images/wall_background.jpg')",
-      }
+        'wall2': "url('../Images/wall_background_2.jpg')",
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],
