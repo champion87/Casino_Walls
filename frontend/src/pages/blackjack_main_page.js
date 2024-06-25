@@ -12,14 +12,34 @@ import {
 import '../App.css';
 import { userContext } from "../components/PrivateRoute"
 import { Button } from '../components/ui/button';
-import { OngoingLobby } from 'src/components/OngoingLobby';
 import { Label } from '@radix-ui/react-label';
 import { call_api } from 'src/lib/utils';
 // import ButtonWithRules from 'src/components/ButtonWithRules';
 import BJRulesButton from 'src/components/BJRulesButton';
+import LobbyCard from 'src/components/LobbyCard';
 
 export const BlackJackMainPage = () => {
   const navigate = useNavigate();
+  const [lobbies, setLobbies] = useState([]);
+
+  useEffect(() => {
+    const fetchLobbies = async () => {
+        try {
+            const response = await call_api(`api/lobbies/`, "get");
+            const data = await response.json();
+            setLobbies(data.lobbies);
+        } catch (error) {
+            console.error('Error fetching lobbies:', error);
+        }
+        console.log(lobbies)
+    };
+
+    fetchLobbies();
+
+    const intervalId = setInterval(fetchLobbies, 5000); // Fetch every 5 seconds
+
+    return () => clearInterval(intervalId); // Cleanup on unmount
+}, []);
 
   async function play_singleplayer_bj() {
     const response = await call_api("api/lobbies/create_lobby/blackjack/?prize=10&max_players=1", "post") // TODO generalize
@@ -29,7 +49,7 @@ export const BlackJackMainPage = () => {
     console.log("started game$$$$$$$$$$$$$$$$$")
     // throw "started game"
     navigate(`/bjGPT/${data["session_key"]}`) // TODO change to the real route
-    
+
   }
 
   async function create_lobby() {
@@ -44,7 +64,7 @@ export const BlackJackMainPage = () => {
     try {
       await call_api(`/api/lobbies/${key}/join_lobby/`, "post");
       console.log(`Joined lobby with key: ${key}`);
-      navigate("/lobby") // TODO change to the real route
+      navigate(`/lobby/${key}`) // TODO change to the real route
 
     } catch (error) {
       console.error(`Failed to join lobby with key ${key}:`, error);
@@ -52,7 +72,6 @@ export const BlackJackMainPage = () => {
     }
   }
 
-  const [lobbies, setLobbies] = useState([]);
 
   return (
 
@@ -61,19 +80,19 @@ export const BlackJackMainPage = () => {
       <div className="bg-[#961212] flex items-center justify-center flex-col rounded-l-3xl">
         <div className="my-4">
           <h1 className="text-3xl font-bold text-yellow-400">On Going Lobbies</h1>
-          <OngoingLobby onClick={() => join_lobby("1234")} />
           {lobbies.map((lobby) => (
-
-            <div onClick={() => join_lobby(lobby.key)}>
-              <OngoingLobby
+              <LobbyCard
+                // className="w-44 mt-2 bg-black text-yellow-300 rounded-full hover:text-yellow-200"
                 lobby_key={lobby.key}
-                className="w-44 mt-2 bg-black text-yellow-300 rounded-full hover:text-yellow-200"
+                game_name={lobby.game_name}
+                max_players={lobby.max_players}
+                prize={lobby.prize}
+                onJoin={() => {join_lobby(lobby.key)}}
               />
-            </div>
           ))}
           <div />
         </div>
-        
+
 
 
         <div className="bg-[#961212] flex items-center justify-center flex-col rounded-l-3xl">
@@ -106,7 +125,7 @@ export const BlackJackMainPage = () => {
 
 
       </div>
-      <BJRulesButton/>
+      <BJRulesButton />
     </div>
   )
 }

@@ -12,6 +12,7 @@ from fastapi.exceptions import HTTPException
 import random
 import string
 from utils.my_log import LOG
+from db import COINS
 router = APIRouter()
 
 
@@ -68,7 +69,9 @@ def get_user(user_name :str = Depends(get_user_name)):
 @router.get("/create_guest_acount/")
 async def create_guest_acount(response: Response):
     my_api_key = key_gen()
-    API_KEYS[my_api_key] = "guest" + str(len(API_KEYS))
+    username = "guest" + str(len(API_KEYS))
+    API_KEYS[my_api_key] = username
+    COINS[username] = 100
     # LOG('got here')
     response.set_cookie(key="api_key", value=my_api_key, samesite='none', secure=True)
     return {"status": "ok"}
@@ -82,6 +85,7 @@ async def create_account(
     USERNAME_TO_PASSWORD[username] = password
     my_api_key = key_gen()
     API_KEYS[my_api_key] = username
+    COINS[username] = 100
 
     response.set_cookie(key="api_key", value=my_api_key, samesite='none', secure=True)
     return {"status": "ok"}

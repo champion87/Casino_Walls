@@ -23,16 +23,21 @@ function BJ_GPT() {
   const [playerScore, setPlayerScore] = useState(0);
   const [message, setMessage] = useState('');
 
-  async function calculateScore(hand) {
+  async function getScore() {
     const response = await call_api(`api/games/${game_key}/blackjack/get_score`, "get")
     const data = await response.json()
 
     return data["score"];
   };
 
-  async function getHand() {
+  async function getDealerScore() {
+    const response = await call_api(`api/games/${game_key}/blackjack/get_dealer_score`, "get")
+    const data = await response.json()
 
-    let newPlayerHand;
+    return data["score"];
+  }
+
+  async function getHand() {
     try {
       const response = await call_api(`api/games/${game_key}/blackjack/get_hand`, "get")
       const data = await response.json()
@@ -43,20 +48,23 @@ function BJ_GPT() {
     }
   };
 
+  async function getDealerHand() {
+    try {
+      const response = await call_api(`api/games/${game_key}/blackjack/get_dealer_hand`, "get")
+      const data = await response.json()
+      console.log("getting hand")
+      console.log(data["hand"])
+
+      return data["hand"];
+    } catch (error) {
+      console.error('Error fetching dealer cards:', error);
+      throw "oof"
+    }
+  };
+
+
 
   async function createDeck() {
-    // let deck = [];
-    // for (let suit of suits) {
-    //   for (let value of values) {
-    //     deck.push({ suit, value });
-    //   }
-    // }
-    // return deck.sort(() => Math.random() - 0.5);
-
-    //////////// unsupported
-
-    // const response = await call_api(`api/games/${game_key}/blackjack/draw`, "get") 
-    // const data = await response.json()
     throw "create deck unsupported"
   };
 
@@ -66,38 +74,30 @@ function BJ_GPT() {
   }, []);
 
   async function startNewGame() {
-    // let newDeck = createDeck();
-    // let newDealerHand = [newDeck.pop(), newDeck.pop()]; // TODO
-    // let newPlayerHand = [newDeck.pop(), newDeck.pop()];
 
-    // await call_api(`api/games/${game_key}/blackjack/draw`, "get")
+    await call_api(`api/games/${game_key}/blackjack/try_restart_game`, "post")
+
+    let newDealerHand = await getDealerHand()
     let newPlayerHand = await getHand();
-    // throw "THATS ENOUGH FOR NOW"
-    // try {
-    //   newPlayerHand
-    // } catch (error) {
-    //   console.error('Error fetching player cards:', error);
-    // }
-    // let newPlayerHand = await getHand()
-    // setDeck(newDeck);
-    // setDealerHand(newDealerHand); // TODO
+
+    console.log(newPlayerHand)
+    console.log(typeof newPlayerHand)
+
+
+    setDealerHand(newDealerHand);
     setPlayerHand(newPlayerHand);
-    // setDealerScore(await calculateScore(newDealerHand));// TODO
-    setPlayerScore(await calculateScore(newPlayerHand));
+    setDealerScore(await getDealerScore())
+    setPlayerScore(await getScore());
     setMessage('');
   };
 
   async function hit() {
-    // let newDeck = [...deck];
-    // let newPlayerHand = [...playerHand, newDeck.pop()];
-
     await call_api(`api/games/${game_key}/blackjack/draw`, "post")
 
     let newPlayerHand = await getHand()
-    let newPlayerScore = await calculateScore(newPlayerHand);
+    let newPlayerScore = await getScore();
 
 
-    // setDeck(newDeck);
     setPlayerHand(newPlayerHand);
     setPlayerScore(newPlayerScore);
 
@@ -110,31 +110,19 @@ function BJ_GPT() {
   async function stand() {
     await call_api(`api/games/${game_key}/blackjack/fold`, "post")
 
+    setDealerHand(await getDealerHand());
+    let newDealerScore = await getDealerScore()
+    setDealerScore(newDealerScore);
 
-    // let newDealerHand = [...dealerHand];
-    // let newDealerScore = await calculateScore(newDealerHand); // TODO
-
-    // while (newDealerScore < 17) {
-    //   newDealerHand.push(newDeck.pop());
-    //   newDealerScore = await calculateScore(newDealerHand);
-    // }
-
-    // setDeck(newDeck);
-    // setDealerHand(newDealerHand);
-    // setDealerScore(newDealerScore);
-
-    // if (newDealerScore > 21) {
-    //   setMessage('Dealer Busted! Player Wins!');
-    // } else if (newDealerScore > playerScore) {
-    //   setMessage('Dealer Wins!');
-    // } else if (newDealerScore < playerScore) {
-    //   setMessage('Player Wins!');
-    // } else {
-    //   setMessage('Push!');
-    // }
-
-    setMessage('Game over!');
-
+    if (newDealerScore > 21) {
+      setMessage('Dealer Busted! Player Wins!');
+    } else if (newDealerScore > playerScore) {
+      setMessage('Dealer Wins!');
+    } else if (newDealerScore < playerScore) {
+      setMessage('Player Wins!');
+    } else {
+      setMessage('Tie!');
+    }
   };
 
   return (
@@ -143,11 +131,11 @@ function BJ_GPT() {
       <div className="dealer">
         <h2>Dealer's Hand</h2>
         <div id="dealer-cards" className="cards">
-          {/* {dealerHand.map((card, index) => (
-            <div key={index} className="card">{card.value} of {card.suit}</div>
-          ))} */}
+          {dealerHand.map((card) => (
+            <div key={card} className="card">{card}</div>
+          ))}
         </div>
-        {/* <div id="dealer-score" className="score">{dealerScore}</div> */}
+        <div id="dealer-score" className="score">{dealerScore}</div>
       </div>
       <div className="player">
         <h2>Your Hand</h2>
@@ -155,7 +143,7 @@ function BJ_GPT() {
           {console.log(playerHand)}
           {playerHand.map((card) => (
             // <div key={index} className="card">{card}</div>
-            <div className="card">{card}</div>
+            <div key={card} className="card">{card}</div>
 
           ))}
 
