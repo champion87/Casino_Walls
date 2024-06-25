@@ -42,7 +42,7 @@ BJ_CARD_VALUES = {
     "J" : 10 ,
     "Q" : 10 ,
     "K" : 10 ,
-    "A" : 11 # TODO
+    "A" : 11 
 }
 
 CARD_VALUES = {
@@ -64,100 +64,6 @@ CARD_VALUES = {
 class GameStatus(Enum):
     ONGOING = 1
     NO_GAME = 2
-
-class BlackJack(Game): # One time game
-    def __init__(self, lobby: Lobby, prize, max_players):
-        self.deck = None
-        # self.dealer = Hand()
-        self.hands : Dict[str:Hand]  = {} # api_key : Hand
-        self.is_finished : Dict[str:bool]  = {} # api_key : Hand
-        self.status = GameStatus.NO_GAME
-        self.lobby = lobby
-        self.prize = prize
-        
-        
-    def start_game(self):
-        self.status = GameStatus.ONGOING
-
-        self.deck = Deck()
-        for username in self.lobby.get_players():
-            self.hands[username] = Hand(self.deck)
-            self.is_finished[username] = False
-            self.hands[username].draw_to_hand().draw_to_hand() # 2 initial cards in BJ
-            
-        # for key in LOBBY1:
-        #     USERS[key].black_jack = bj
-        #     USERS[key].decrease_coins(
-        #         fee
-        #     )  # TODO this won't decrease ANY coins if the player doesn't have any. Ignoring this problem for now
-    
-        
-    # @return List of apikeys of the winners and the prize
-    def end_game(self):
-        self.status = GameStatus.NO_GAME
-        max_score = 0
-        
-        for hand in self.hands.values():
-            max_score = max(max_score, hand.get_BJ_score())
-            
-        winners = [username for username in self.lobby.get_players() if self.hands[username].get_BJ_score() == max_score]
-        
-        # LOG("done BJ.end_game()")
-        return winners, self.prize
-    
-        
-    def is_overdraft(self, username:str):
-        return self.hands[username].is_overdraft()
-    
-    def check_game_over(self):
-        if self.is_game_over():
-            self.status = GameStatus.NO_GAME
-    
-    # @return True iff all hands are done
-    def is_game_over(self):
-        
-        # LOG("finished:" + str(self.is_finished))
-        for out in self.is_finished.values():
-            if not out:
-                return False
-        return True    
-    
-    def get_hand(self, username: str):
-        return self.hands[username].to_list_of_str()
-    
-    def get_score(self, username: str) -> List[str]:
-        # LOG(f"{self.hands=}")
-        # LOG(f"{self.lobby.get_players()=}")
-        return self.hands[username].get_BJ_sum()
-    
-    def get_player_json(self, username:str):
-        return {
-            "hand" : self.hands[username].to_list_of_str(),
-            "sum" : self.hands[username].get_BJ_sum(),
-            "finish_state" : self.hands[username].is_overdraft()
-            }
-    
-    def to_json(self):
-        return {
-            "hands" : [hand.to_list_of_str() for hand in self.hands],
-            "sums" : [hand.get_BJ_sum() for hand in self.hands],
-            "finish_statuses" : [hand.is_overdraft for hand in self.hands],
-            "end_game" : self.is_overdraft()
-            }
-        
-    def draw(self, username:str):
-        if self.is_finished[username]:
-            raise Exception(f"Player <{username}> is out! Can't draw a card!")
-        self.hands[username].draw_to_hand()
-        if self.hands[username].is_overdraft():
-            self.is_finished[username] = True
-    
-    def fold(self, username:str):
-        if self.is_finished[username]:
-            raise Exception(f"Player <{username}> is out! Can't fold!")
-        self.is_finished[username] = True
-       
-    
 
 class Card:
     def __init__(self, symbol: Symbol, number: int):
@@ -221,6 +127,7 @@ class Hand:
         return score
     
     def get_BJ_score(self):
+        raise NotImplementedError("get_BJ_score is not supported!")
         return self.get_BJ_sum() if not self.is_overdraft() else 0
     
     def is_overdraft(self):
@@ -231,3 +138,124 @@ class Hand:
         return [str(card) for card in self.cards]
 
 
+
+
+class BlackJack(Game):
+    def __init__(self, lobby: Lobby, prize, max_players):
+        self.deck = None
+        # self.dealer = Hand()
+        self.hands : Dict[str:Hand]  = {} # username : Hand
+        self.dealer_hand : Hand = None
+        self.is_finished : Dict[str:bool]  = {} # username : Hand
+        self.status = GameStatus.NO_GAME
+        self.lobby = lobby
+        self.prize = prize
+        
+        
+    def start_game(self):
+        if not self.status == GameStatus.NO_GAME:
+            raise Exception("Game already started!")
+        
+        self.status = GameStatus.ONGOING
+
+        self.deck = Deck()
+        for username in self.lobby.get_players():
+            self.hands[username] = Hand(self.deck)
+            self.is_finished[username] = False
+            self.hands[username].draw_to_hand().draw_to_hand() # 2 initial cards in BJ
+            
+        self.dealer_hand = Hand(self.deck)
+        self.dealer_hand.draw_to_hand().draw_to_hand()
+        
+        while self.dealer_hand.get_BJ_sum() < 17:
+            self.dealer_hand.draw_to_hand()
+        
+        # for key in LOBBY1:
+        #     USERS[key].black_jack = bj
+        #     USERS[key].decrease_coins(
+        #         fee
+        #     )  # TODO this won't decrease ANY coins if the player doesn't have any. Ignoring this problem for now
+    
+        
+    # @return List of apikeys of the winners and the prize
+    def end_game(self):
+        self.status = GameStatus.NO_GAME
+        max_score = 0
+        
+        for hand in self.hands.values():
+            max_score = max(max_score, hand.get_BJ_score())
+            
+        winners = [username for username in self.lobby.get_players() if self.hands[username].get_BJ_score() == max_score]
+        
+        # LOG("done BJ.end_game()")
+        return winners, self.prize
+    
+        
+    def is_overdraft(self, username:str):
+        return self.hands[username].is_overdraft()
+    
+    def check_game_over(self):
+        if self.is_game_over():
+            self.status = GameStatus.NO_GAME
+    
+    # @return True iff all hands are done
+    def is_game_over(self):
+        
+        # LOG("finished:" + str(self.is_finished))
+        for out in self.is_finished.values():
+            if not out:
+                return False
+        return True    
+    
+    def get_hand(self, username: str)-> Hand:
+        return self.hands[username]
+    
+    def get_dealer_hand(self) -> Hand:
+        return self.dealer_hand
+    
+    def get_score(self, username: str) -> List[str]:
+        # LOG(f"{self.hands=}")
+        # LOG(f"{self.lobby.get_players()=}")
+        return self.hands[username].get_BJ_sum()
+    
+    def get_player_json(self, username:str):
+        return {
+            "hand" : self.hands[username].to_list_of_str(),
+            "sum" : self.hands[username].get_BJ_sum(),
+            "finish_state" : self.hands[username].is_overdraft()
+            }
+    
+    def to_json(self):
+        return {
+            "hands" : [hand.to_list_of_str() for hand in self.hands],
+            "sums" : [hand.get_BJ_sum() for hand in self.hands],
+            "finish_statuses" : [hand.is_overdraft for hand in self.hands],
+            "end_game" : self.is_overdraft()
+            }
+        
+    def draw(self, username:str):
+        if self.is_finished[username]:
+            raise Exception(f"Player <{username}> is out! Can't draw a card!")
+        self.hands[username].draw_to_hand()
+        if self.hands[username].is_overdraft():
+            self.is_finished[username] = True
+        
+        if self.is_game_over():
+                self.status = GameStatus.NO_GAME
+    
+    def fold(self, username:str):
+        if self.is_finished[username]:
+            raise Exception(f"Player <{username}> is out! Can't fold!")
+        self.is_finished[username] = True
+        
+        if self.is_game_over():
+                self.status = GameStatus.NO_GAME
+        
+    # def decorator(f):
+    #     def wrapper(*args, **kwargs):
+    #         f(*args, **kwargs)
+    #         self:'BlackJack' = args[0]
+    #         if self.is_game_over():
+    #             self.status = GameStatus.NO_GAME
+       
+    

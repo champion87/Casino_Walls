@@ -5,6 +5,8 @@ export function cn(...inputs) {
   return twMerge(clsx(inputs))
 }
 
+// For example:
+// await call_api(`api/games/${game_key}/blackjack/get_score`, "get")
 export async function call_api(path, the_method){
   if (the_method == undefined) {throw "you forgot the method parameter"}
   try
