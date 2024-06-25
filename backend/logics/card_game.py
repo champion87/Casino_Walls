@@ -155,6 +155,7 @@ class BlackJack(Game):
         for username in self.lobby.get_players():
             self.is_out[username] = True # just to make sure
             score = self.hands[username].get_BJ_score()
+            score = 0 if score>21 else score
             if score > dealer_score:
                 COINS[username] += self.prize + self.prize # one for the payback, one is the extra prize
             elif score == dealer_score:

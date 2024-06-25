@@ -9,12 +9,6 @@ const BJRulesButton = () => {
 
   return (
     <div>
-      <button 
-        onClick={toggleRules} 
-        className="w-44 mt-6 bg-black text-yellow-300 rounded-full hover:text-yellow-200 p-2"
-      >
-        {showRules ? 'Hide Blackjack Rules' : 'Show Blackjack Rules'}
-      </button>
       {showRules && (
         <div className="bg-white text-black p-4 mt-2 rounded-md">
           <h2 className="text-xl font-bold">Blackjack Rules</h2>
@@ -36,6 +30,12 @@ const BJRulesButton = () => {
           </ul>
         </div>
       )}
+      <button 
+        onClick={toggleRules} 
+        className="w-44 mt-6 bg-black text-yellow-300 rounded-full hover:text-yellow-200 p-2"
+      >
+        {showRules ? 'Hide Blackjack Rules' : 'Show Blackjack Rules'}
+      </button>
     </div>
   );
 };

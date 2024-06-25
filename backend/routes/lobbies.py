@@ -23,7 +23,7 @@ specific_lobby_router = APIRouter()
 ############
 
 # USERNAME_TO_LOBBY = { "Lidor" : Lobby() }
-LOBBIES: Dict[str, Lobby] = { "1" : Lobby()}
+LOBBIES: Dict[str, Lobby] = { "1" : Lobby("example game", 999, "example-key", 1337)}
 SESSIONS : Dict[str , Game] = {"id" : Game()}
 
 LOBBY_TO_SESSION : Dict[str, str] = {}
@@ -70,6 +70,18 @@ def get_unused_id(data):
 # TODO delete empty lobbies
 # TODO don't allow user to be in many lobbies
 
+@router.get("/")
+def get_lobbies():
+    LOG({'lobbies' : [lobby.export() for lobby in LOBBIES.values()]})
+    return {'lobbies' : [lobby.export() for lobby in LOBBIES.values()]}
+
+@specific_lobby_router.get("/player_count")
+def get_player_count(lobby: Lobby = Depends(get_lobby)):
+    # return {'count' : len(lobby.get_players())}
+    return {'count' : 7}
+    
+
+
 # For example
 # http://127.0.0.1:8000/api/2/lobbies/join_lobby
 @specific_lobby_router.post("/join_lobby")
@@ -86,10 +98,10 @@ def join_lobby(lobby: Lobby = Depends(get_lobby), username = Depends(get_user_na
 # http://127.0.0.1:8000/api/2/lobbies/create_lobby/? ...
 
 # TODO maybe later save the creator of the lobby
-def create_lobby():
-    lobby = Lobby()
-    
+def create_lobby(game_name:str, prize:int, max_players:int = 9999):
     key = get_unused_id(LOBBIES)
+    lobby = Lobby(game_name, max_players, key, prize)
+    
     
     LOBBIES[key] = lobby
     # LOBBIES[lobby_key] = Lobby()
@@ -104,7 +116,7 @@ def create_lobby():
 from logics.card_game import BlackJack
 @create_lobby_router.post("/blackjack")
 def blackjack(prize: int , max_players: int):#, username = Depends(get_user_name)):
-    lobby, lobby_key = create_lobby()
+    lobby, lobby_key = create_lobby("BlackJack", prize, max_players)
     
     bj = BlackJack(lobby, prize, max_players)
     
