@@ -1,9 +1,12 @@
 from pydantic import BaseModel, Field
 from typing import List
 
-class Lobby(BaseModel):
+class Lobby:#(BaseModel):
     # TODO 'creator' field
-    usernames: List[str] = Field(default_factory=list)
+    # usernames: List[str] = Field(default_factory=list)
+
+    def __init__(self):
+        self.usernames = []
 
     def add(self, user: str):
         self.usernames.append(user)

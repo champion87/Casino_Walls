@@ -2,7 +2,7 @@ from typing import List, Dict
 from fastapi.params import Path, Query
 import asyncio
 from logics.game import Game
-from logics.games import get_game
+# from logics.games import get_game
 from logics.lobby import Lobby
 # from logics.game_lobby import Lobby, get_lobby
 from routes.auth import get_user_name, key_gen
@@ -10,22 +10,13 @@ from fastapi import APIRouter, Depends
 from fastapi.exceptions import HTTPException
 from utils.my_log import LOG
 
-router = APIRouter()
-
-@router.get("/hey_yo")
-def test():
-    LOG(":WOW")
-
 
 player_added_event = asyncio.Event()
 
+router = APIRouter()
 create_lobby_router = APIRouter()
-
 specific_lobby_router = APIRouter()
-    
-@create_lobby_router.get("/hey_yo")
-def test():
-    LOG("WOW")
+
     
 ############
 ### DATA ###
@@ -35,14 +26,22 @@ def test():
 LOBBIES: Dict[str, Lobby] = { "1" : Lobby()}
 SESSIONS : Dict[str , Game] = {"id" : Game()}
 
+LOBBY_TO_SESSION : Dict[str, str] = {}
+
+# def get_session(game_key: str = Path()):
+#     LOG(f"got {game_key = }")
+#     return SESSIONS.get(game_key, None)
 
 ###########################
 ### Dependency Handlers ###
 ###########################
 
-def get_session(session_key: str = Path()):
-    LOG(f"got {session_key = }")
-    return SESSIONS[session_key]
+def get_session(game_key: str = Path(..., description="game key ahhhh")):
+    # LOG(f"got {game_key = }")
+    # # LOG("HEYYYY")
+    # LOG(SESSIONS)
+    return SESSIONS[game_key]
+    # return game_key
 
 def set_session(key, game):
     SESSIONS[key] = game
@@ -86,9 +85,9 @@ def join_lobby(lobby: Lobby = Depends(get_lobby), username = Depends(get_user_na
 # For example
 # http://127.0.0.1:8000/api/2/lobbies/create_lobby/? ...
 
-def create_lobby(username):
+# TODO maybe later save the creator of the lobby
+def create_lobby():
     lobby = Lobby()
-    lobby.add(username)
     
     key = get_unused_id(LOBBIES)
     
@@ -98,17 +97,35 @@ def create_lobby(username):
     
     return lobby, key
 
+
+
+
 # /blackjack/?prize=100&max_players=4
 from logics.card_game import BlackJack
 @create_lobby_router.post("/blackjack")
-def blackjack(prize: int , max_players: int, username = Depends(get_user_name)):
-    lobby, key = create_lobby(username)
+def blackjack(prize: int , max_players: int):#, username = Depends(get_user_name)):
+    lobby, lobby_key = create_lobby()
     
     bj = BlackJack(lobby, prize, max_players)
     
-    LOG("created bj lobby wink wink!")
+    session_key = get_unused_id(SESSIONS)
+    SESSIONS[session_key] = bj
+    LOBBY_TO_SESSION[lobby_key] = session_key
     
-    # TODO return the key?
+    # LOG(LOBBIES)
+    # LOG(SESSIONS)
+    
+    return {
+        'lobby_key' : lobby_key,
+        'session_key' : session_key
+    }
+    
+@specific_lobby_router.post("/start_game")
+def start_game(lobby_key:str = Path()):
+    # raise Exception("started game")
+    SESSIONS[LOBBY_TO_SESSION[lobby_key]].start_game()
+    
+    
     
     
 # http://127.0.0.1:8000/api/2/lobbies/current_players
@@ -122,14 +139,14 @@ async def wait_for_players(lobby: Lobby = Depends(get_lobby)):
     await player_added_event.wait()
     return {"players": lobby.get_players()}
 
-# For example
-# http://127.0.0.1:8000/api/2/lobbies/start_game/
-@specific_lobby_router.post("/start_game") 
-async def start_game(lobby: Lobby = Depends(get_lobby)):
-    if game != None:
-        id = get_unused_id(SESSIONS)
-        SESSIONS[id] = game(lobby, prize)
-        return {}
+# # For example
+# # http://127.0.0.1:8000/api/2/lobbies/start_game/
+# @specific_lobby_router.post("/start_game") 
+# async def start_game(lobby: Lobby = Depends(get_lobby)):
+#     if game != None:
+#         id = get_unused_id(SESSIONS)
+#         SESSIONS[id] = game(lobby, prize)
+#         return {}
     
     
 # @router.get("/start_game") 

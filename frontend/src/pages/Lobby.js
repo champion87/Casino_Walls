@@ -2,8 +2,11 @@ import React, { useState, useEffect } from 'react';
 // import axios from 'axios';
 import PlayerList from '../components/PlayerList';
 import {call_api} from '../lib/utils'
+import { useParams } from 'react-router-dom';
 
 const Lobby = () => {
+  let { lobby_key } = useParams();
+
   const [playerName, setPlayerName] = useState('');
   const [players, setPlayers] = useState([]);
   const [waiting, setWaiting] = useState(false);
@@ -11,7 +14,7 @@ const Lobby = () => {
   useEffect(() => {
     if (waiting) {
       const interval = setInterval(async () => {
-        const response = await call_api('api/2/lobbies/current_players', 'get');
+        const response = await call_api(`api/${lobby_key}/lobbies/current_players`, 'get');
         const json = await response.json()
         setPlayers(json.players);
       }, 1000);

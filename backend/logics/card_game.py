@@ -68,16 +68,23 @@ class GameStatus(Enum):
 class BlackJack(Game): # One time game
     def __init__(self, lobby: Lobby, prize, max_players):
         self.deck = None
+        # self.dealer = Hand()
         self.hands : Dict[str:Hand]  = {} # api_key : Hand
         self.is_finished : Dict[str:bool]  = {} # api_key : Hand
-        self.status = GameStatus.ONGOING
+        self.status = GameStatus.NO_GAME
         self.lobby = lobby
         self.prize = prize
         
+        
+    def start_game(self):
         # TODO start game.
         # copied from start_game(). please check.
+        self.status = GameStatus.ONGOING
+
         self.deck = Deck()
+        # LOG("STARTING GAME!")
         for username in self.lobby.get_players():
+            # LOG(f"{username=}")
             self.hands[username] = Hand(self.deck)
             self.is_finished[username] = False
             self.hands[username].draw_to_hand().draw_to_hand() # 2 initial cards in BJ
@@ -88,6 +95,7 @@ class BlackJack(Game): # One time game
         #         fee
         #     )  # TODO this won't decrease ANY coins if the player doesn't have any. Ignoring this problem for now
     
+        
     # @return List of apikeys of the winners and the prize
     def end_game(self):
         self.status = GameStatus.NO_GAME
@@ -98,7 +106,7 @@ class BlackJack(Game): # One time game
             
         winners = [username for username in self.lobby.get_players() if self.hands[username].get_BJ_score() == max_score]
         
-        LOG("done BJ.end_game()")
+        # LOG("done BJ.end_game()")
         return winners, self.prize
     
         
@@ -108,11 +116,19 @@ class BlackJack(Game): # One time game
     # @return True iff all hands are done
     def is_game_over(self):
         
-        LOG("finished:" + str(self.is_finished))
+        # LOG("finished:" + str(self.is_finished))
         for out in self.is_finished.values():
             if not out:
                 return False
         return True    
+    
+    def get_hand(self, username: str):
+        return self.hands[username].to_list_of_str()
+    
+    def get_score(self, username: str) -> List[str]:
+        # LOG(f"{self.hands=}")
+        # LOG(f"{self.lobby.get_players()=}")
+        return self.hands[username].get_BJ_sum()
     
     def get_player_json(self, username:str):
         return {
@@ -134,14 +150,14 @@ class BlackJack(Game): # One time game
         if self.hands[username].is_overdraft():
             self.is_finished[username] = True
             
-        LOG(self.hands)
-        LOG("heelo")
+        # LOG(self.hands)
+        # LOG("heelo")
         # else:
             # self.is_finished[api_key] = False
     
 
 class Card:
-    def __init__(self, symbol, number):
+    def __init__(self, symbol: Symbol, number: int):
         self.symbol = symbol
         self.number = number
         
@@ -151,11 +167,8 @@ class Card:
     def __repr__(self):
         return self.__str__()
     
-    def get_BJ_value(self, is_overdraft: bool = False):
-        if is_overdraft and self.number == 1:
-            return 1 # Ace
-        else:
-            return BJ_CARD_VALUES[CARD_VALUES[self.number]]
+    def get_BJ_value(self):
+        return BJ_CARD_VALUES[CARD_VALUES[self.number]]
 
 
 NEW_DECK = [Card(symb, num) for (symb, num) in itertools.product(CARD_SYMBOLS.keys(), CARD_VALUES.keys())]
@@ -196,8 +209,13 @@ class Hand:
         return self
     
     def get_BJ_sum(self):
-        return sum(card.get_BJ_value() for card in self.cards)
-        return 69 # TODO Aces
+        score = sum(card.get_BJ_value() for card in self.cards)
+        aceCount = len([card for card in self.cards if card.number==1]) # 1 means ACE
+        while score > 21 and aceCount > 0:
+            score -= 10
+            aceCount -= 1
+            
+        return score
     
     def get_BJ_score(self):
         return self.get_BJ_sum() if not self.is_overdraft() else 0
