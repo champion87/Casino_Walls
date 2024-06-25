@@ -26,6 +26,10 @@ class Lobby:#(BaseModel):
     def get_players(self):
         return self.usernames
     
+    def pop_user(self, username):
+        if username in self.usernames:
+            self.usernames.remove(username)
+    
     def export(self):
         res = {
             'key' : self.key,
@@ -34,5 +38,4 @@ class Lobby:#(BaseModel):
             'is_locked' : self.is_locked,
             'prize' : self.prize
         }
-        LOG(res)
         return res

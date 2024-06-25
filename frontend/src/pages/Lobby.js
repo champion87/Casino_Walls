@@ -56,6 +56,7 @@
 
 import { useParams } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
+import { call_api } from 'src/lib/utils';
 
 const Lobby = () => {
   let { lobby_key } = useParams();
@@ -66,10 +67,12 @@ const Lobby = () => {
   useEffect(() => {
     const fetchPlayers = async () => {
       try {
-        const response = await fetch(`api/lobbies/${lobby_key}/current_players`);
+        const response = await call_api(`api/lobbies/${lobby_key}/current_players`, "get");
         const data = await response.json();
         setPlayers(data.players);
         setLoading(false);
+        console.log("players:")
+        console.log(data.players)
       } catch (error) {
         console.error('Error fetching players:', error);
         setLoading(false);
@@ -125,7 +128,7 @@ const styles = {
     textAlign: 'left',
   },
   playerItem: {
-    background: '#f0f0f0',
+    background: '#545309',
     padding: '0.5rem',
     marginBottom: '0.5rem',
     borderRadius: '5px',

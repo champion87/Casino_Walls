@@ -27,6 +27,7 @@ LOBBIES: Dict[str, Lobby] = { "example-key" : Lobby("example game", 999, "exampl
 SESSIONS : Dict[str , Game] = {"id" : Game()}
 
 LOBBY_TO_SESSION : Dict[str, str] = {}
+USERNAME_TO_LOBBY_KEY : Dict[str, str] = {}
 
 # def get_session(game_key: str = Path()):
 #     LOG(f"got {game_key = }")
@@ -87,8 +88,15 @@ def get_player_count(lobby: Lobby = Depends(get_lobby)):
 def join_lobby(lobby: Lobby = Depends(get_lobby), username = Depends(get_user_name)):
     if lobby == None:
         raise HTTPException(status_code=422, detail="no such lobby")
+    if username in lobby.get_players(): #player is already in
+        return {}
+    if username in USERNAME_TO_LOBBY_KEY:
+        LOBBIES[USERNAME_TO_LOBBY_KEY[username]].pop_user(username)
+        
     lobby.add(username)
-    player_added_event.set()
+    USERNAME_TO_LOBBY_KEY[username] = lobby.key
+    
+    # player_added_event.set()
     LOG(LOBBIES)
     # return {}
 
