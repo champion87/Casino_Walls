@@ -85,6 +85,7 @@ async def create_account(
     USERNAME_TO_PASSWORD[username] = password
     my_api_key = key_gen()
     API_KEYS[my_api_key] = username
+    COINS[username] = 100
 
     response.set_cookie(key="api_key", value=my_api_key, samesite='none', secure=True)
     return {"status": "ok"}
