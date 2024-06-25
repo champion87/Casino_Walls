@@ -23,7 +23,7 @@ specific_lobby_router = APIRouter()
 ############
 
 # USERNAME_TO_LOBBY = { "Lidor" : Lobby() }
-LOBBIES: Dict[str, Lobby] = { "1" : Lobby("example game", 999, "example-key", 1337)}
+LOBBIES: Dict[str, Lobby] = { "example-key" : Lobby("example game", 999, "example-key", 1337)}
 SESSIONS : Dict[str , Game] = {"id" : Game()}
 
 LOBBY_TO_SESSION : Dict[str, str] = {}
@@ -89,8 +89,8 @@ def join_lobby(lobby: Lobby = Depends(get_lobby), username = Depends(get_user_na
         raise HTTPException(status_code=422, detail="no such lobby")
     lobby.add(username)
     player_added_event.set()
-    
-    return {}
+    LOG(LOBBIES)
+    # return {}
 
 
 # For example
@@ -142,6 +142,7 @@ def start_game(lobby_key:str = Path()):
 # http://127.0.0.1:8000/api/2/lobbies/current_players
 @specific_lobby_router.get("/current_players")
 def players(lobby: Lobby = Depends(get_lobby)):
+    LOG(lobby.get_players())
     return {"players": lobby.get_players()}
 
 @specific_lobby_router.get("/wait_for_players")

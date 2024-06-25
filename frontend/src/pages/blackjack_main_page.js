@@ -62,7 +62,7 @@ export const BlackJackMainPage = () => {
 
   async function join_lobby(key) {
     try {
-      await call_api(`/api/lobbies/${key}/join_lobby/`, "post");
+      await call_api(`api/lobbies/${key}/join_lobby/`, "post");
       console.log(`Joined lobby with key: ${key}`);
       navigate(`/lobby/${key}`) // TODO change to the real route
 
