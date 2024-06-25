@@ -77,6 +77,13 @@ module.exports = {
       backgroundImage: {
         'wall': "url('../Images/wall_background.jpg')",
         'wall2': "url('../Images/wall_background_2.jpg')",
+        'coin': "url('../Images/coinpic.png')",
+        'wheel': "url('../Images/wheelpic.png')",
+        'wheel2': "url('../Images/wheelpic2.png')",
+        'cosmos': "url('../Images/cosmos.png')",
+
+
+
       },
     },
   },

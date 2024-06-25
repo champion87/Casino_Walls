@@ -33,6 +33,7 @@ Startup:
 >>> npm install @radix-ui/react-slot
 >>> npm install -D tailwindcss
 >>> npm install @radix-ui/react-toast
+>>> npm install @radix-ui/react-slider
 >>> and many more...
 
 React helpful links:
@@ -60,7 +61,7 @@ For query brose at:
 http://127.0.0.1:8000/items/5?q=somequery
 
 For docs brose at:
-http://127.0.0.1:8000/docs
+http://127.0.0.1:8000/api/docs
 
 python server:
 http://127.0.0.1:8000/
