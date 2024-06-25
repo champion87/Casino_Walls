@@ -18,7 +18,24 @@ def generate_random_prize(bet, username=Depends(get_user_name)):
     current_money = COINS[username]
     if bet < 0 or bet > current_money:
         return {"prize": 0, "coins": COINS[username], "bet_money": 0}
-    possible_prizes_list = [0.1, 1.9, 0.3, 1.7, 0.5, 0, 1.5, 0.7, 1.3, 0.9, 1.1]
+    # possible_prizes_list = [0.1, 1.9, 0.3, 1.7, 0.5, 0, 1.5, 0.7, 1.3, 0.9, 1.1]
+    possible_prizes_list = [
+        0.5,
+        0.7,
+        0.7,
+        0.75,
+        0.75,
+        0.8,
+        0.8,
+        0.85,
+        0.85,
+        1.05,
+        1.1,
+        1.2,
+        1.3,
+        2,
+    ]
+
     # make it less uniform and more close to a normal distribution, maybe using sum of bernulli random variables
 
     prize = math.floor(bet * random.choice(possible_prizes_list))
