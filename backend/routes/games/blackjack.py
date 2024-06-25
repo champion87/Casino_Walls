@@ -15,7 +15,7 @@ def get_score(game:BlackJack = Depends(get_session), username: str = Depends(get
 def BJ_restart_game(game:BlackJack = Depends(get_session)):
     dealer_hand = game.get_dealer_hand()
     if game.is_game_over():
-        return {"score" : dealer_hand.get_BJ_sum()}
+        return {"score" : dealer_hand.get_BJ_score()}
     else:
         return {"score" : dealer_hand.cards[0].get_BJ_value()}
 
@@ -42,7 +42,7 @@ def BJ_fold(game:BlackJack = Depends(get_session), user_name: str = Depends(get_
     game.fold(user_name) #TODO try except
 
 @router.post('/try_restart_game')
-def BJ_restart_game(game:BlackJack = Depends(get_session)):   
+def BJ_restart_game(game:BlackJack = Depends(get_session)):
     try:     
         game.start_game() #TODO try except
         return {"was_restarted" : True}

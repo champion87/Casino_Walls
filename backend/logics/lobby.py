@@ -7,9 +7,16 @@ class Lobby:#(BaseModel):
 
     def __init__(self):
         self.usernames = []
+        self.is_locked = False
 
     def add(self, user: str):
+        '''Return True if the lobby is locked.'''
+        if self.is_locked:
+            return True
         self.usernames.append(user)
+    
+    def lock(self):
+        self.is_locked = True
         
     def get_players(self):
         return self.usernames
