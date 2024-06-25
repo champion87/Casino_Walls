@@ -1,14 +1,14 @@
 from fastapi import APIRouter, Depends
 import datetime
 from routes.auth import get_user_name
-
+from db import COINS
 router = APIRouter()
 
-COINS = {}
+
 last_claimed= {}
 @router.get('/')
 def get_coins(user_name: str = Depends(get_user_name)):
-    return { "coins": COINS.setdefault(user_name, 100)}
+    return { "coins": COINS[user_name]}
 
 @router.post("/claim")
 async def claim_coins(user_name: str = Depends(get_user_name)):
