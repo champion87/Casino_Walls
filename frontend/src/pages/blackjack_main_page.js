@@ -15,26 +15,40 @@ import { Button } from '../components/ui/button';
 import { OngoingLobby } from 'src/components/OngoingLobby';
 import { Label } from '@radix-ui/react-label';
 import { call_api } from 'src/lib/utils';
-
-function test(param) {
-  console.log(param)
-  console.log("oops")
-}
+// import ButtonWithRules from 'src/components/ButtonWithRules';
+import BJRulesButton from 'src/components/BJRulesButton';
 
 export const BlackJackMainPage = () => {
+  const navigate = useNavigate();
+
+  async function play_singleplayer_bj() {
+    const response = await call_api("api/lobbies/create_lobby/blackjack/?prize=10&max_players=1", "post") // TODO generalize
+    const data = await response.json()
+    await call_api(`api/lobbies/${data["lobby_key"]}/join_lobby/`, "post");
+    await call_api(`api/lobbies/${data["lobby_key"]}/start_game/`, "post");
+    console.log("started game$$$$$$$$$$$$$$$$$")
+    // throw "started game"
+    navigate(`/bjGPT/${data["session_key"]}`) // TODO change to the real route
+    
+  }
 
   async function create_lobby() {
     console.log("creating lobby, wink wink.")
-    call_api("api/lobbies/create_lobby/blackjack/?prize=10&max_players=4", "post") // TODO generalize
+    const response = await call_api("api/lobbies/create_lobby/blackjack/?prize=10&max_players=4", "post") // TODO generalize
+    const data = await response.json()
+    join_lobby(data["lobby_key"])
     // call_api("api/lobbies/create_lobby/test", "post")
   }
 
   async function join_lobby(key) {
     try {
-      await call_api(`/api/lobbies/${key}/join_lobby/`, "POST");
+      await call_api(`/api/lobbies/${key}/join_lobby/`, "post");
       console.log(`Joined lobby with key: ${key}`);
+      navigate("/lobby") // TODO change to the real route
+
     } catch (error) {
       console.error(`Failed to join lobby with key ${key}:`, error);
+      throw "oof"
     }
   }
 
@@ -60,6 +74,8 @@ export const BlackJackMainPage = () => {
           <div />
         </div>
         
+
+
         <div className="bg-[#961212] flex items-center justify-center flex-col rounded-l-3xl">
           <div className="my-4">
             <h1 className="text-3xl font-bold text-yellow-400">Create a New Lobby</h1>
@@ -73,7 +89,24 @@ export const BlackJackMainPage = () => {
           </Button>
 
         </div>
+
+        <div className="bg-[#961212] flex items-center justify-center flex-col rounded-l-3xl">
+          <div className="my-4">
+            <h1 className="text-3xl font-bold text-yellow-400">Single Player</h1>
+          </div>
+          <Button
+            type="button"
+            onClick={play_singleplayer_bj}
+            className="w-44 mt-6 bg-black text-yellow-300 rounded-full hover:text-yellow-200"
+          >
+            play_bj
+          </Button>
+
+        </div>
+
+
       </div>
+      <BJRulesButton/>
     </div>
   )
 }

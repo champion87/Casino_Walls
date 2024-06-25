@@ -1,1 +1,4 @@
 node_modules
+frontend/src/components/BJRules.js
+frontend/src/components/ButtonWithRules.js
+.gitignore

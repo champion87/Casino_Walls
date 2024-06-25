@@ -55,7 +55,7 @@ export const HomePage = () => {
                         <p>- wikipedia</p>
                     </CardContent>
                     <CardFooter className="flex items-center justify-center">
-                        <Button className="text-yellow-400">Take Me There</Button>
+                        <Button className="text-yellow-400" onClick={() => navigate("/blackjack_main")}>Take Me There</Button>
                     </CardFooter>
                 </Card>
                 <Card className="w-[350px] m-10">

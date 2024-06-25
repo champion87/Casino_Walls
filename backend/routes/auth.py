@@ -45,7 +45,7 @@ def api_key_query(api_key: Union[str, None] = Cookie(None)):
 def get_api_key(
     api_key: str = Security(api_key_query),
 ) -> str:
-    LOG(api_key)
+    # LOG(f"{api_key = }")
     if api_key in API_KEYS.keys():
         return api_key
     raise HTTPException(status_code=401, detail="no valid token")
@@ -54,8 +54,7 @@ def get_api_key(
 def get_user_name(
     api_key: str = Security(api_key_query),
 ) -> str:
-    LOG(api_key)
-    # LOG(API_KEYS)
+    # LOG(f"{api_key = }")    # # LOG(API_KEYS)
     if api_key in API_KEYS.keys():
         return API_KEYS[api_key]
     raise HTTPException(status_code=401, detail="no valid token")
@@ -70,7 +69,7 @@ def get_user(user_name :str = Depends(get_user_name)):
 async def create_guest_acount(response: Response):
     my_api_key = key_gen()
     API_KEYS[my_api_key] = "guest" + str(len(API_KEYS))
-    LOG('got here')
+    # LOG('got here')
     response.set_cookie(key="api_key", value=my_api_key, samesite='none', secure=True)
     return {"status": "ok"}
 
@@ -91,12 +90,12 @@ async def create_account(
 @router.post("/login/")
 async def login(response: Response, username: str = Form(), password: str = Form()):
     if username not in USERNAME_TO_PASSWORD.keys():
-        LOG("user doesn't exist")
+        # LOG("user doesn't exist")
         return {"status": "not ok"}
 
     if USERNAME_TO_PASSWORD[username] != password:
-        LOG("incorrect password")
-        LOG(password)
+        # LOG("incorrect password")
+        # LOG(password)
         return {"status": "not ok"}
 
     my_api_key = key_gen()
