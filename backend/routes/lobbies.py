@@ -77,9 +77,8 @@ def get_lobbies():
 
 @specific_lobby_router.get("/player_count")
 def get_player_count(lobby: Lobby = Depends(get_lobby)):
-    # return {'count' : len(lobby.get_players())}
-    return {'count' : 7}
-    
+    return {'count' : len(lobby.get_players())}
+
 
 
 # For example

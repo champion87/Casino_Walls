@@ -64,7 +64,7 @@ export const BlackJackMainPage = () => {
     try {
       await call_api(`/api/lobbies/${key}/join_lobby/`, "post");
       console.log(`Joined lobby with key: ${key}`);
-      navigate("/lobby") // TODO change to the real route
+      navigate(`/lobby/${key}`) // TODO change to the real route
 
     } catch (error) {
       console.error(`Failed to join lobby with key ${key}:`, error);
@@ -87,7 +87,7 @@ export const BlackJackMainPage = () => {
                 game_name={lobby.game_name}
                 max_players={lobby.max_players}
                 prize={lobby.prize}
-                onJoin={() => {console.log("joined!")}}
+                onJoin={() => {join_lobby(lobby.key)}}
               />
           ))}
           <div />
