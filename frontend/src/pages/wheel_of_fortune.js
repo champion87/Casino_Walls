@@ -106,9 +106,16 @@ export const Wheel_of_fortune = () => {
 
 
     async function spin_wheel_slider() {
+        var coins_count = await get_coins();
         let gamble_input_box = document.getElementById("gamble_input_box")
 
         bet = gamble_input_box.value;
+        if (!is_positive_integer(bet) || bet > coins_count) {
+            display('bet_money_text', '');
+            display('prize_text', '');
+            display('message', "You can't bet " + String(bet) + ' coins');
+            return;
+        }
 
         response = await call_api("api/games/wheel_of_fortune/spin_wheel_slider/" + bet, "get");
         json = await response.json();
@@ -129,6 +136,7 @@ export const Wheel_of_fortune = () => {
             display('bet_money_text', '');
             display('prize_text', '');
             display('message', "You didn't bet coins");
+
         }
 
         if (bet == 1) {
@@ -157,11 +165,6 @@ export const Wheel_of_fortune = () => {
         const num = Number(str);
         return Number.isInteger(num) && num >= 0;
     }
-
-
-
-
-
 
     function open_rules() {
         document.getElementById('open').style.display = 'none'
@@ -193,10 +196,10 @@ export const Wheel_of_fortune = () => {
 
             <div className='bg-black w-fit inline-block p-5 justify-center rounded-xl'>
                 <h1 className='font-bold'>Welcome to the wheel of fortune</h1>
-                <Button type="button" className=' w-full mt-6 bg-white text-black rounded-full hover:text-yellow-300' onClick={() => open_rules()} onMouseOver={() => display('open', 'click to open the rules')}
+                <Button type="button" className=' w-full mt-6 bg-white text-black rounded-full hover:text-yellow-300' onClick={open_rules} onMouseOver={() => display('open', 'click to open the rules')}
                     onMouseOut={() => display('open', 'rules')} //{/*..............rules.............*/}
                     id="open">rules</Button> {/*..............rules.............*/}
-                <Button type="button" className=' w-full mt-6 bg-white text-black rounded-full hover:text-yellow-300' onClick={() => close_rules()} onMouseOver={() => display('close', 'click to close the rules')}
+                <Button type="button" className=' w-full mt-6 bg-white text-black rounded-full hover:text-yellow-300' onClick={close_rules} onMouseOver={() => display('close', 'click to close the rules')}
                     onMouseOut={() => display('close', 'rules')} //..............rules.............
                     id="close">rules</Button><br />
                 <p id="text">Spinning the wheel will <br />
@@ -214,7 +217,7 @@ export const Wheel_of_fortune = () => {
 
                 <p id="gamble">Gamble 0 coins</p><br />
                 <Button type="button" id="spinButton" className=' w-full mt-6 bg-white text-black rounded-full hover:text-yellow-300' onClick={spin_wheel_slider}>spin the wheel!</Button>
-                <div className='bg-green-600 m-5 p-2 rounded-md'>
+                <div className='bg-green-600 m-5 p-2 rounded-md '>
                     <p id="bet_money_text" className='font-extrabold'></p>
                     <p id="prize_text" className='font-extrabold'></p>
                     <p id="message" className='font-extrabold'></p>
