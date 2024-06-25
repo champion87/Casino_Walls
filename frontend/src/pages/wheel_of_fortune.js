@@ -106,9 +106,16 @@ export const Wheel_of_fortune = () => {
 
 
     async function spin_wheel_slider() {
+        var coins_count = await get_coins();
         let gamble_input_box = document.getElementById("gamble_input_box")
 
         bet = gamble_input_box.value;
+        if (!is_positive_integer(bet) || bet > coins_count) {
+            display('bet_money_text', '');
+            display('prize_text', '');
+            display('message', "You can't bet " + String(bet) + ' coins');
+            return;
+        }
 
         response = await call_api("api/games/wheel_of_fortune/spin_wheel_slider/" + bet, "get");
         json = await response.json();
@@ -129,6 +136,7 @@ export const Wheel_of_fortune = () => {
             display('bet_money_text', '');
             display('prize_text', '');
             display('message', "You didn't bet coins");
+
         }
 
         if (bet == 1) {
