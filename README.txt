@@ -33,6 +33,7 @@ Startup:
 >>> npm install @radix-ui/react-slot
 >>> npm install -D tailwindcss
 >>> npm install @radix-ui/react-toast
+>>> npm install @radix-ui/react-slider
 >>> and many more...
 
 React helpful links:

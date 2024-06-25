@@ -8,6 +8,7 @@ import React, {
 
 import { Button } from '../components/ui/button';
 import { Slider } from "../components/ui/slider"
+import { call_api } from "../lib/utils"
 
 
 
@@ -175,7 +176,7 @@ export const Wheel_of_fortune = () => {
             <p id="coin_amount">coin amount:</p>
             <img src="/images/coinpic.png" alt="coins" height="32px" width="32px" />
 
-            <Slider min={0} max={100} value={0} id="slider" />
+            <Slider id="slider" max={100} defaultValue={[50]} step={1} min={0} className="w-1/4" onChange={slider_handle_change}/>
             {/*onChange={slider_handle_change*/}
             <p>Gamble <input type="text" min="0" step="1" id="gamble_input_box" size="1" onChange={gamble_box_on_input} /> coins</p>
 
