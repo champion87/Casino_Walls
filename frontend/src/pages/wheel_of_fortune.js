@@ -7,6 +7,9 @@ import React, {
 } from 'react';
 
 import { Button } from '../components/ui/button';
+import { Slider } from "../components/ui/slider"
+
+
 
 export const Wheel_of_fortune = () => {
 
@@ -172,8 +175,8 @@ export const Wheel_of_fortune = () => {
             <p id="coin_amount">coin amount:</p>
             <img src="/images/coinpic.png" alt="coins" height="32px" width="32px" />
 
-            <input type="range" min="0" max="100" value={0} onChange={slider_handle_change} class="slider" id="slider" />
-
+            <Slider min={0} max={100} value={0} id="slider" />
+            {/*onChange={slider_handle_change*/}
             <p>Gamble <input type="text" min="0" step="1" id="gamble_input_box" size="1" onChange={gamble_box_on_input} /> coins</p>
 
             <p id="gamble">Gamble 0 coins</p><br />
