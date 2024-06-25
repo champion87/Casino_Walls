@@ -84,8 +84,8 @@ export const BlackJackMainPage = () => {
               <LobbyCard
                 // className="w-44 mt-2 bg-black text-yellow-300 rounded-full hover:text-yellow-200"
                 lobby_key={lobby.key}
-                game_name="Black Jack"
-                maxPlayers={69}
+                game_name={lobby.game_name}
+                max_players={lobby.max_players}
                 prize={lobby.prize}
                 onJoin={() => {console.log("joined!")}}
               />

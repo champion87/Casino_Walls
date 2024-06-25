@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import List
+from utils.my_log import LOG
 
 class Lobby:#(BaseModel):
     # TODO 'creator' field
@@ -26,10 +27,12 @@ class Lobby:#(BaseModel):
         return self.usernames
     
     def export(self):
-        return {
+        res = {
             'key' : self.key,
             'max_players' : self.max_players,
             'game_name' : self.game_name,
             'is_locked' : self.is_locked,
             'prize' : self.prize
         }
+        LOG(res)
+        return res

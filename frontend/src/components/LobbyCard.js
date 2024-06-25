@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { call_api } from 'src/lib/utils';
 
-const LobbyCard = ({ lobby_key, game_name, maxPlayers, prize, onJoin }) => {
+const LobbyCard = ({ lobby_key, game_name, max_players, prize, onJoin }) => {
     const [currentPlayers, setCurrentPlayers] = useState(0);
 
     useEffect(() => {
@@ -10,7 +10,7 @@ const LobbyCard = ({ lobby_key, game_name, maxPlayers, prize, onJoin }) => {
             try {
                 const response = await call_api(`api/lobbies/${lobby_key}/player_count`, "get");
                 const data = await response.json();
-                setCurrentPlayers(data.currentPlayers);
+                setCurrentPlayers(data.count);
             } catch (error) {
                 console.error('Error fetching player count:', error);
             }
@@ -30,7 +30,7 @@ const LobbyCard = ({ lobby_key, game_name, maxPlayers, prize, onJoin }) => {
                 {lobby_key}
             </p>
             <p className="text-gray-700 mb-4">
-                Players: {currentPlayers} / {maxPlayers}
+                Players: {currentPlayers} / {max_players}
             </p>
             <button
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
@@ -45,7 +45,8 @@ const LobbyCard = ({ lobby_key, game_name, maxPlayers, prize, onJoin }) => {
 LobbyCard.propTypes = {
     lobby_key: PropTypes.string.isRequired,
     game_name: PropTypes.string.isRequired,
-    maxPlayers: PropTypes.number.isRequired,
+    max_players: PropTypes.number.isRequired,
+    prize: PropTypes.number.isRequired,
     onJoin: PropTypes.func.isRequired,
 };
 
