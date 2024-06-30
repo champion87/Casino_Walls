@@ -23,7 +23,7 @@ specific_lobby_router = APIRouter()
 ############
 
 # USERNAME_TO_LOBBY = { "Lidor" : Lobby() }
-LOBBIES: Dict[str, Lobby] = { "example-key" : Lobby("example game", 999, "example-key", 1337)}
+LOBBIES: Dict[str, Lobby] = { }
 SESSIONS : Dict[str , Game] = {"id" : Game()}
 
 LOBBY_TO_SESSION : Dict[str, str] = {}
@@ -144,7 +144,13 @@ def start_game(lobby_key:str = Path()):
     # raise Exception("started game")
     SESSIONS[LOBBY_TO_SESSION[lobby_key]].start_game()
     
-    
+@specific_lobby_router.get("/is_game_started")
+def is_started(lobby_key:str = Path()):
+    # raise Exception("started game")
+    return {
+        "is_started" : SESSIONS[LOBBY_TO_SESSION[lobby_key]].is_started(),
+        "session_key" : LOBBY_TO_SESSION[lobby_key]
+    }
     
     
 # http://127.0.0.1:8000/api/2/lobbies/current_players

@@ -23,6 +23,12 @@ def BJ_restart_game(game:BlackJack = Depends(get_session)):
 def get_hand(game:BlackJack = Depends(get_session), username: str = Depends(get_user_name)):
     return {"hand" : game.get_hand(username).to_list_of_str()}
 
+@router.get('/get_other_hands')
+def hands(game:BlackJack = Depends(get_session), username: str = Depends(get_user_name)):
+    return {
+        "hands" : game.get_hands_for_show(username)
+    }
+
 @router.get('/get_dealer_hand')
 def BJ_restart_game(game:BlackJack = Depends(get_session)):
     dealer_hand = game.get_dealer_hand()
@@ -31,20 +37,32 @@ def BJ_restart_game(game:BlackJack = Depends(get_session)):
     else:
         return {"hand" : [str(dealer_hand.cards[0]), "xxxx\n"*3]}
     
+@router.get('/is_game_over')
+def is_game_over(game:BlackJack = Depends(get_session)):
+    LOG(game.is_game_over())
+    return {"is_game_over" : game.is_game_over()}
+
 
 @router.post('/draw')
 def BJ_draw(game:BlackJack = Depends(get_session), user_name: str = Depends(get_user_name)):
-    game.draw(user_name) #TODO try except
-
+    try:
+        game.draw(user_name)
+    except:
+        LOG("shit happens: sometimes 'fold' is accidently called twice for some reason. Nevermind.")
 
 @router.post('/fold')
 def BJ_fold(game:BlackJack = Depends(get_session), user_name: str = Depends(get_user_name)):
-    game.fold(user_name) #TODO try except
+    LOG("I TRY FOLD")
+    try:
+        game.fold(user_name)
+    except:
+        LOG("shit happens: sometimes 'fold' is accidently called twice for some reason. Nevermind.")
+        
 
 @router.post('/try_restart_game')
 def BJ_restart_game(game:BlackJack = Depends(get_session)):
     try:     
-        game.start_game() #TODO try except
+        game.start_game()
         return {"was_restarted" : True}
     except:
         return {"was_restarted" : False}

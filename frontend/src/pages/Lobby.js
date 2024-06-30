@@ -57,6 +57,7 @@
 import { useParams } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 import { call_api } from 'src/lib/utils';
+import { useNavigate } from 'react-router-dom';
 
 const Lobby = () => {
   let { lobby_key } = useParams();
@@ -64,10 +65,25 @@ const Lobby = () => {
   const [players, setPlayers] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const navigate = useNavigate();
+
+
   useEffect(() => {
-    const fetchPlayers = async () => {
+    const fetchData = async () => {
       try {
-        const response = await call_api(`api/lobbies/${lobby_key}/current_players`, "get");
+        const response = await call_api(`/api/lobbies/${lobby_key}/is_game_started`, "get");
+        const data = await response.json();
+        
+        if (data.is_started) {
+          navigate(`/bjGPT/${data["session_key"]}`)
+        }
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching gameStart:', error);
+      }
+
+      try {
+        const response = await call_api(`/api/lobbies/${lobby_key}/current_players`, "get");
         const data = await response.json();
         setPlayers(data.players);
         setLoading(false);
@@ -79,14 +95,17 @@ const Lobby = () => {
       }
     };
 
-    fetchPlayers();
+    fetchData();
 
-    const interval = setInterval(fetchPlayers, 5000); // Fetch players every 5 seconds
+    const interval = setInterval(fetchData, 1000); // Fetch players every 5 seconds
+
     return () => clearInterval(interval); // Cleanup on component unmount
   }, []);
 
   const startGame = () => {
     console.log('Game started');
+    call_api(`/api/lobbies/${lobby_key}/start_game`, "post")
+
     // Implement game start logic here
   };
 

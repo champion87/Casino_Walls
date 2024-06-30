@@ -148,12 +148,16 @@ class BlackJack(Game):
         self.lobby = lobby
         self.prize = prize
     
+    def is_started(self):
+        return self.status == GameStatus.ONGOING
+    
     def end_game(self):
         self.status = GameStatus.NO_GAME
         dealer_score = self.dealer_hand.get_BJ_score()
         
         for username in self.lobby.get_players():
-            self.is_out[username] = True # just to make sure
+            if self.is_out[username]: # just to make sure
+                LOG("WTFFFFFFF")
             score = self.hands[username].get_BJ_score()
             score = 0 if score>21 else score
             if score > dealer_score:
@@ -171,6 +175,21 @@ class BlackJack(Game):
         
     #     # LOG("done BJ.end_game()")
     #     return winners, self.prize
+        
+    def get_hands_for_show(self, username: str):
+        res = {}
+        
+        if self.is_game_over():
+            for (name,hand) in self.hands.items():
+                if name != username:
+                    res[name] = hand.to_list_of_str()
+        else:
+            for (name,hand) in self.hands.items():
+                if name != username:
+                    res[name] = len(hand.to_list_of_str()) * ["xxxx\n"*3]
+                
+        return res
+        
         
     def start_game(self):
         '''return True if some player doesn't have enough money, False upon success.
@@ -234,15 +253,17 @@ class BlackJack(Game):
         self.hands[username].draw_to_hand()
         if self.hands[username].is_overdraft():
             self.is_out[username] = True
+            LOG(f"{username} DRAWWWW")
+            
         
         if self.is_game_over():
             self.end_game()
     
     def fold(self, username:str):
-        LOG(COINS)   
         if self.is_out[username]:
             raise Exception(f"Player <{username}> is out! Can't fold!")
         self.is_out[username] = True
+        LOG(f"{username} FOLDDDD")
         
         if self.is_game_over():
             self.end_game()
