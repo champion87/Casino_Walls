@@ -156,10 +156,12 @@ class BlackJack(Game):
         dealer_score = self.dealer_hand.get_BJ_score()
         
         for username in self.lobby.get_players():
-            if self.is_out[username]: # just to make sure
+            if not self.is_out[username]: # just to make sure
                 LOG("WTFFFFFFF")
             score = self.hands[username].get_BJ_score()
-            score = 0 if score>21 else score
+            score = -1 if score>21 else score
+            dealer_score = 0 if dealer_score>21 else dealer_score
+            LOG(f"{score=}")
             if score > dealer_score:
                 COINS[username] += self.prize + self.prize # one for the payback, one is the extra prize
             elif score == dealer_score:
@@ -235,8 +237,6 @@ class BlackJack(Game):
     
     # @return True iff all hands are done
     def is_game_over(self):
-        
-        # LOG("finished:" + str(self.is_finished))
         for out in self.is_out.values():
             if not out:
                 return False
@@ -287,10 +287,3 @@ class BlackJack(Game):
             "finish_statuses" : [hand.is_overdraft for hand in self.hands],
             "end_game" : self.is_overdraft()
             }
-        
-    # def decorator(f):
-    #     def wrapper(*args, **kwargs):
-    #         f(*args, **kwargs)
-    #         self:'BlackJack' = args[0]
-    #         if self.is_game_over():
-    #             self.status = GameStatus.NO_GAME

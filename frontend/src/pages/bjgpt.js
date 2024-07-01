@@ -89,51 +89,51 @@ function BJ_GPT(is_single_player) {
     startNewGame();
   }, []);
 
-  // useEffect(() => {
-  //   const fetchHands = async () => {
-  //     try {
-  //       const response = await call_api(`/api/games/${game_key}/blackjack/get_other_hands`, "get");
-  //       const data = await response.json();
-  //       setHands(data.hands);
+  useEffect(() => {
+    const fetchHands = async () => {
+      try {
+        const response = await call_api(`/api/games/${game_key}/blackjack/get_other_hands`, "get");
+        const data = await response.json();
+        setHands(data.hands);
 
-  //       const response2 = await call_api(`/api/games/${game_key}/blackjack/is_game_over`, "get");
-  //       const data2 = await response2.json();
+        const response2 = await call_api(`/api/games/${game_key}/blackjack/is_game_over`, "get");
+        const data2 = await response2.json();
 
-  //       console.log("data2.is_game_over")
+        console.log("data2.is_game_over")
 
-  //       console.log(data2.is_game_over)
+        console.log(data2.is_game_over)
 
-  //       if (data2.is_game_over) {
-  //         setDealerHand(await getDealerHand());
+        if (data2.is_game_over) {
+          setDealerHand(await getDealerHand());
 
-  //         let newDealerScore = await getDealerScore()
-  //         let yourScore = await getScore()
-  //         setDealerScore(newDealerScore);
+          let newDealerScore = await getDealerScore()
+          let yourScore = await getScore()
+          setDealerScore(newDealerScore);
 
-  //         if (yourScore > 21) {
-  //           setMessage('Player Busted!');
-  //         } else if (newDealerScore > 21) {
-  //           setMessage('Dealer Busted! Player Wins!');
-  //         } else if (newDealerScore > playerScore) {
-  //           setMessage('Dealer Wins!');
-  //         } else if (newDealerScore < playerScore) {
-  //           setMessage('Player Wins!');
-  //         } else {
-  //           setMessage('Tie!');
-  //         }
-  //       }
+          if (yourScore > 21) {
+            setMessage('Player Busted!');
+          } else if (newDealerScore > 21) {
+            setMessage('Dealer Busted! Player Wins!');
+          } else if (newDealerScore > yourScore) {
+            setMessage('Dealer Wins!');
+          } else if (newDealerScore < yourScore) {
+            setMessage('Player Wins!');
+          } else {
+            setMessage('Tie!');
+          }
+        }
 
-  //     } catch (error) {
-  //       console.error('Error fetching other hands:', error);
-  //     }
-  //   };
+      } catch (error) {
+        console.error('Error fetching other hands:', error);
+      }
+    };
 
-  //   fetchHands();
+    fetchHands();
 
-  //   const intervalId = setInterval(fetchHands, 1000); // Fetch every 5 seconds
+    const intervalId = setInterval(fetchHands, 1000); // Fetch every 5 seconds
 
-  //   return () => clearInterval(intervalId); // Cleanup on unmount
-  // }, []);
+    return () => clearInterval(intervalId); // Cleanup on unmount
+  }, []);
 
   async function startNewGame() {
 
@@ -162,11 +162,6 @@ function BJ_GPT(is_single_player) {
 
     setPlayerHand(newPlayerHand);
     setPlayerScore(newPlayerScore);
-
-    if (newPlayerScore > 21) {
-      // setMessage('Player Busted!');
-      // TODO endgame here
-    }
   };
 
   async function stand() {
