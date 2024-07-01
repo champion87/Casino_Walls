@@ -42,6 +42,9 @@ def is_game_over(game:BlackJack = Depends(get_session)):
     LOG(game.is_game_over())
     return {"is_game_over" : game.is_game_over()}
 
+@router.post('/abort')
+def abort(game:BlackJack = Depends(get_session), username: str = Depends(get_user_name)):
+    game.abort(username)
 
 @router.post('/draw')
 def BJ_draw(game:BlackJack = Depends(get_session), user_name: str = Depends(get_user_name)):

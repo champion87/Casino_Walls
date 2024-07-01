@@ -73,8 +73,9 @@ const Lobby = () => {
       try {
         const response = await call_api(`/api/lobbies/${lobby_key}/is_game_started`, "get");
         const data = await response.json();
-        
+
         if (data.is_started) {
+          // console.log("game already started????")
           navigate(`/bjGPT/${data["session_key"]}`)
         }
         setLoading(false);
@@ -102,6 +103,11 @@ const Lobby = () => {
     return () => clearInterval(interval); // Cleanup on component unmount
   }, []);
 
+  async function BackToMainPage() {
+    call_api(`/api/lobbies/${lobby_key}/leave_lobby`, "post")
+    navigate("/blackjack_main")
+  }
+
   const startGame = () => {
     console.log('Game started');
     call_api(`/api/lobbies/${lobby_key}/start_game`, "post")
@@ -115,6 +121,8 @@ const Lobby = () => {
 
   return (
     <div style={styles.container}>
+      <button onClick={BackToMainPage}>Go Back</button>
+
       <h1 style={styles.header}>Lobby</h1>
       <ul style={styles.playerList}>
         {players.map((player, index) => (

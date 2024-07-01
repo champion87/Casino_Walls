@@ -15,10 +15,10 @@ class Lobby:#(BaseModel):
         self.prize = prize
 
     def add(self, user: str):
-        '''Return True if the lobby is locked.'''
         if self.is_locked:
-            return True
-        self.usernames.append(user)
+            raise Exception(f"Lobby <{self.key}> is locked!")
+        else:
+            self.usernames.append(user)
     
     def lock(self):
         self.is_locked = True
@@ -29,6 +29,8 @@ class Lobby:#(BaseModel):
     def pop_user(self, username):
         if username in self.usernames:
             self.usernames.remove(username)
+        else:
+            raise Exception(f"User <{username}> is not in Lobby <{self.key}>!")
     
     def export(self):
         res = {

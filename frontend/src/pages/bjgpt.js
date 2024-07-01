@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './bjgpt.css';
 import { call_api } from 'src/lib/utils';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const suits = ['Hearts', 'Diamonds', 'Clubs', 'Spades'];
 const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
@@ -14,6 +14,8 @@ const getCardValue = (card) => {
 
 
 function BJ_GPT() {
+  const navigate = useNavigate();
+
   // const [ game_key ] = useParams();
   let { game_key } = useParams();
   // const [deck, setDeck] = useState(createDeck());
@@ -64,7 +66,10 @@ function BJ_GPT() {
     }
   };
 
-
+  async function BackToMainPage() {
+    const response = await call_api(`/api/games/${game_key}/blackjack/abort`, "post")
+    navigate("/blackjack_main")
+  }
 
   async function createDeck() {
     throw "create deck unsupported"
@@ -87,15 +92,18 @@ function BJ_GPT() {
 
         console.log("data2.is_game_over")
 
-        console.log(data2.is_game_over) 
+        console.log(data2.is_game_over)
 
         if (data2.is_game_over) {
           setDealerHand(await getDealerHand());
 
           let newDealerScore = await getDealerScore()
+          let yourScore = await getScore()
           setDealerScore(newDealerScore);
 
-          if (newDealerScore > 21) {
+          if (yourScore > 21) {
+            setMessage('Player Busted!');
+          } else if (newDealerScore > 21) {
             setMessage('Dealer Busted! Player Wins!');
           } else if (newDealerScore > playerScore) {
             setMessage('Dealer Wins!');
@@ -147,7 +155,7 @@ function BJ_GPT() {
     setPlayerScore(newPlayerScore);
 
     if (newPlayerScore > 21) {
-      setMessage('Player Busted!');
+      // setMessage('Player Busted!');
       // TODO endgame here
     }
   };
@@ -156,6 +164,7 @@ function BJ_GPT() {
     console.log("i stand!")
     await call_api(`/api/games/${game_key}/blackjack/fold`, "post")
 
+    setMessage('What a Thrill!');
 
   };
 
@@ -192,6 +201,8 @@ function BJ_GPT() {
         <button onClick={hit} disabled={message !== ''}>Hit</button>
         <button onClick={stand} disabled={message !== ''}>Stand</button>
         <button onClick={startNewGame}>New Game</button>
+        <button onClick={BackToMainPage}>Go Back</button>
+
       </div>
       <div id="message" className="message">{message}</div>
 

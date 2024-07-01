@@ -220,7 +220,10 @@ class BlackJack(Game):
             
         return False # success
             
-
+    def abort(self, username: str):
+        self.hands.pop(username)
+        self.is_out.pop(username)
+        self.check_game_over()
         
     def is_overdraft(self, username:str):
         return self.hands[username].is_overdraft()
