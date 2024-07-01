@@ -21,7 +21,10 @@ def BJ_restart_game(game:BlackJack = Depends(get_session)):
 
 @router.get('/get_hand')
 def get_hand(game:BlackJack = Depends(get_session), username: str = Depends(get_user_name)):
-    return {"hand" : game.get_hand(username).to_list_of_str()}
+    try:
+        return {"hand" : game.get_hand(username).to_list_of_str()}
+    except:
+        LOG(f"Player <{username}> called get_hand but it is no longer in the game")
 
 @router.get('/get_other_hands')
 def hands(game:BlackJack = Depends(get_session), username: str = Depends(get_user_name)):

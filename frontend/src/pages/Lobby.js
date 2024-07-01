@@ -62,11 +62,20 @@ import { useNavigate } from 'react-router-dom';
 const Lobby = () => {
   let { lobby_key } = useParams();
 
+  const [coinAmount, setCoinAmount] = useState(0);
   const [players, setPlayers] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
 
+  async function get_coins(){
+    const coin_res = await call_api("/api/coins/", "GET").then(response => response.json());
+    setCoinAmount(parseInt(coin_res.coins));
+  }
+
+  useEffect(() => {
+    get_coins();
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -121,6 +130,9 @@ const Lobby = () => {
 
   return (
     <div style={styles.container}>
+      <p className="mt-2 text-yellow-200">
+        coin amount: {coinAmount}
+      </p>
       <button onClick={BackToMainPage}>Go Back</button>
 
       <h1 style={styles.header}>Lobby</h1>

@@ -203,7 +203,8 @@ class BlackJack(Game):
                 return True # failure
         for username in self.lobby.get_players():
             COINS[username] -= self.prize
-        
+            
+        self.lobby.lock()
         self.status = GameStatus.ONGOING
 
         self.deck = Deck()

@@ -6,22 +6,34 @@ class Lobby:#(BaseModel):
     # TODO 'creator' field
     # usernames: List[str] = Field(default_factory=list)
 
+    # TODO edge cases: max players is negative or zero
     def __init__(self, game_name:str, max_players:int, key:str, prize:int):
         self.usernames = []
         self.is_locked = False
+        self.is_full = False
         self.max_players = max_players
         self.game_name = game_name
         self.key = key
         self.prize = prize
 
     def add(self, user: str):
+        if len(self.usernames) >= self.max_players:
+            raise Exception(f"Lobby <{self.key}> is full!")
         if self.is_locked:
             raise Exception(f"Lobby <{self.key}> is locked!")
         else:
             self.usernames.append(user)
+            
     
     def lock(self):
         self.is_locked = True
+        
+    def is_available(self):
+        if self.is_locked:
+            return False
+        if len(self.usernames) >= self.max_players:
+            return False
+        return True
         
     def get_players(self):
         return self.usernames
