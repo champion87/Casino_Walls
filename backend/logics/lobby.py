@@ -16,14 +16,24 @@ class Lobby:#(BaseModel):
         self.key = key
         self.prize = prize
         self.ready = {}
+        self.old_users = []
+# # TODO validate that the returning player once was in the lobby
+#     def re_enter(self, user: str):
+#         if user not in self.usernames:
+#             self.usernames.append(user)
+
+    def kick_all_players(self):
+        self.usernames = []
 
     def add(self, user: str):
         if len(self.usernames) >= self.max_players:
             raise Exception(f"Lobby <{self.key}> is full!")
-        if self.is_locked:
+        if user not in self.old_users and self.is_locked:
             raise Exception(f"Lobby <{self.key}> is locked!")
         else:
-            self.usernames.append(user)
+            if user not in self.usernames:
+                self.usernames.append(user)
+                self.old_users.append(user)
             LOG("HEYYYYYYYYYYYYY")
             LOG(self.usernames)
             

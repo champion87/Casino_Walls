@@ -81,39 +81,24 @@ def get_player_count(lobby: Lobby = Depends(get_lobby)):
 def leave_lobby(lobby: Lobby = Depends(get_lobby), username = Depends(get_user_name)):
     lobby.pop_user(username)
 
-
-# For example
-# http://127.0.0.1:8000/api/2/lobbies/join_lobby
+# TODO manage shared code with "join_lobby"
 @specific_lobby_router.post("/join_lobby")
 def join_lobby(lobby: Lobby = Depends(get_lobby), username = Depends(get_user_name)):
-    
-        
-
     if lobby == None:
         raise HTTPException(status_code=422, detail="no such lobby")
     if username in lobby.get_players(): #player is already in
         raise HTTPException(status_code=422, detail="FUCKKKK")
-        # LOG("ALREADY IN")
-        
-        return {}
-        
-    # LOG("GOOOOOOOOOOOOOOOOOOO")
+
+    if username in USERNAME_TO_LOBBY_KEY:
+        LOBBIES[USERNAME_TO_LOBBY_KEY].pop_user(username)
     try:
         lobby.add(username)
     except:
         raise HTTPException(status_code=422, detail="lobby is locked")
     
-    if username in USERNAME_TO_LOBBY_KEY:
-        USERNAME_TO_LOBBY_KEY.pop(username)
         
     USERNAME_TO_LOBBY_KEY[username] = lobby.key
     
-    # player_added_event.set()
-    # LOG(LOBBIES)
-    # LOG(USERNAME_TO_LOBBY_KEY)
-    
-    # return {}
-
 
 # For example
 # http://127.0.0.1:8000/api/2/lobbies/create_lobby/? ...

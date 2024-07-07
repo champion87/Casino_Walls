@@ -221,6 +221,8 @@ class BlackJack(Game):
         while self.dealer_hand.get_BJ_score() < 17:
             self.dealer_hand.draw_to_hand()
             
+        self.lobby.kick_all_players()    
+            
         return False # success
             
     def abort(self, username: str):

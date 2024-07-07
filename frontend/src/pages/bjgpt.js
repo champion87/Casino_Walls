@@ -13,7 +13,7 @@ const getCardValue = (card) => {
 };
 
 
-function BJ_GPT(is_single_player) {
+function BJ_GPT() {
   const navigate = useNavigate();
 
   // const [ game_key ] = useParams();
@@ -81,6 +81,7 @@ function BJ_GPT(is_single_player) {
     const response = await call_api(`/api/lobbies/my_lobby`, "get")
     const data = await response.json()
     await call_api(`/api/games/${game_key}/blackjack/abort`, "post")
+    await call_api(`/api/lobbies/${data.lobby_key}/join_lobby`, "post")
     navigate(`/lobby/${data.lobby_key}`)
   }
 
