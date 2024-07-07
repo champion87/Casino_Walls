@@ -15,6 +15,7 @@ class Lobby:#(BaseModel):
         self.game_name = game_name
         self.key = key
         self.prize = prize
+        self.ready = {}
 
     def add(self, user: str):
         if len(self.usernames) >= self.max_players:
@@ -23,7 +24,19 @@ class Lobby:#(BaseModel):
             raise Exception(f"Lobby <{self.key}> is locked!")
         else:
             self.usernames.append(user)
+            LOG("HEYYYYYYYYYYYYY")
+            LOG(self.usernames)
             
+    def set_ready(self, username: str):
+        self.ready[username] = True
+    
+    def is_ready(self):
+        for user in self.usernames:
+            if not self.ready.get(user, False):
+                LOG(f"{user} is not ready")
+                return False
+            LOG(f"{user} is ready!")
+        return True
     
     def lock(self):
         self.is_locked = True
@@ -37,6 +50,9 @@ class Lobby:#(BaseModel):
         
     def get_players(self):
         return self.usernames
+    
+    def get_num_players(self):
+        return len(self.usernames)
     
     def pop_user(self, username):
         if username in self.usernames:
@@ -53,3 +69,6 @@ class Lobby:#(BaseModel):
             'prize' : self.prize
         }
         return res
+    
+    def __repr__(self):
+        return str(self.export()) + str(self.usernames)

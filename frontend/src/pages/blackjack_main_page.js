@@ -50,6 +50,13 @@ export const BlackJackMainPage = () => {
 
   }
 
+  async function test() {
+    console.log("creating test lobby, wink wink.")
+    const response = await call_api("/api/lobbies/create_lobby/blackjack/?prize=1000&max_players=2", "post") // TODO generalize
+    const data = await response.json()
+    join_lobby(data["lobby_key"])
+  }
+
   async function create_lobby() {
     console.log("creating lobby, wink wink.")
     const response = await call_api("/api/lobbies/create_lobby/blackjack/?prize=10&max_players=4", "post") // TODO generalize
@@ -115,6 +122,13 @@ export const BlackJackMainPage = () => {
             className="w-44 mt-6 bg-black text-yellow-300 rounded-full hover:text-yellow-200"
           >
             play_bj
+          </Button>
+          <Button
+            type="button"
+            onClick={test}
+            className="w-44 mt-6 bg-black text-yellow-300 rounded-full hover:text-yellow-200"
+          >
+            test
           </Button>
 
         </div>

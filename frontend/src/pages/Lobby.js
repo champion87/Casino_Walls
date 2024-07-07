@@ -6,6 +6,8 @@ import { useNavigate } from 'react-router-dom';
 const Lobby = () => {
   let { lobby_key } = useParams();
 
+  const [message, setMessage] = useState('');
+  // const [coinAmount, setCoinAmount] = useState(0);
   const [coinAmount, setCoinAmount] = useState(0);
   const [players, setPlayers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -64,9 +66,14 @@ const Lobby = () => {
   const startGame = () => {
     console.log('Game started');
     call_api(`/api/lobbies/${lobby_key}/start_game`, "post")
-
-    // Implement game start logic here
   };
+
+  async function goReady() {
+    const response = await call_api(`/api/lobbies/${lobby_key}/set_ready_for_start_game`, "post")
+    const data = response.json()
+    setMessage(data.result);
+
+  }
 
   if (loading) {
     return <div>Loading...</div>;
@@ -86,6 +93,9 @@ const Lobby = () => {
         ))}
       </ul>
       <button onClick={startGame} style={styles.startButton}>Start Game</button>
+      <button onClick={goReady} style={styles.startButton}>Ready!</button>
+      <div id="message" className="message">{message}</div>
+
     </div>
   );
 };

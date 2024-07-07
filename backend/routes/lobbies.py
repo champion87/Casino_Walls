@@ -9,6 +9,7 @@ from routes.auth import get_user_name, key_gen
 from fastapi import APIRouter, Depends
 from fastapi.exceptions import HTTPException
 from utils.my_log import LOG
+from db import COINS, LOBBIES, LOBBY_TO_SESSION,  SESSIONS, USERNAME_TO_LOBBY_KEY
 
 
 player_added_event = asyncio.Event()
@@ -18,16 +19,6 @@ create_lobby_router = APIRouter()
 specific_lobby_router = APIRouter()
 
     
-############
-### DATA ###
-############
-
-# USERNAME_TO_LOBBY = { "Lidor" : Lobby() }
-LOBBIES: Dict[str, Lobby] = { }
-SESSIONS : Dict[str , Game] = {"id" : Game()}
-
-LOBBY_TO_SESSION : Dict[str, str] = {}
-USERNAME_TO_LOBBY_KEY : Dict[str, str] = {}
 
 # def get_session(game_key: str = Path()):
 #     LOG(f"got {game_key = }")
@@ -86,7 +77,7 @@ def get_my_lobby(username = Depends(get_user_name)):
 def get_player_count(lobby: Lobby = Depends(get_lobby)):
     return {'count' : len(lobby.get_players())}
 
-@specific_lobby_router.get("/leave_lobby")
+@specific_lobby_router.post("/leave_lobby")
 def leave_lobby(lobby: Lobby = Depends(get_lobby), username = Depends(get_user_name)):
     lobby.pop_user(username)
 
@@ -101,21 +92,25 @@ def join_lobby(lobby: Lobby = Depends(get_lobby), username = Depends(get_user_na
     if lobby == None:
         raise HTTPException(status_code=422, detail="no such lobby")
     if username in lobby.get_players(): #player is already in
+        raise HTTPException(status_code=422, detail="FUCKKKK")
+        # LOG("ALREADY IN")
+        
         return {}
         
+    # LOG("GOOOOOOOOOOOOOOOOOOO")
     try:
         lobby.add(username)
     except:
         raise HTTPException(status_code=422, detail="lobby is locked")
     
     if username in USERNAME_TO_LOBBY_KEY:
-        LOBBIES[USERNAME_TO_LOBBY_KEY[username]].pop_user(username)
+        USERNAME_TO_LOBBY_KEY.pop(username)
         
     USERNAME_TO_LOBBY_KEY[username] = lobby.key
     
     # player_added_event.set()
-    LOG(LOBBIES)
-    LOG(USERNAME_TO_LOBBY_KEY)
+    # LOG(LOBBIES)
+    # LOG(USERNAME_TO_LOBBY_KEY)
     
     # return {}
 
@@ -165,6 +160,24 @@ def start_game(lobby_key:str = Path()):
         SESSIONS[LOBBY_TO_SESSION[lobby_key]].start_game()
     except:
         return {}
+    
+@specific_lobby_router.post("/set_ready_for_start_game")
+def set_ready(lobby_key:str = Path(), lobby: Lobby = Depends(get_lobby), username = Depends(get_user_name)):
+    if COINS[username] <= lobby.prize:
+        return {"result" : f"Not enough money! Need {lobby.prize} coins..."}
+    else:
+        lobby.set_ready(username)
+        if lobby.is_ready():
+            try:
+                SESSIONS[LOBBY_TO_SESSION[lobby_key]].start_game()
+                return {"result" : "Ready!"}
+                
+            except:
+                LOG("ERROR IN SET READY: NO SESSION FOUND")
+                return {}
+                    
+
+    
     
 @specific_lobby_router.get("/is_game_started")
 def is_started(lobby_key:str = Path()):

@@ -27,6 +27,7 @@ Startup:
 
 >>> pip install fastapi
 >>> pip install uvicorn
+>>> pip install APScheduler
 >>> npm i axios
 >>> npm i react-router-dom
 >>> npm install lucide-react
