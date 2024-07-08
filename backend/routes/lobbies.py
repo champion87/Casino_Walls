@@ -90,7 +90,10 @@ def join_lobby(lobby: Lobby = Depends(get_lobby), username = Depends(get_user_na
         raise HTTPException(status_code=422, detail="FUCKKKK")
 
     if username in USERNAME_TO_LOBBY_KEY:
-        LOBBIES[USERNAME_TO_LOBBY_KEY].pop_user(username)
+        try:
+            LOBBIES[USERNAME_TO_LOBBY_KEY[username]].pop_user(username)
+        except:
+            LOG("The user is not in that lobby anymore, but that's ok")
     try:
         lobby.add(username)
     except:
@@ -138,13 +141,13 @@ def blackjack(prize: int , max_players: int):#, username = Depends(get_user_name
         'session_key' : session_key
     }
     
-@specific_lobby_router.post("/start_game")
-def start_game(lobby_key:str = Path()):
-    # raise Exception("started game")
-    try:
-        SESSIONS[LOBBY_TO_SESSION[lobby_key]].start_game()
-    except:
-        return {}
+# @specific_lobby_router.post("/start_game")
+# def start_game(lobby_key:str = Path()):
+#     # raise Exception("started game")
+#     try:
+#         SESSIONS[LOBBY_TO_SESSION[lobby_key]].start_game()
+#     except:
+#         return {}
     
 @specific_lobby_router.post("/set_ready_for_start_game")
 def set_ready(lobby_key:str = Path(), lobby: Lobby = Depends(get_lobby), username = Depends(get_user_name)):

@@ -70,14 +70,13 @@ function BJ_GPT() {
     await call_api(`/api/games/${game_key}/blackjack/abort`, "post")
     const response = await call_api(`/api/lobbies/my_lobby`, "get")
     const data = response.json()
-    await call_api(`/api/lobbies/${data.lobby_key}/leave_lobby`, "post")
+    // await call_api(`/api/lobbies/${data.lobby_key}/leave_lobby`, "post")
 
 
     navigate("/blackjack_main")
   }
 
-  async function BackToLobby()
-  {
+  async function BackToLobby() {
     const response = await call_api(`/api/lobbies/my_lobby`, "get")
     const data = await response.json()
     await call_api(`/api/games/${game_key}/blackjack/abort`, "post")
@@ -163,6 +162,10 @@ function BJ_GPT() {
 
     setPlayerHand(newPlayerHand);
     setPlayerScore(newPlayerScore);
+
+    if (newPlayerScore > 21){
+      setMessage("Player busted!")
+    }
   };
 
   async function stand() {

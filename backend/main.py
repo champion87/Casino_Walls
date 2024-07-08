@@ -13,13 +13,16 @@ def my_job():
         LOG(f"{lob}")
         
 def clear_lobbies():
-    for key, lob in LOBBIES.items():
-        if not lob.is_locked and len(lob.get_players())==0:
-            del LOBBIES[key]
+    try:
+        for key, lob in LOBBIES.items():
+            if not lob.is_locked and len(lob.get_players())==0:
+                del LOBBIES[key]
+    except:
+        pass
             
             
 scheduler = BackgroundScheduler()
-scheduler.add_job(my_job, 'interval', seconds=1)
-scheduler.add_job(clear_lobbies, 'interval', seconds=1)
+# scheduler.add_job(my_job, 'interval', seconds=1)
+# scheduler.add_job(clear_lobbies, 'interval', seconds=1)
 
 scheduler.start()

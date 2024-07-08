@@ -63,14 +63,15 @@ const Lobby = () => {
     navigate("/blackjack_main")
   }
 
-  const startGame = () => {
-    console.log('Game started');
-    call_api(`/api/lobbies/${lobby_key}/start_game`, "post")
-  };
+  // const startGame = () => {
+  //   console.log('Game started');
+  //   call_api(`/api/lobbies/${lobby_key}/start_game`, "post")
+  // };
 
   async function goReady() {
     const response = await call_api(`/api/lobbies/${lobby_key}/set_ready_for_start_game`, "post")
-    const data = response.json()
+    const data = await response.json()
+    console.log(data)
     setMessage(data.result);
 
   }
@@ -92,7 +93,7 @@ const Lobby = () => {
           <li key={index} style={styles.playerItem}>{player}</li>
         ))}
       </ul>
-      <button onClick={startGame} style={styles.startButton}>Start Game</button>
+      {/* <button onClick={startGame} style={styles.startButton}>Start Game</button> */}
       <button onClick={goReady} style={styles.startButton}>Ready!</button>
       <div id="message" className="message">{message}</div>
 
