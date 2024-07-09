@@ -20,12 +20,15 @@ import Lobby from './pages/Lobby.js';
 import { Wheel_of_fortune } from './pages/wheel_of_fortune';
 import { BlackJackMainPage } from './pages/blackjack_main_page';
 import { PokerMainPage } from './pages/PokerMainPage';
+import { Toaster } from './components/ui/toaster';
+
 
 
 const App = () => {
 
   return (
     <div className='App'>
+      <Toaster/>
       <UserContextProvider>
         <Router>
           <Routes>

@@ -64,6 +64,16 @@ export const LoginPage = () => {
       await forceUpdate();
       page_address ? navigate(page_address) : navigate('/');
     }
+    if (res.status === 'not ok'){
+      toast({
+        title: "wrong credentials",
+        description: "Incorrect username or password",
+        className: "bg-black text-yellow-400", 
+        action: (
+          <ToastAction altText="Ok">Ok</ToastAction>
+        ),
+      });
+    }
   }
 
   return (  

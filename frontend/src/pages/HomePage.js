@@ -45,7 +45,7 @@ export const HomePage = () => {
                         <p className="text-2xl font-semibold text-yellow-400">our top played games:</p>
                     </div>
                     <div className="grid w-full h-full grid-cols-3">
-                        <Card className="w-[350px] m-10 bg-black">
+                        <Card className="w-[350px] m-10 bg-cards bg-cover">
                             <CardHeader>
                                 <CardTitle className="text-yellow-400 font-bold">Blackjack</CardTitle>
                                 <CardDescription className="text-yellow-300 font-semibold">one of the all time best casino games</CardDescription>
@@ -59,7 +59,7 @@ export const HomePage = () => {
                                 <Button className="text-yellow-400" onClick={() => navigate("/blackjack_main")}>Take Me There</Button>
                             </CardFooter>
                         </Card>
-                        <Card className="w-[350px] m-10 bg-black">
+                        <Card className="w-[350px] m-10 bg-wheel">
                             <CardHeader>
                                 <CardTitle className="text-yellow-400">Wheel of Fortune</CardTitle>
                                 <CardDescription className="text-yellow-300">one of the all time best casino games</CardDescription>

@@ -10,3 +10,6 @@ router.include_router(blackjack_router, prefix='/{game_key}/blackjack')
 
 from .wheel_of_fortune import router as wheel_of_fortune_router
 router.include_router(wheel_of_fortune_router, prefix='/wheel_of_fortune')
+
+from .poker import router as poker_router
+router.include_router(poker_router, prefix='/{game_key}/poker')
