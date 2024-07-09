@@ -54,19 +54,19 @@ def get_lobbies():
     LOG({'lobbies' : [lobby.export() for lobby in LOBBIES.values()]})
     return {'lobbies' : [lobby.export() for lobby in LOBBIES.values() if lobby.is_available()]}
 
-@router.get("/{game_name}")
+@router.get("/game/{game_name}")
 def get_lobbies(game_name:str = Path()):
     LOG({'lobbies' : [lobby.export() for lobby in LOBBIES.values()]})
     return {'lobbies' : [lobby.export() for lobby in LOBBIES.values() if lobby.is_available() and lobby.game_name == game_name]}
 
  
-# @router.get("/my_lobby")
-# def get_my_lobby(username = Depends(get_user_name)):
-#     # LOG(USERNAME_TO_LOBBY_KEY)
-#     # LOG({'lobbies' : [lobby.export() for lobby in LOBBIES.values()]})
-#     LOG("wow\n")
-#     # return { "lobby_key" : USERNAME_TO_LOBBY_KEY[username] }
-#     return { "lobby_key" : "WOW" }
+@router.get("/my_lobby")
+def get_my_lobby(username = Depends(get_user_name)):
+    # LOG(USERNAME_TO_LOBBY_KEY)
+    # LOG({'lobbies' : [lobby.export() for lobby in LOBBIES.values()]})
+    LOG("wow\n")
+    return { "lobby_key" : USERNAME_TO_LOBBY_KEY[username] }
+    # return { "lobby_key" : "WOW" }
     
 
 @specific_lobby_router.get("/player_count")
@@ -136,31 +136,31 @@ def blackjack(prize: int , max_players: int):
         'session_key' : save_session(game, lobby_key)
     }   
 
-# @create_lobby_router.post("/blackjack")
-# def blackjack(prize: int , max_players: int):#, username = Depends(get_user_name)):
-#     lobby, lobby_key = create_lobby("BlackJack", prize, max_players)
+@create_lobby_router.post("/blackjack")
+def blackjack(prize: int , max_players: int):#, username = Depends(get_user_name)):
+    lobby, lobby_key = create_lobby("BlackJack", prize, max_players)
     
-#     bj = BlackJack(lobby, prize, max_players)
+    bj = BlackJack(lobby, prize, max_players)
     
-#     session_key = get_unused_id(SESSIONS)
+    session_key = get_unused_id(SESSIONS)
     
-#     SESSIONS[session_key] = bj
-#     LOBBY_TO_SESSION[lobby_key] = session_key
+    SESSIONS[session_key] = bj
+    LOBBY_TO_SESSION[lobby_key] = session_key
     
-#     return {
-#         'lobby_key' : lobby_key,
-#         'session_key' : session_key
-#     }
+    return {
+        'lobby_key' : lobby_key,
+        'session_key' : session_key
+    }
     
 
     
-# @specific_lobby_router.post("/start_game")
-# def start_game(lobby_key:str = Path()):
-#     # raise Exception("started game")
-#     try:
-#         SESSIONS[LOBBY_TO_SESSION[lobby_key]].start_game()
-#     except:
-#         return {}
+@specific_lobby_router.post("/start_game")
+def start_game(lobby_key:str = Path()):
+    # raise Exception("started game")
+    try:
+        SESSIONS[LOBBY_TO_SESSION[lobby_key]].start_game()
+    except:
+        return {}
     
 @specific_lobby_router.post("/set_ready_for_start_game")
 def set_ready(lobby_key:str = Path(), lobby: Lobby = Depends(get_lobby), username = Depends(get_user_name)):
