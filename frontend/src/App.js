@@ -22,7 +22,7 @@ import { BlackJackMainPage } from './pages/blackjack_main_page';
 import { Wheel2 } from './components/wheel2'
 import { PokerMainPage } from './pages/PokerMainPage';
 import { Toaster } from './components/ui/toaster';
-
+import PokerTable from './pages/Poker';
 
 
 const App = () => {
@@ -48,6 +48,7 @@ const App = () => {
 
               <Route path="games/:game_key?" element={<GamesLobbyPage />}>
                 <Route path="blackjack" element={<BJ_GPT />} />
+                <Route path="poker" element={<PokerTable />} />
                 <Route path="wheel_of_fortune" element={<Wheel_of_fortune />} />
               </Route>
             </Route>

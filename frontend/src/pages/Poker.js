@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
 import { call_api } from 'src/lib/utils';
-
+import { useParams } from 'react-router-dom';
+import { Toast } from '@radix-ui/react-toast';
+import { useToast } from 'src/components/ui/use-toast';
+import { ToastAction } from '@radix-ui/react-toast';
 
 const PokerTable = () => {
+    const toast = useToast()
+
     let { game_key } = useParams();
     const [playerCards, setPlayerCards] = useState(['', '']); // Initial player cards
     const [boardCards, setBoardCards] = useState(['', '', '', '', '']); // Initial Board cards
