@@ -11,3 +11,22 @@ export async function fetchLobbies(gameName, setLobbies) {
         console.error('Error fetching lobbies:', error);
     }
 };
+
+export async function create_lobby(gameName) {
+    console.log("creating lobby, wink wink.")
+    const response = await call_api(`/api/lobbies/create_lobby/${gameName}/?prize=10&max_players=4`, "post") // TODO generalize
+    const data = await response.json()
+    await join_lobby(data["lobby_key"])
+    return data["lobby_key"]
+}
+
+export async function join_lobby(key) {
+    try {
+        await call_api(`/api/lobbies/${key}/join_lobby/`, "post");
+        console.log(`Joined lobby with key: ${key}`);
+        return key
+    } catch (error) {
+        console.error(`Failed to join lobby with key ${key}:`, error);
+        throw "oof"
+    }
+}

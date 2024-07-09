@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { call_api } from 'src/lib/utils';
 import { useNavigate } from 'react-router-dom';
 
-const Lobby = (gameName) => {
+const Lobby = ({gameName}) => {
   let { lobby_key } = useParams();
 
   const [message, setMessage] = useState('');
@@ -56,6 +56,7 @@ const Lobby = (gameName) => {
 
   async function BackToMainPage() {
     call_api(`/api/lobbies/${lobby_key}/leave_lobby`, "post")
+    console.log(gameName)
     navigate(`/${gameName}_main`)
   }
 

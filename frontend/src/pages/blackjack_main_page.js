@@ -16,7 +16,7 @@ import { Label } from '@radix-ui/react-label';
 import { call_api } from 'src/lib/utils';
 import BJRulesButton from 'src/components/BJRulesButton';
 import LobbyCard from 'src/components/LobbyCard';
-import { fetchLobbies } from 'src/lib/main_page_utils';
+import { fetchLobbies, create_lobby, join_lobby } from 'src/lib/main_page_utils';
 
 
 export const BlackJackMainPage = () => {
@@ -24,20 +24,20 @@ export const BlackJackMainPage = () => {
   const [lobbies, setLobbies] = useState([]);
 
   useEffect(() => {
-    const fetchLobbies = async () => {
-        try {
-            const response = await call_api(`/api/lobbies/`, "get");
-            const data = await response.json();
-            setLobbies(data.lobbies);
-        } catch (error) {
-            console.error('Error fetching lobbies:', error);
-        }
-        console.log(lobbies)
-    };
+    // const fetchLobbies = async () => {
+    //     try {
+    //         const response = await call_api(`/api/lobbies/`, "get");
+    //         const data = await response.json();
+    //         setLobbies(data.lobbies);
+    //     } catch (error) {
+    //         console.error('Error fetching lobbies:', error);
+    //     }
+    //     console.log(lobbies)
+    // };
 
-    fetchLobbies();
+    fetchLobbies("blackjack", setLobbies);
 
-    const intervalId = setInterval(fetchLobbies, 5000); // Fetch every 5 seconds
+    const intervalId = setInterval(() => {fetchLobbies("blackjack", setLobbies)}, 5000); // Fetch every 5 seconds
 
     return () => clearInterval(intervalId); // Cleanup on unmount
 }, []);
@@ -56,27 +56,28 @@ export const BlackJackMainPage = () => {
     console.log("creating test lobby, wink wink.")
     const response = await call_api("/api/lobbies/create_lobby/blackjack/?prize=1000&max_players=2", "post") // TODO generalize
     const data = await response.json()
-    join_lobby(data["lobby_key"])
+    
+    navigate(`/blackjack_lobby/${await join_lobby(data["lobby_key"])}`) // TODO change to the real route
   }
 
-  async function create_lobby() {
-    console.log("creating lobby, wink wink.")
-    const response = await call_api("/api/lobbies/create_lobby/blackjack/?prize=10&max_players=4", "post") // TODO generalize
-    const data = await response.json()
-    join_lobby(data["lobby_key"])
-  }
+  // async function create_lobby() {
+  //   console.log("creating lobby, wink wink.")
+  //   const response = await call_api("/api/lobbies/create_lobby/blackjack/?prize=10&max_players=4", "post") // TODO generalize
+  //   const data = await response.json()
+  //   join_lobby(data["lobby_key"])
+  // }
 
-  async function join_lobby(key) {
-    try {
-      await call_api(`/api/lobbies/${key}/join_lobby/`, "post");
-      console.log(`Joined lobby with key: ${key}`);
-      navigate(`/lobby/${key}`) // TODO change to the real route
+  // async function join_lobby(key) {
+  //   try {
+  //     await call_api(`/api/lobbies/${key}/join_lobby/`, "post");
+  //     console.log(`Joined lobby with key: ${key}`);
+  //     navigate(`/lobby/${key}`) // TODO change to the real route
 
-    } catch (error) {
-      console.error(`Failed to join lobby with key ${key}:`, error);
-      throw "oof"
-    }
-  }
+  //   } catch (error) {
+  //     console.error(`Failed to join lobby with key ${key}:`, error);
+  //     throw "oof"
+  //   }
+  // }
 
 
   return (
@@ -92,7 +93,7 @@ export const BlackJackMainPage = () => {
                 game_name={lobby.game_name}
                 max_players={lobby.max_players}
                 prize={lobby.prize}
-                onJoin={() => {join_lobby(lobby.key)}}
+                onJoin={async () => {navigate(`/blackjack_lobby/${await join_lobby(lobby.key)}`)}}
               />
           ))}
           <div />
@@ -106,7 +107,7 @@ export const BlackJackMainPage = () => {
           </div>
           <Button
             type="button"
-            onClick={create_lobby}
+            onClick={async () => {navigate(`/blackjack_lobby/${await create_lobby("blackjack")}`)}}
             className="w-44 mt-6 bg-black text-yellow-300 rounded-full hover:text-yellow-200"
           >
             create_lobby
