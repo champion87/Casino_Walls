@@ -17,11 +17,7 @@ class Lobby:#(BaseModel):
         self.prize = prize
         self.ready = {}
         self.old_users = []
-# # TODO validate that the returning player once was in the lobby
-#     def re_enter(self, user: str):
-#         if user not in self.usernames:
-#             self.usernames.append(user)
-
+        
     def kick_all_players(self):
         self.usernames = []
 

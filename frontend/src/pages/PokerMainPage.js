@@ -18,6 +18,8 @@ import BJRulesButton from 'src/components/BJRulesButton';
 import LobbyCard from 'src/components/LobbyCard';
 import { fetchLobbies, create_lobby, join_lobby } from 'src/lib/main_page_utils';
 import { LobbyList } from 'src/components/LobbyList';
+import PokerRulesButton from 'src/components/PokerRules';
+
 
 export const PokerMainPage = () => {
   const navigate = useNavigate();
@@ -59,7 +61,13 @@ export const PokerMainPage = () => {
           >
             create lobby
           </Button>
-
+          <Button
+            type="button"
+            onClick={() => {navigate("/games")}}
+            className="w-44 mt-6 bg-black text-yellow-300 rounded-full hover:text-yellow-200"
+          >
+            back to games screen
+          </Button>
         </div>
 
         <div className="bg-[#961212] flex items-center justify-center flex-col rounded-l-3xl">
@@ -74,13 +82,13 @@ export const PokerMainPage = () => {
             single player -
             not yet supported
           </Button>
-          
+
 
         </div>
 
 
       </div>
-      <BJRulesButton />
+      <PokerRulesButton />
     </div>
   )
 }
