@@ -40,8 +40,8 @@ def Poker_restart_game(game:Poker = Depends(get_session)):
     except:
         return {"was_restarted" : False}
     
-@router.post('/get_player_amount')
+@router.post('/get_player_count')
 def BJ_draw(game:Poker = Depends(get_session), user_name: str = Depends(get_user_name)):
-    return {"num" : game.get_player_amount()} #TODO try except
+    return {"num" : game.get_player_count()} #TODO try except
 
         

@@ -158,24 +158,69 @@ class Hand:
         return [card.get_Poker_string() for card in self.cards]
 
 
-
-
-class BlackJack(Game):
-    def __init__(self, lobby: Lobby, prize, max_players):
+class CardGame(Game):
+    def __init__(self, lobby: Lobby, max_players):
         self.deck = None
         self.usernames: List = None
         self.hands : Dict[str:Hand]  = {} # username : Hand
-        self.dealer_hand : Hand = None
-        self.is_out : Dict[str:bool]  = {} # username : Hand
         self.status = GameStatus.NO_GAME
         self.lobby = lobby
-        self.prize = prize
-    
+        
     def is_started(self):
         return self.status == GameStatus.ONGOING
     
+    def get_player_count(self):
+        return len(self.usernames)
+
+    def get_hand(self, username: str)-> Hand:
+        return self.hands[username]  
+    
     def end_game(self):
         self.status = GameStatus.NO_GAME
+        
+    def get_hands_for_show(self, username: str):
+        res = {}
+        
+        if self.status == GameStatus.NO_GAME: # TODO make sure that this one isn't nonsense
+            for (name,hand) in self.hands.items():
+                if name != username:
+                    res[name] = hand.to_list_of_str()
+        else:
+            for (name,hand) in self.hands.items():
+                if name != username:
+                    res[name] = len(hand.to_list_of_str()) * ["xxxx\n"*3]
+                
+        return 
+    
+    
+    def start_game(self):
+        if not self.status == GameStatus.NO_GAME:
+            raise Exception("Game already started!")
+        
+        self.lobby.lock()
+        self.status = GameStatus.ONGOING
+
+        self.deck = Deck()
+        for username in self.lobby.get_players():
+            self.hands[username] = Hand(self.deck)
+            
+        self.usernames = self.lobby.get_players().copy()
+            
+        self.lobby.kick_all_players()  
+        
+        
+        
+        
+
+class BlackJack(CardGame):
+    def __init__(self, lobby: Lobby, prize, max_players):
+        super().__init__(lobby, max_players)
+        self.dealer_hand : Hand = None
+        self.is_out : Dict[str:bool]  = {} 
+        self.prize = prize
+    
+    def end_game(self):
+        super().end_game()
         dealer_score = self.dealer_hand.get_BJ_score()
         
         for username in self.usernames:
@@ -190,65 +235,28 @@ class BlackJack(Game):
             elif score == dealer_score:
                 COINS[username] += self.prize # just the payback
                 
-        LOG(COINS)   
-    #     max_score = 0
         
-    #     for hand in self.hands.values():
-    #         max_score = max(max_score, hand.get_BJ_score())
-            
-    #     winners = [username for username in self.lobby.get_players() if self.hands[username].get_BJ_score() == max_score]
-        
-    #     # LOG("done BJ.end_game()")
-    #     return winners, self.prize
-        
-    def get_hands_for_show(self, username: str):
-        res = {}
-        
-        if self.is_game_over():
-            for (name,hand) in self.hands.items():
-                if name != username:
-                    res[name] = hand.to_list_of_str()
-        else:
-            for (name,hand) in self.hands.items():
-                if name != username:
-                    res[name] = len(hand.to_list_of_str()) * ["xxxx\n"*3]
-                
-        return res
-        
-        
+   
     def start_game(self):
-        '''return True if some player doesn't have enough money, False upon success.
-        Excepts if the game is already running'''
-        
-        if not self.status == GameStatus.NO_GAME:
-            raise Exception("Game already started!")
+        '''Excepts if some player doesn't have enough money or if the game is already running'''
         
         for username in self.lobby.get_players():
             if COINS[username] < self.prize:
-                return True # failure
-        for username in self.lobby.get_players():
+                return True # failure #TODO raise exception
+        
+        super().start_game()  
+          
+        for username in self.usernames: #TODO self vs super()? i think that 'self' will do...
             COINS[username] -= self.prize
-            
-        self.lobby.lock()
-        self.status = GameStatus.ONGOING
-
-        self.deck = Deck()
-        for username in self.lobby.get_players():
-            self.hands[username] = Hand(self.deck)
             self.is_out[username] = False
             self.hands[username].draw_to_hand().draw_to_hand() # 2 initial cards in BJ
-            
-        self.usernames = self.lobby.get_players().copy()
             
         self.dealer_hand = Hand(self.deck)
         self.dealer_hand.draw_to_hand().draw_to_hand()
         
         while self.dealer_hand.get_BJ_score() < 17:
             self.dealer_hand.draw_to_hand()
-            
-        self.lobby.kick_all_players()    
-            
-        return False # success
+           
             
     def abort(self, username: str):
         self.hands.pop(username)
@@ -269,8 +277,6 @@ class BlackJack(Game):
                 return False
         return True    
     
-    def get_hand(self, username: str)-> Hand:
-        return self.hands[username]
     
     def get_dealer_hand(self) -> Hand:
         return self.dealer_hand
@@ -301,40 +307,21 @@ class BlackJack(Game):
             LOG("game over fold")
             self.end_game()
 
-        
-    def get_player_json(self, username:str):
-        return {
-            "hand" : self.hands[username].to_list_of_str(),
-            "sum" : self.hands[username].get_BJ_score(),
-            "finish_state" : self.hands[username].is_overdraft()
-            }
-    
-    def to_json(self):
-        return {
-            "hands" : [hand.to_list_of_str() for hand in self.hands],
-            "sums" : [hand.get_BJ_score() for hand in self.hands],
-            "finish_statuses" : [hand.is_overdraft for hand in self.hands],
-            "end_game" : self.is_overdraft()
-            }
 
-
-
-class Poker(Game):
+class Poker(CardGame):
     def __init__(self, lobby: Lobby, max_players):
-        self.deck = None
-        self.hands : Dict[str:Hand]  = {} # username : Hand
+        super().__init__(lobby, max_players)
         self.is_out : Dict[str:bool]  = {} # username : did he fold
-        self.status = GameStatus.NO_GAME
-        self.lobby = lobby
-        self.pot = 0
-        self.current_bet = 0
-        self.board = None
-        self.round_num = 0
-        self.bets : Dict[str:int] = {}
         self.standing : Dict[str:bool] = {} # username : did he stand
+        self.pot: int = 0
+        self.current_bet: int = 0
+        self.board: Hand = None
+        self.round_num: int = 0
+        self.bets : Dict[str:int] = {}
     
     def end_game(self):
-        self.status = GameStatus.NO_GAME
+        super().end_game()
+        
         best_score = 0
         winner_list = []
 
@@ -356,28 +343,16 @@ class Poker(Game):
             COINS[winner] += self.pot // len(winner_list)
         
     def start_game(self):
-        '''return True if some player doesn't have enough money, False upon success.
-        Excepts if the game is already running'''
+        '''Excepts if the game is already running'''
+        super().start_game()
         
-        if not self.status == GameStatus.NO_GAME:
-            raise Exception("Game already started!")
-        
-        self.status = GameStatus.ONGOING
-
-        self.deck = Deck()
         self.board = Hand(self.deck)
 
-        for username in self.lobby.get_players():
-            self.hands[username] = Hand(self.deck)
+        for username in self.usernames(): #TODO self vs super
             self.is_out[username] = False
             self.standing[username] = False
             self.hands[username].draw_to_hand().draw_to_hand() # 2 initial cards in Poker
-            
-        return False # success
-    
-    def check_game_over(self):
-        if self.is_game_over():
-            self.status = GameStatus.NO_GAME
+
     
     # @return True iff all players are standing or out  
     def is_round_over(self):
@@ -387,9 +362,6 @@ class Poker(Game):
                 return False
         
         return True
-    
-    def get_hand(self, username: str)-> Hand:
-        return self.hands[username]
     
     def get_board(self)-> Hand:
         return self.board
@@ -430,19 +402,5 @@ class Poker(Game):
         else:
             self.board.draw_to_hand()
             self.round_num += 1
-
-        
-    def get_player_json(self, username:str):
-        return {
-            "hand" : self.hands[username].to_list_of_str(),
-            "score" : self.hands[username].get_Poker_score(),
-            }
     
-    def to_json(self):
-        return {
-            "hands" : [hand.to_list_of_str() for hand in self.hands],
-            "scores" : [hand.get_Poker_score() for hand in self.hands],
-            }
     
-    def get_player_amount(self):
-        return len(self.lobby.get_players())

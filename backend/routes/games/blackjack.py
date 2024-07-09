@@ -73,12 +73,3 @@ def BJ_restart_game(game:BlackJack = Depends(get_session)):
     except:
         return {"was_restarted" : False}
         
-        
-    
-
-
-# @router.get('/get_state')
-# def get_game_state(game:BlackJack = Depends(get_game), user_name: str = Depends(get_user_name)):
-#     LOG("get_state")
-#     LOG(game.get_player_json())
-#     return game.get_player_json()

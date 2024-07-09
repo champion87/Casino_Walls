@@ -124,13 +124,14 @@ function BJ_GPT() {
       const response = await call_api(`/api/games/${game_key}/blackjack/get_other_hands`, "get");
       const data = await response.json();
       setHands(data.hands);
+      console.log("hands from the server")
+
+      console.log(data.hands)
 
       const response2 = await call_api(`/api/games/${game_key}/blackjack/is_game_over`, "get");
       const data2 = await response2.json();
 
-      console.log("data2.is_game_over")
-
-      console.log(data2.is_game_over)
+      
 
       if (data2.is_game_over) {
         console.log("I set")
@@ -216,7 +217,7 @@ function BJ_GPT() {
       <div id="message" className="message">{message}</div>
 
       <div>
-        {Object.entries(hands)
+      {console.log("hands")}{console.log(hands)}{Object.entries(hands)
           .map(([key, hand]) => (
             <>
               <h2>{key}'s Hand</h2>
