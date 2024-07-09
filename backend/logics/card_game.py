@@ -330,8 +330,8 @@ class Poker(Game):
         self.current_bet = 0
         self.board = None
         self.round_num = 0
-        self.bets = Dict[str:int] = {}
-        self.standing = Dict[str:bool] = {} # username : did he stand
+        self.bets : Dict[str:int] = {}
+        self.standing : Dict[str:bool] = {} # username : did he stand
     
     def end_game(self):
         self.status = GameStatus.NO_GAME

@@ -25,7 +25,7 @@ const LobbyCard = ({ lobby_key, game_name, max_players, prize, onJoin }) => {
 
     return (
         <div className="lobby-card bg-white shadow-md rounded-lg p-4 m-4 w-64">
-            <h2 className="text-xl text-gray-700 font-bold mb-0">{game_name} - {prize}$</h2>
+            <h2 className="text-xl text-gray-700 font-bold mb-0">{`${game_name}` + (prize>0 ? `- ${prize}$` : '')}</h2>
             <p className="text-gray-300 mb-2">
                 {lobby_key}
             </p>

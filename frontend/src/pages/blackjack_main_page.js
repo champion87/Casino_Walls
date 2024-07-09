@@ -42,11 +42,7 @@ export const BlackJackMainPage = () => {
   }
 
   async function test() {
-    console.log("creating test lobby, wink wink.")
-    const response = await call_api("/api/lobbies/create_lobby/blackjack/?prize=1000&max_players=2", "post") // TODO generalize
-    const data = await response.json()
-    
-    navigate(`/blackjack_lobby/${await join_lobby(data["lobby_key"])}`) // TODO change to the real route
+  
   }
 
   return (

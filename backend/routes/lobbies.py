@@ -97,25 +97,54 @@ def create_lobby(game_name:str, prize:int, max_players:int = 9999):
     
     return lobby, key
 
+  
+def save_session(game: Game, lobby_key: str):
+    session_key = get_unused_id(SESSIONS)
+    
+    SESSIONS[session_key] = game
+    LOBBY_TO_SESSION[lobby_key] = session_key
+    
 
 
+
+from logics.card_game import Poker
+@create_lobby_router.post("/poker")
+def poker(max_players: int):#, username = Depends(get_user_name)):
+    lobby, lobby_key = create_lobby("Poker", 0, max_players) # 0 is default value for prize since poker doesnt care about prize
+    game = Poker(lobby, max_players)
+    return {
+        'lobby_key' : lobby_key,
+        'session_key' : save_session(game, lobby_key)
+    }   
+     
 
 from logics.card_game import BlackJack
 @create_lobby_router.post("/blackjack")
-def blackjack(prize: int , max_players: int):#, username = Depends(get_user_name)):
+def blackjack(prize: int , max_players: int):
     lobby, lobby_key = create_lobby("BlackJack", prize, max_players)
-    
-    bj = BlackJack(lobby, prize, max_players)
-    
-    session_key = get_unused_id(SESSIONS)
-    
-    SESSIONS[session_key] = bj
-    LOBBY_TO_SESSION[lobby_key] = session_key
-    
+    game = BlackJack(lobby, prize, max_players)
     return {
         'lobby_key' : lobby_key,
-        'session_key' : session_key
-    }
+        'session_key' : save_session(game, lobby_key)
+    }   
+
+# @create_lobby_router.post("/blackjack")
+# def blackjack(prize: int , max_players: int):#, username = Depends(get_user_name)):
+#     lobby, lobby_key = create_lobby("BlackJack", prize, max_players)
+    
+#     bj = BlackJack(lobby, prize, max_players)
+    
+#     session_key = get_unused_id(SESSIONS)
+    
+#     SESSIONS[session_key] = bj
+#     LOBBY_TO_SESSION[lobby_key] = session_key
+    
+#     return {
+#         'lobby_key' : lobby_key,
+#         'session_key' : session_key
+#     }
+    
+
     
 # @specific_lobby_router.post("/start_game")
 # def start_game(lobby_key:str = Path()):
