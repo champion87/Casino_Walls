@@ -46,7 +46,7 @@ export const PokerMainPage = () => {
     await call_api(`/api/lobbies/${data["lobby_key"]}/join_lobby/`, "post");
     await call_api(`/api/lobbies/${data["lobby_key"]}/start_game/`, "post");
     console.log("started game$$$$$$$$$$$$$$$$$")
-    navigate(`/bjGPT/${data["session_key"]}`) // TODO change to the real route
+    navigate(`/games/${data["session_key"]}/blackjack`) // TODO change to the real route
 
   }
 

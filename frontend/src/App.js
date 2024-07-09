@@ -28,25 +28,25 @@ const App = () => {
 
   return (
     <div className='App'>
-      <Toaster/>
+      <Toaster />
       <UserContextProvider>
         <Router>
           <Routes>
             <Route path="/login" element={<LoginPage />} />
 
             {/* TESTING */}
-            <Route path="/lobby/:lobby_key" element={<Lobby />} />
-            <Route path="/bjGPT/:game_key" element={<BJ_GPT />} />
-            <Route path="/blackjack" element={<BlackJackPage />} />
+            {/* <Route path="/lobby/:lobby_key" element={<Lobby />} /> */}
             {/* TESTING */}
 
             <Route element={<PrivateRoute />}>
               <Route exact path="/" element={<HomePage />} />
               <Route path="/blackjack_main" element={<BlackJackMainPage />} />
               <Route path="/poker_main" element={<PokerMainPage />} />
+              <Route path="/poker_lobby/:lobby_key" element={<Lobby gameName="poker"/>} />
+              <Route path="/blackjack_lobby/:lobby_key" element={<Lobby gameName="blackjack" />} />
+
               <Route path="games/:game_key?" element={<GamesLobbyPage />}>
-                {/* <Route path="blackjack" element={<BlackJackPage />} /> */}
-                <Route path="bjGPT" element={<BJ_GPT/>} />
+                <Route path="blackjack" element={<BJ_GPT />} />
                 <Route path="wheel_of_fortune" element={<Wheel_of_fortune />} />
               </Route>
             </Route>

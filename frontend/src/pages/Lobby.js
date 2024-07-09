@@ -3,11 +3,10 @@ import React, { useState, useEffect } from 'react';
 import { call_api } from 'src/lib/utils';
 import { useNavigate } from 'react-router-dom';
 
-const Lobby = () => {
+const Lobby = (gameName) => {
   let { lobby_key } = useParams();
 
   const [message, setMessage] = useState('');
-  // const [coinAmount, setCoinAmount] = useState(0);
   const [coinAmount, setCoinAmount] = useState(0);
   const [players, setPlayers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -30,7 +29,7 @@ const Lobby = () => {
         const data = await response.json();
 
         if (data.is_started) {
-          navigate(`/bjGPT/${data["session_key"]}`)
+          navigate(`/games/${data["session_key"]}/${gameName}`)
         }
         setLoading(false);
       } catch (error) {
@@ -57,7 +56,7 @@ const Lobby = () => {
 
   async function BackToMainPage() {
     call_api(`/api/lobbies/${lobby_key}/leave_lobby`, "post")
-    navigate("/blackjack_main")
+    navigate(`/${gameName}_main`)
   }
 
   // const startGame = () => {

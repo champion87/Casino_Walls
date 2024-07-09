@@ -7,7 +7,7 @@ class Lobby:#(BaseModel):
     # usernames: List[str] = Field(default_factory=list)
 
     # TODO edge cases: max players is negative or zero
-    def __init__(self, game_name:str, max_players:int, key:str, prize:int):
+    def __init__(self, game_name:str, max_players:int, key:str, prize="default_prize_valueXXX"):
         self.usernames = []
         self.is_locked = False
         self.is_full = False

@@ -8,7 +8,8 @@ COINS = {}
 ############
 
 # USERNAME_TO_LOBBY = { "Lidor" : Lobby() }
-LOBBIES: Dict[str, Lobby] = { }
+LOBBIES: Dict[str, Lobby] = { } # BJ LOBBIES
+POKER_LOBBIES: Dict[str, Lobby] = { }
 SESSIONS : Dict[str , Game] = {"id" : Game()}
 
 LOBBY_TO_SESSION : Dict[str, str] = {}

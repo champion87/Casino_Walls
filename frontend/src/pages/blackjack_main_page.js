@@ -16,6 +16,8 @@ import { Label } from '@radix-ui/react-label';
 import { call_api } from 'src/lib/utils';
 import BJRulesButton from 'src/components/BJRulesButton';
 import LobbyCard from 'src/components/LobbyCard';
+import { fetchLobbies } from 'src/lib/main_page_utils';
+
 
 export const BlackJackMainPage = () => {
   const navigate = useNavigate();
@@ -46,7 +48,7 @@ export const BlackJackMainPage = () => {
     await call_api(`/api/lobbies/${data["lobby_key"]}/join_lobby/`, "post");
     await call_api(`/api/lobbies/${data["lobby_key"]}/start_game/`, "post");
     console.log("started game$$$$$$$$$$$$$$$$$")
-    navigate(`/bjGPT/${data["session_key"]}`) // TODO change to the real route
+    navigate(`/games/${data["session_key"]}/blackjack`) // TODO change to the real route
 
   }
 
