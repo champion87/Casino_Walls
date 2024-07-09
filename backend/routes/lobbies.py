@@ -31,7 +31,6 @@ def set_session(key, game):
 def get_lobby(lobby_key: str = Path()):
     if lobby_key not in LOBBIES.keys():
         return None
-        LOBBIES[lobby_key] = Lobby()
     return LOBBIES[lobby_key]
 
 def set_lobby(key, lobby):
@@ -54,6 +53,12 @@ def get_unused_id(data):
 def get_lobbies():
     LOG({'lobbies' : [lobby.export() for lobby in LOBBIES.values()]})
     return {'lobbies' : [lobby.export() for lobby in LOBBIES.values() if lobby.is_available()]}
+
+@router.get("/{game_name}")
+def get_lobbies(game_name:str = Path()):
+    LOG({'lobbies' : [lobby.export() for lobby in LOBBIES.values()]})
+    return {'lobbies' : [lobby.export() for lobby in LOBBIES.values() if lobby.is_available() and lobby.game_name == game_name]}
+
 
 @router.get("/my_lobby")
 def get_my_lobby(username = Depends(get_user_name)):
@@ -110,7 +115,7 @@ def save_session(game: Game, lobby_key: str):
 from logics.poker_logic import Poker
 @create_lobby_router.post("/poker")
 def poker(max_players: int):#, username = Depends(get_user_name)):
-    lobby, lobby_key = create_lobby("Poker", 0, max_players) # 0 is default value for prize since poker doesnt care about prize
+    lobby, lobby_key = create_lobby("poker", 0, max_players) # 0 is default value for prize since poker doesnt care about prize
     game = Poker(lobby, max_players)
     return {
         'lobby_key' : lobby_key,
@@ -121,7 +126,7 @@ def poker(max_players: int):#, username = Depends(get_user_name)):
 from logics.blackjack_logic import BlackJack
 @create_lobby_router.post("/blackjack")
 def blackjack(prize: int , max_players: int):
-    lobby, lobby_key = create_lobby("BlackJack", prize, max_players)
+    lobby, lobby_key = create_lobby("blackjack", prize, max_players)
     game = BlackJack(lobby, prize, max_players)
     return {
         'lobby_key' : lobby_key,
