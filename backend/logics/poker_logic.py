@@ -12,6 +12,7 @@ class Poker(CardGame):
         self.standing : Dict[str:bool] = {} # username : did he stand
         self.pot: int = 0
         self.current_bet: int = 0
+        self.current_player = 0
         self.board: Hand = None
         self.round_num: int = 0
         self.bets : Dict[str:int] = {}
@@ -44,26 +45,43 @@ class Poker(CardGame):
         super().start_game()
         
         self.board = Hand(self.deck)
+        self.board.draw_to_hand().draw_to_hand()
 
-        for username in self.usernames(): #TODO self vs super
+        for username in self.usernames:
             self.is_out[username] = False
             self.standing[username] = False
             self.hands[username].draw_to_hand().draw_to_hand() # 2 initial cards in Poker
 
     
-    # @return True iff all players are standing or out  
+    # @return True iff all players except one are standing or out  
     def is_round_over(self):
+        seen_one_not_standing = False
         
         for username in self.lobby.get_players():
             if not (self.is_out[username] or self.standing[username]):
-                return False
+                if seen_one_not_standing:
+                    return False
+                else:
+                    seen_one_not_standing = True
         
         return True
     
     def get_board(self)-> Hand:
         return self.board
     
-    def stand(self, username: str):
+    def get_pot(self)-> int:
+        return self.pot
+
+    def get_current_bet(self)-> int:
+        return self.current_bet
+    
+    def get_current_player(self)-> int:
+        return self.current_player
+    
+    def stand(self, username: str) -> bool:
+        if username != self.usernames[self.current_player]:
+            return False
+        
         if (self.bets[username] < self.current_bet):
             return False
         
@@ -71,25 +89,47 @@ class Poker(CardGame):
 
         if self.is_round_over():
             self.end_round()
+        else:
+            self.next_player()
+        
+        return True
 
-    def call(self, username: str):
+    def call(self, username: str) -> bool:
+        if username != self.usernames[self.current_player]:
+            return False
+        
         COINS[username] -= self.current_bet - self.bets[username]
+        self.next_player()
 
-    def my_raise(self, username: str, raise_amount: int = 10): # raise_amount is amount of money added to the current bet of the table
-        COINS[username] -= self.current_bet - self.bets[username] + raise_amount
+        return True
+
+    def my_raise(self, username: str, raise_amount: int = 10) -> int: # raise_amount is amount of money added to the current bet of the table
+        if username != self.usernames[self.current_player]:
+            return 0
+        
+        coins_to_deduce = min(self.current_bet - self.bets[username] + raise_amount, COINS[username])
+        COINS[username] -= coins_to_deduce
 
         for player in self.lobby.get_players():
             self.standing[player] = False
 
+        self.next_player()
+        return coins_to_deduce
+
     
-    def fold(self, username:str):
-        LOG(COINS)   
+    def fold(self, username:str) -> bool:
+        if username != self.usernames[self.current_player]:
+            return False   
         if self.is_out[username]:
-            raise Exception(f"Player <{username}> is out! Can't fold!")
+            return False
         self.is_out[username] = True
         
         if self.is_round_over():
             self.end_round()
+        else:
+            self.next_player()
+
+        return True
 
     def end_round(self):
         for username in self.lobby.get_players():
@@ -99,3 +139,11 @@ class Poker(CardGame):
         else:
             self.board.draw_to_hand()
             self.round_num += 1
+
+    def next_player(self):
+        self.current_player = self.current_player % self.get_player_count()
+
+        while self.is_out[self.current_player] or self.standing[self.current_player]:
+            self.current_player = self.current_player % self.get_player_count()
+        
+        return 

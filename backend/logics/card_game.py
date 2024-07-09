@@ -172,6 +172,9 @@ class CardGame(Game):
     
     def end_game(self):
         self.status = GameStatus.NO_GAME
+
+    def get_player_num(self, username : str):
+        return [i for i,x in enumerate(self.usernames) if x == username][0]
         
     def get_hands_for_show(self, username: str):
         res = {}

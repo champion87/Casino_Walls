@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { call_api } from 'src/lib/utils';
 import { useParams } from 'react-router-dom';
-import { Toast } from '@radix-ui/react-toast';
 import { useToast } from 'src/components/ui/use-toast';
 import { ToastAction } from '@radix-ui/react-toast';
 
@@ -18,16 +17,24 @@ const PokerTable = () => {
     const [myBet, setMyBet] = useState(0); // Amount this player betted in current round
 
 
-    const dealCards = () => {
+    const getBoardState = async () => {
 
-        const playerCards = ['Ac', 'As']; //TODO
-        const cardsOnBoard = ['2s', '2c', '2h', '2d', '3s']; //TODO
+        const playerCards = await call_api(`/api/games/${game_key}/poker/get_hand`, "GET").then(res => res.json())
+        const cardsOnBoard = await call_api(`/api/games/${game_key}/poker/get_board`, "GET").then(res => res.json())
+        const potFromBackend = await call_api(`/api/games/${game_key}/poker/get_pot`, "GET").then(res => res.json())
+        const currentBet = await call_api(`/api/games/${game_key}/poker/get_current_bet`, "GET").then(res => res.json())
 
-        setPlayerCards(playerCards);
-        setBoardCards(cardsOnBoard);
+        setPlayerCards(playerCards.hand);
+        setBoardCards(cardsOnBoard.board);
+        setPot(potFromBackend.pot);
+        setPlayerBet(currentBet.bet);
         setGamePhase('flop');
         setCurrentPlayer(0); // Reset to player 0 after dealing
     };
+
+    useEffect(() => {
+        getBoardState()
+      }, []);
 
     const check = () => {
         if (myBet < playerBet) {
@@ -45,7 +52,7 @@ const PokerTable = () => {
         nextPlayer();
     };
 
-    async function call(){
+    const call = async () => {
         await call_api(`api/games/${game_key}/poker/call`)
         console.log(`Player ${currentPlayer} calls.`);
         setPot(pot + playerBet - myBet);
@@ -53,7 +60,7 @@ const PokerTable = () => {
         nextPlayer();
     };
 
-    async function raise(raiseAmount) {
+    const raise = async (raiseAmount) => {
         await call_api(`api/games/${game_key}/poker/raise`)
         // In a real game, this might involve increasing the current bet amount and deducting chips from the player
         const newBet = playerBet + raiseAmount; // Example: Increase bet by 10 for demonstration
@@ -111,9 +118,6 @@ const PokerTable = () => {
             </div>
 
             <div className="control-buttons">
-                {gamePhase === 'deal' && (
-                    <button onClick={dealCards}>Deal Cards</button>
-                )}
                 {/* Add buttons for other game phases (turn, river, showdown) */}
             </div>
         </div>
