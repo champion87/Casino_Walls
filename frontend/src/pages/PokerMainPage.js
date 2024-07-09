@@ -17,7 +17,7 @@ import { call_api } from 'src/lib/utils';
 import BJRulesButton from 'src/components/BJRulesButton';
 import LobbyCard from 'src/components/LobbyCard';
 
-export const BlackJackMainPage = () => {
+export const PokerMainPage = () => {
   const navigate = useNavigate();
   const [lobbies, setLobbies] = useState([]);
 
