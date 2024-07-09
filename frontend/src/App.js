@@ -19,7 +19,7 @@ import BJ_GPT from './pages/bjgpt';
 import Lobby from './pages/Lobby.js';
 import { Wheel_of_fortune } from './pages/wheel_of_fortune';
 import { BlackJackMainPage } from './pages/blackjack_main_page';
-
+import { Wheel2 } from './components/wheel2'
 
 
 const App = () => {
@@ -42,7 +42,7 @@ const App = () => {
               <Route path="/blackjack_main" element={<BlackJackMainPage />} />
               <Route path="games/:game_key?" element={<GamesLobbyPage />}>
                 <Route path="blackjack" element={<BlackJackPage />} />
-                <Route path="bjGPT" element={<BJ_GPT/>} />
+                <Route path="bjGPT" element={<BJ_GPT />} />
                 <Route path="wheel_of_fortune" element={<Wheel_of_fortune />} />
               </Route>
             </Route>

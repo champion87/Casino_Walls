@@ -9,30 +9,32 @@ import React, {
 import { Button } from '../components/ui/button';
 import { Slider } from "../components/ui/slider"
 import { call_api } from "../lib/utils"
+import Wheel2 from 'src/components/wheel2';
 
 
 
 export const Wheel_of_fortune = () => {
+    const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
     const [betAmount, setBetAmount] = useState();
     const [betPercentage, setBetPercentage] = useState();
 
     var coin_amount;
     var coins;
-    var bet, response, json, prize, new_bet;
+    var bet, response, json, prize, new_bet, mult;
 
 
 
 
 
     async function slider_handle_change(event) {
-        console.log(event)
+        //console.log(event)
         var gamble_input_box = document.getElementById("gamble_input_box")
         let slider = document.getElementById("slider");
         //console.log(slider.value)
         //gamble_input_box.value = slider.value;
-        var aaa = await event[0];
-        console.log(aaa)
-        setBetPercentage(aaa)
+        var ev = await event[0];
+        //console.log(ev)
+        setBetPercentage(ev)
         let coins_bet = await bet_amount();
         setBetAmount(coins_bet)
         gamble_input_box.value = coins_bet
@@ -105,7 +107,8 @@ export const Wheel_of_fortune = () => {
     }
 
 
-    async function spin_wheel_slider() {
+
+    async function spin_logic() {
         var coins_count = await get_coins();
         let gamble_input_box = document.getElementById("gamble_input_box")
 
@@ -114,15 +117,44 @@ export const Wheel_of_fortune = () => {
             display('bet_money_text', '');
             display('prize_text', '');
             display('message', "You can't bet " + String(bet) + ' coins');
-            return;
+            return [-1, 0, 0, 0];
+        }
+
+        if (bet == 0) {
+            display('bet_money_text', '');
+            display('prize_text', '');
+            display('message', "You didn't bet coins");
+            return [-1, 0, 0, 0];
         }
 
         response = await call_api("api/games/wheel_of_fortune/spin_wheel_slider/" + bet, "get");
         json = await response.json();
 
-        prize = json.prize
-        coins = json.coins
-        bet = json.bet
+        prize = json.prize;
+        coins = json.coins;
+        bet = json.bet;
+        mult = json.mult;
+        //await sleep(5000);
+        //display_results(bet, prize, coins);
+        //let prize_display_box = document.getElementById("prize_display");
+        //prize_display_box.style.display = "none";
+        display('bet_money_text', '');
+        display('prize_text', '');
+        display('message', '');
+
+        return [mult, bet, prize, coins];
+    }
+
+
+    async function display_results(bet, prize, coins) {
+        //let prize_display_box = document.getElementById("prize_display");
+        //prize_display_box.style.display = "inline";
+        let gamble = document.getElementById("gamble");
+        let gamble_input_box = document.getElementById("gamble_input_box")
+        new_bet = await bet_amount();
+        gamble.innerHTML = "Gamble " + new_bet + " coins (" + Math.floor(new_bet / coins * 100) + "%)";
+        gamble_input_box.value = String(new_bet);
+
         display('bet_money_text', 'You bet ' + bet + " coins");
         display('prize_text', 'Your prize is ' + prize + " coins");
         if (prize > bet) {
@@ -146,15 +178,7 @@ export const Wheel_of_fortune = () => {
             display('prize_text', 'Your prize is 1 coin');
         }
 
-
         display('coin_amount', 'coin amount: ' + coins + ' coins');
-        let slider = document.getElementById("slider");
-        let gamble = document.getElementById("gamble");
-
-
-        new_bet = await bet_amount();
-        gamble.innerHTML = "Gamble " + new_bet + " coins (" + Math.floor(new_bet / coins * 100) + "%)";
-        gamble_input_box.value = String(new_bet);
     }
 
 
@@ -192,7 +216,7 @@ export const Wheel_of_fortune = () => {
 
     return (
 
-        <div className='bg-wheel bg-cover w-screen h-screen p-10 text-yellow-400'>
+        <div className='bg-wheel bg-cover overflow-y-scroll w-screen h-screen p-10 text-yellow-400'>
 
             <div className='bg-black w-fit inline-block p-5 justify-center rounded-xl'>
                 <h1 className='font-bold'>Welcome to the wheel of fortune</h1>
@@ -204,9 +228,10 @@ export const Wheel_of_fortune = () => {
                     id="close">rules</Button><br />
                 <p id="text">Spinning the wheel will <br />
                     cost you some number of coins.<br />
-                    You will recieve back a random amount<br />
-                    of coins between half and double <br />
-                    the amount of your bet. Good luck!</p><br /><br />
+                    You will recieve back a random<br />
+                    multiple of your bet amount according<br />
+                    to the prizes written on the wheel. <br />
+                    Good luck!</p><br /><br />
                 <p id="coin_amount">coin amount:</p>
 
                 <div className='p-5'>
@@ -216,12 +241,17 @@ export const Wheel_of_fortune = () => {
                 <p>Gamble <input type="text" min="0" step="1" id="gamble_input_box" size="1" onChange={gamble_box_handle_change} className='text-black' /> coins</p>
 
                 <p id="gamble">Gamble 0 coins</p><br />
-                <Button type="button" id="spinButton" className=' w-full mt-6 bg-white text-black rounded-full hover:text-yellow-300' onClick={spin_wheel_slider}>spin the wheel!</Button>
-                <div className='bg-green-600 m-5 p-2 rounded-md '>
+
+                <Wheel2 id="wheel2" onSpin={spin_logic} prizeDisplay={display_results}></Wheel2>
+                {/*<div className='bg-coin m-1 p-1 h-20 w-20 inline-block'></div>*/}
+
+                {/* <Button type="button" id="spinButton" className=' w-full mt-6 bg-white text-black rounded-full hover:text-yellow-300' onClick={spin_wheel_slider}>spin the wheel!</Button> */}
+                <div id='prize_display' className='bg-green-600 m-5 p-2 rounded-md '>
                     <p id="bet_money_text" className='font-extrabold'></p>
                     <p id="prize_text" className='font-extrabold'></p>
                     <p id="message" className='font-extrabold'></p>
                 </div>
+
             </div>
 
         </div>
