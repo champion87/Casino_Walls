@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Path
 from routes.lobbies import get_session, SESSIONS
-from logics.card_game import Poker
+from logics.poker_logic import Poker
 from routes.auth import get_user_name
 
 
@@ -26,7 +26,7 @@ def BJ_draw(game:Poker = Depends(get_session), user_name: str = Depends(get_user
 
 @router.post('/raise')
 def BJ_draw(game:Poker = Depends(get_session), user_name: str = Depends(get_user_name)):
-    game.call(user_name) #TODO try except
+    game.my_raise(user_name) #TODO try except
 
 @router.post('/fold')
 def BJ_fold(game:Poker = Depends(get_session), user_name: str = Depends(get_user_name)):
@@ -40,8 +40,8 @@ def Poker_restart_game(game:Poker = Depends(get_session)):
     except:
         return {"was_restarted" : False}
     
-@router.post('/get_player_count')
+@router.post('/get_player_amount')
 def BJ_draw(game:Poker = Depends(get_session), user_name: str = Depends(get_user_name)):
-    return {"num" : game.get_player_count()} #TODO try except
+    return {"num" : game.get_player_amount()} #TODO try except
 
         

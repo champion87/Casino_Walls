@@ -107,7 +107,7 @@ def save_session(game: Game, lobby_key: str):
 
 
 
-from logics.card_game import Poker
+from logics.poker_logic import Poker
 @create_lobby_router.post("/poker")
 def poker(max_players: int):#, username = Depends(get_user_name)):
     lobby, lobby_key = create_lobby("Poker", 0, max_players) # 0 is default value for prize since poker doesnt care about prize
@@ -118,7 +118,7 @@ def poker(max_players: int):#, username = Depends(get_user_name)):
     }   
      
 
-from logics.card_game import BlackJack
+from logics.blackjack_logic import BlackJack
 @create_lobby_router.post("/blackjack")
 def blackjack(prize: int , max_players: int):
     lobby, lobby_key = create_lobby("BlackJack", prize, max_players)

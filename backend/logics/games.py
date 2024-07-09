@@ -4,7 +4,7 @@ import random
 from typing import Dict, List
 from fastapi.params import Path, Query
 from logics.game import Game
-from logics.card_game import BlackJack
+from logics.blackjack_logic import BlackJack
 from utils.my_log import LOG
 
 

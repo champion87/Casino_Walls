@@ -1,8 +1,7 @@
 from fastapi import APIRouter, Depends, Path
-from logics.card_game import Game
 from routes.auth import get_user_name
 from utils.my_log import LOG
-from logics.card_game import BlackJack
+from logics.blackjack_logic import BlackJack
 from routes.lobbies import get_session, SESSIONS
 router = APIRouter()
 
