@@ -114,6 +114,13 @@ export const GamesLobbyPage = () =>  {
             </Button>
             <Button
               type="button"
+              onClick={() => navigate("/poker_main")}
+              className="w-full m-4 bg-white inline-block text-black rounded-full hover:text-yellow-300"
+            >
+              poker 
+            </Button>
+            <Button
+              type="button"
               onClick={() => navigate("/")}
               className="w-full m-4 bg-white inline-block text-black rounded-full hover:text-yellow-300"
             >
