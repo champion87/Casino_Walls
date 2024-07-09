@@ -23,7 +23,7 @@ export const GamesLobbyPage = () =>  {
   const [coinAmount, setCoinAmount] = useState(0);
 
   async function get_coins(){
-    const coin_res = await call_api("api/coins/", "GET").then(response => response.json());
+    const coin_res = await call_api("/api/coins/", "GET").then(response => response.json());
     setCoinAmount(parseInt(coin_res.coins));
   }
   

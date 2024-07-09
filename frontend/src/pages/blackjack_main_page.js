@@ -14,7 +14,6 @@ import { userContext } from "../components/PrivateRoute"
 import { Button } from '../components/ui/button';
 import { Label } from '@radix-ui/react-label';
 import { call_api } from 'src/lib/utils';
-// import ButtonWithRules from 'src/components/ButtonWithRules';
 import BJRulesButton from 'src/components/BJRulesButton';
 import LobbyCard from 'src/components/LobbyCard';
 
@@ -25,7 +24,7 @@ export const BlackJackMainPage = () => {
   useEffect(() => {
     const fetchLobbies = async () => {
         try {
-            const response = await call_api(`api/lobbies/`, "get");
+            const response = await call_api(`/api/lobbies/`, "get");
             const data = await response.json();
             setLobbies(data.lobbies);
         } catch (error) {
@@ -42,22 +41,20 @@ export const BlackJackMainPage = () => {
 }, []);
 
   async function play_singleplayer_bj() {
-    const response = await call_api("api/lobbies/create_lobby/blackjack/?prize=10&max_players=1", "post") // TODO generalize
+    const response = await call_api("/api/lobbies/create_lobby/blackjack/?prize=10&max_players=1", "post") // TODO generalize
     const data = await response.json()
-    await call_api(`api/lobbies/${data["lobby_key"]}/join_lobby/`, "post");
-    await call_api(`api/lobbies/${data["lobby_key"]}/start_game/`, "post");
+    await call_api(`/api/lobbies/${data["lobby_key"]}/join_lobby/`, "post");
+    await call_api(`/api/lobbies/${data["lobby_key"]}/start_game/`, "post");
     console.log("started game$$$$$$$$$$$$$$$$$")
-    // throw "started game"
     navigate(`/bjGPT/${data["session_key"]}`) // TODO change to the real route
 
   }
 
   async function create_lobby() {
     console.log("creating lobby, wink wink.")
-    const response = await call_api("api/lobbies/create_lobby/blackjack/?prize=10&max_players=4", "post") // TODO generalize
+    const response = await call_api("/api/lobbies/create_lobby/blackjack/?prize=10&max_players=4", "post") // TODO generalize
     const data = await response.json()
     join_lobby(data["lobby_key"])
-    // call_api("api/lobbies/create_lobby/test", "post")
   }
 
   async function join_lobby(key) {
@@ -82,7 +79,6 @@ export const BlackJackMainPage = () => {
           <h1 className="text-3xl font-bold text-yellow-400">On Going Lobbies</h1>
           {lobbies.map((lobby) => (
               <LobbyCard
-                // className="w-44 mt-2 bg-black text-yellow-300 rounded-full hover:text-yellow-200"
                 lobby_key={lobby.key}
                 game_name={lobby.game_name}
                 max_players={lobby.max_players}

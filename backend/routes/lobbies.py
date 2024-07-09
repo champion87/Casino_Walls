@@ -23,10 +23,11 @@ specific_lobby_router = APIRouter()
 ############
 
 # USERNAME_TO_LOBBY = { "Lidor" : Lobby() }
-LOBBIES: Dict[str, Lobby] = { "1" : Lobby("example game", 999, "example-key", 1337)}
+LOBBIES: Dict[str, Lobby] = { }
 SESSIONS : Dict[str , Game] = {"id" : Game()}
 
 LOBBY_TO_SESSION : Dict[str, str] = {}
+USERNAME_TO_LOBBY_KEY : Dict[str, str] = {}
 
 # def get_session(game_key: str = Path()):
 #     LOG(f"got {game_key = }")
@@ -73,24 +74,50 @@ def get_unused_id(data):
 @router.get("/")
 def get_lobbies():
     LOG({'lobbies' : [lobby.export() for lobby in LOBBIES.values()]})
-    return {'lobbies' : [lobby.export() for lobby in LOBBIES.values()]}
+    return {'lobbies' : [lobby.export() for lobby in LOBBIES.values() if lobby.is_available()]}
+
+@router.get("/my_lobby")
+def get_my_lobby(username = Depends(get_user_name)):
+    LOG({'lobbies' : [lobby.export() for lobby in LOBBIES.values()]})
+    LOG(USERNAME_TO_LOBBY_KEY)
+    return { "lobby_key" : USERNAME_TO_LOBBY_KEY[username] }
 
 @specific_lobby_router.get("/player_count")
 def get_player_count(lobby: Lobby = Depends(get_lobby)):
     return {'count' : len(lobby.get_players())}
 
+@specific_lobby_router.get("/leave_lobby")
+def leave_lobby(lobby: Lobby = Depends(get_lobby), username = Depends(get_user_name)):
+    lobby.pop_user(username)
 
 
 # For example
 # http://127.0.0.1:8000/api/2/lobbies/join_lobby
 @specific_lobby_router.post("/join_lobby")
 def join_lobby(lobby: Lobby = Depends(get_lobby), username = Depends(get_user_name)):
+    
+        
+
     if lobby == None:
         raise HTTPException(status_code=422, detail="no such lobby")
-    lobby.add(username)
-    player_added_event.set()
+    if username in lobby.get_players(): #player is already in
+        return {}
+        
+    try:
+        lobby.add(username)
+    except:
+        raise HTTPException(status_code=422, detail="lobby is locked")
     
-    return {}
+    if username in USERNAME_TO_LOBBY_KEY:
+        LOBBIES[USERNAME_TO_LOBBY_KEY[username]].pop_user(username)
+        
+    USERNAME_TO_LOBBY_KEY[username] = lobby.key
+    
+    # player_added_event.set()
+    LOG(LOBBIES)
+    LOG(USERNAME_TO_LOBBY_KEY)
+    
+    # return {}
 
 
 # For example
@@ -134,14 +161,24 @@ def blackjack(prize: int , max_players: int):#, username = Depends(get_user_name
 @specific_lobby_router.post("/start_game")
 def start_game(lobby_key:str = Path()):
     # raise Exception("started game")
-    SESSIONS[LOBBY_TO_SESSION[lobby_key]].start_game()
+    try:
+        SESSIONS[LOBBY_TO_SESSION[lobby_key]].start_game()
+    except:
+        return {}
     
-    
+@specific_lobby_router.get("/is_game_started")
+def is_started(lobby_key:str = Path()):
+    # raise Exception("started game")
+    return {
+        "is_started" : SESSIONS[LOBBY_TO_SESSION[lobby_key]].is_started(),
+        "session_key" : LOBBY_TO_SESSION[lobby_key]
+    }
     
     
 # http://127.0.0.1:8000/api/2/lobbies/current_players
 @specific_lobby_router.get("/current_players")
 def players(lobby: Lobby = Depends(get_lobby)):
+    LOG(lobby.get_players())
     return {"players": lobby.get_players()}
 
 @specific_lobby_router.get("/wait_for_players")
