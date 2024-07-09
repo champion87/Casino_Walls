@@ -17,9 +17,9 @@ create_lobby_router = APIRouter()
 specific_lobby_router = APIRouter()
 
     
-###########################
-### Dependency Handlers ###
-###########################
+# ###########################
+# ### Dependency Handlers ###
+# ###########################
 
 def get_session(game_key: str = Path(..., description="game key ahhhh")):
     return SESSIONS[game_key]
@@ -59,12 +59,15 @@ def get_lobbies(game_name:str = Path()):
     LOG({'lobbies' : [lobby.export() for lobby in LOBBIES.values()]})
     return {'lobbies' : [lobby.export() for lobby in LOBBIES.values() if lobby.is_available() and lobby.game_name == game_name]}
 
-
-@router.get("/my_lobby")
-def get_my_lobby(username = Depends(get_user_name)):
-    LOG({'lobbies' : [lobby.export() for lobby in LOBBIES.values()]})
-    LOG(USERNAME_TO_LOBBY_KEY)
-    return { "lobby_key" : USERNAME_TO_LOBBY_KEY[username] }
+ 
+# @router.get("/my_lobby")
+# def get_my_lobby(username = Depends(get_user_name)):
+#     # LOG(USERNAME_TO_LOBBY_KEY)
+#     # LOG({'lobbies' : [lobby.export() for lobby in LOBBIES.values()]})
+#     LOG("wow\n")
+#     # return { "lobby_key" : USERNAME_TO_LOBBY_KEY[username] }
+#     return { "lobby_key" : "WOW" }
+    
 
 @specific_lobby_router.get("/player_count")
 def get_player_count(lobby: Lobby = Depends(get_lobby)):
