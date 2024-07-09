@@ -185,7 +185,7 @@ class CardGame(Game):
                 if name != username:
                     res[name] = len(hand.to_list_of_str()) * ["xxxx\n"*3]
                 
-        return 
+        return res
     
     
     def start_game(self):
