@@ -18,6 +18,8 @@ import BJRulesButton from 'src/components/BJRulesButton';
 import LobbyCard from 'src/components/LobbyCard';
 import { fetchLobbies, create_lobby, join_lobby } from 'src/lib/main_page_utils';
 import { LobbyList } from 'src/components/LobbyList';
+import PokerRulesButton from 'src/components/PokerRules';
+
 
 export const PokerMainPage = () => {
   const navigate = useNavigate();
@@ -86,7 +88,7 @@ export const PokerMainPage = () => {
 
 
       </div>
-      <BJRulesButton />
+      <PokerRulesButton />
     </div>
   )
 }
