@@ -19,6 +19,7 @@ import BJ_GPT from './pages/bjgpt';
 import Lobby from './pages/Lobby.js';
 import { Wheel_of_fortune } from './pages/wheel_of_fortune';
 import { BlackJackMainPage } from './pages/blackjack_main_page';
+import { Wheel2 } from './components/wheel2'
 import { PokerMainPage } from './pages/PokerMainPage';
 import { Toaster } from './components/ui/toaster';
 
