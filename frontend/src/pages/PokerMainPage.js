@@ -59,7 +59,13 @@ export const PokerMainPage = () => {
           >
             create lobby
           </Button>
-
+          <Button
+            type="button"
+            onClick={() => {navigate("/games")}}
+            className="w-44 mt-6 bg-black text-yellow-300 rounded-full hover:text-yellow-200"
+          >
+            back to games screen
+          </Button>
         </div>
 
         <div className="bg-[#961212] flex items-center justify-center flex-col rounded-l-3xl">
@@ -74,7 +80,7 @@ export const PokerMainPage = () => {
             single player -
             not yet supported
           </Button>
-          
+
 
         </div>
 

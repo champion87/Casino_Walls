@@ -98,6 +98,13 @@ export const BlackJackMainPage = () => {
           >
             test
           </Button>
+          <Button
+            type="button"
+            onClick={() => {navigate("/games")}}
+            className="w-44 mt-6 bg-black text-yellow-300 rounded-full hover:text-yellow-200"
+          >
+            back to games screen
+          </Button>
 
         </div>
 
