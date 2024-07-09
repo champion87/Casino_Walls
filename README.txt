@@ -27,6 +27,7 @@ Startup:
 
 >>> pip install fastapi
 >>> pip install uvicorn
+>>> pip install eval7
 >>> npm i axios
 >>> npm i react-router-dom
 >>> npm install lucide-react

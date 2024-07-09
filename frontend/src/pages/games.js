@@ -82,7 +82,7 @@ export const GamesLobbyPage = () =>  {
             >
               logout
             </Button>
-            <Label htmlFor='coin_claim' className='mt-6 text-yellow-300'>
+            <Label className='mt-6 text-yellow-300'>
             claim free coins every hour
             </Label>
             <Button
