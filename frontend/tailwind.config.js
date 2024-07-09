@@ -81,6 +81,7 @@ module.exports = {
         'wheel': "url('../Images/wheelpic.png')",
         'wheel2': "url('../Images/wheelpic2.png')",
         'cosmos': "url('../Images/cosmos.png')",
+        'cards': "url('../Images/Playing-Cards.jpg')",
 
 
 

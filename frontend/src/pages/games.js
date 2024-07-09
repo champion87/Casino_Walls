@@ -23,7 +23,7 @@ export const GamesLobbyPage = () =>  {
   const [coinAmount, setCoinAmount] = useState(0);
 
   async function get_coins(){
-    const coin_res = await call_api("api/coins/", "GET").then(response => response.json());
+    const coin_res = await call_api("/api/coins/", "GET").then(response => response.json());
     setCoinAmount(parseInt(coin_res.coins));
   }
   
@@ -66,35 +66,67 @@ export const GamesLobbyPage = () =>  {
   return(
     
     <div>
-      <div className="bg-[#690d0d] h-screen w-screen items-center p-10">
-          <div className="bg-[#961212] flex items-center justify-center flex-col rounded-3xl">
+      <div className="bg-wall bg-cover h-screen w-screen items-center p-10">
+          <div className="bg-black flex items-center justify-center flex-col rounded-3xl">
             <div className="my-4">
               <h1 className="text-3xl font-bold text-yellow-400">This is the main game screen please choose a game</h1>
               <p className="mt-2 text-yellow-200">
                 coin amount: {coinAmount}
               </p>
             </div>
+            <div className='items-center justify-center flex flex-col'>
             <Button
               type="button"
               onClick={logout}
-              className="w-44 mt-6 bg-black text-yellow-300 rounded-full hover:text-yellow-200"
+              className="w-full bg-white text-black rounded-full hover:text-yellow-300"
             >
               logout
             </Button>
-            <Label htmlFor='coin_claim' className='mt-6 text-yellow-300'>
+            <Label className='mt-6 text-yellow-300'>
             claim free coins every hour
             </Label>
             <Button
               type="button"
               id="coin_claim"
               onClick={claim_coins}
-              className="w-44 my-2 bg-black text-yellow-300 rounded-full hover:text-yellow-200"
+              className="w-full mt-6 bg-white text-black rounded-full hover:text-yellow-300"
             >
               here
             </Button>
-            <p className='text-sm text-yellow-200'>
+            </div>
+            <p className='text-sm my-5 text-yellow-200'>
               {coinStatus}
             </p>
+            <div className='flex '>
+            <Button
+              type="button"
+              onClick={() => navigate("/games/7/wheel_of_fortune")}
+              className="w-full m-4 inline-block bg-white text-black rounded-full hover:text-yellow-300"
+            >
+              wheel of fortune
+            </Button>
+            <Button
+              type="button"
+              onClick={() => navigate("/blackjack_main")}
+              className="w-full m-4 bg-white inline-block text-black rounded-full hover:text-yellow-300"
+            >
+              blackjack 
+            </Button>
+            <Button
+              type="button"
+              onClick={() => navigate("/poker_main")}
+              className="w-full m-4 bg-white inline-block text-black rounded-full hover:text-yellow-300"
+            >
+              poker 
+            </Button>
+            <Button
+              type="button"
+              onClick={() => navigate("/")}
+              className="w-full m-4 bg-white inline-block text-black rounded-full hover:text-yellow-300"
+            >
+              home page
+            </Button>
+            </div>
           </div>
         </div>
         {/*<button onClick="location.href = '/games/wheel_of_fortune/';">Go to wheel of fortune</button>

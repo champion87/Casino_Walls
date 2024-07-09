@@ -30,7 +30,7 @@ export const HomePage = () => {
                         <Button
                             type="button"
                             onClick={goToGames}
-                            className="w-44 mt-10 bg-black text-yellow-300 rounded-full hover:text-yellow-200 outline-2 outline-yellow-300"
+                            className="w-fit m-4 bg-white inline-block text-black rounded-full hover:text-yellow-300"
                         >
                             go to games screen
                         </Button>
@@ -45,7 +45,7 @@ export const HomePage = () => {
                         <p className="text-2xl font-semibold text-yellow-400">our top played games:</p>
                     </div>
                     <div className="grid w-full h-full grid-cols-3">
-                        <Card className="w-[350px] m-10 bg-black">
+                        <Card className="w-[350px] m-10 bg-cards bg-cover">
                             <CardHeader>
                                 <CardTitle className="text-yellow-400 font-bold">Blackjack</CardTitle>
                                 <CardDescription className="text-yellow-300 font-semibold">one of the all time best casino games</CardDescription>
@@ -59,34 +59,33 @@ export const HomePage = () => {
                                 <Button className="text-yellow-400" onClick={() => navigate("/blackjack_main")}>Take Me There</Button>
                             </CardFooter>
                         </Card>
-                        <Card className="w-[350px] m-10">
+                        <Card className="w-[350px] m-10 bg-wheel">
                             <CardHeader>
                                 <CardTitle className="text-yellow-400">Wheel of Fortune</CardTitle>
                                 <CardDescription className="text-yellow-300">one of the all time best casino games</CardDescription>
                             </CardHeader>
                             <CardContent>
-
                             </CardContent>
                             <CardFooter className="flex items-center justify-center">
                                 <Button className="text-yellow-300" onClick={() => navigate("/games/7/wheel_of_fortune")}>Take Me There</Button>
                             </CardFooter>
                         </Card>
-                        <Card className="w-[350px] m-10">
+                        <Card className="w-[350px] m-10 bg-black text-yellow-300">
                             <CardHeader>
                                 <CardTitle>Coming Soon...</CardTitle>
-                                <CardDescription>one of the all time best casino games</CardDescription>
+                                <CardDescription className="text-yellow-300">one of the all time best casino games</CardDescription>
                             </CardHeader>
                             <CardContent>
 
                             </CardContent>
-                            <CardFooter className="flex items-center justify-center">
-                                <Button>Take Me There</Button>
+                            <CardFooter className="flex items-center justify-center text-yellow-300">
+                                <Button className="text-yellow-300">Take Me There</Button>
                             </CardFooter>
                         </Card>
                     </div>
 
                 </div>
-                <div className="bg-[rgb(150,18,18)] flex items-center justify-center flex-col text-yellow-300 rounded-3xl mt-10">
+                <div className="bg-black flex items-center justify-center flex-col text-yellow-300 rounded-3xl mt-10">
                     <p>'אין אתר' ~ N. Atar</p>
                     <p>🌟🌟🌟🌟🌟</p>
                     <p>some reviews...</p>

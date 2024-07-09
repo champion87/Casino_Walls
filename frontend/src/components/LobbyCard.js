@@ -8,7 +8,7 @@ const LobbyCard = ({ lobby_key, game_name, max_players, prize, onJoin }) => {
     useEffect(() => {
         const fetchPlayerCount = async () => {
             try {
-                const response = await call_api(`api/lobbies/${lobby_key}/player_count`, "get");
+                const response = await call_api(`/api/lobbies/${lobby_key}/player_count`, "get");
                 const data = await response.json();
                 setCurrentPlayers(data.count);
             } catch (error) {
