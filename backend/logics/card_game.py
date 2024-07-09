@@ -141,6 +141,7 @@ class Hand:
 class BlackJack(Game):
     def __init__(self, lobby: Lobby, prize, max_players):
         self.deck = None
+        self.usernames: List = None
         self.hands : Dict[str:Hand]  = {} # username : Hand
         self.dealer_hand : Hand = None
         self.is_out : Dict[str:bool]  = {} # username : Hand
@@ -155,7 +156,7 @@ class BlackJack(Game):
         self.status = GameStatus.NO_GAME
         dealer_score = self.dealer_hand.get_BJ_score()
         
-        for username in self.lobby.get_players():
+        for username in self.usernames:
             if not self.is_out[username]: # just to make sure
                 LOG("WTFFFFFFF")
             score = self.hands[username].get_BJ_score()
@@ -214,6 +215,8 @@ class BlackJack(Game):
             self.hands[username] = Hand(self.deck)
             self.is_out[username] = False
             self.hands[username].draw_to_hand().draw_to_hand() # 2 initial cards in BJ
+            
+        self.usernames = self.lobby.get_players().copy()
             
         self.dealer_hand = Hand(self.deck)
         self.dealer_hand.draw_to_hand().draw_to_hand()

@@ -2,9 +2,7 @@ from typing import List, Dict
 from fastapi.params import Path, Query
 import asyncio
 from logics.game import Game
-# from logics.games import get_game
 from logics.lobby import Lobby
-# from logics.game_lobby import Lobby, get_lobby
 from routes.auth import get_user_name, key_gen
 from fastapi import APIRouter, Depends
 from fastapi.exceptions import HTTPException
@@ -19,21 +17,12 @@ create_lobby_router = APIRouter()
 specific_lobby_router = APIRouter()
 
     
-
-# def get_session(game_key: str = Path()):
-#     LOG(f"got {game_key = }")
-#     return SESSIONS.get(game_key, None)
-
 ###########################
 ### Dependency Handlers ###
 ###########################
 
 def get_session(game_key: str = Path(..., description="game key ahhhh")):
-    # LOG(f"got {game_key = }")
-    # # LOG("HEYYYY")
-    # LOG(SESSIONS)
     return SESSIONS[game_key]
-    # return game_key
 
 def set_session(key, game):
     SESSIONS[key] = game
@@ -60,7 +49,6 @@ def get_unused_id(data):
 ######################
 
 # TODO delete empty lobbies
-# TODO don't allow user to be in many lobbies
 
 @router.get("/")
 def get_lobbies():
@@ -81,7 +69,6 @@ def get_player_count(lobby: Lobby = Depends(get_lobby)):
 def leave_lobby(lobby: Lobby = Depends(get_lobby), username = Depends(get_user_name)):
     lobby.pop_user(username)
 
-# TODO manage shared code with "join_lobby"
 @specific_lobby_router.post("/join_lobby")
 def join_lobby(lobby: Lobby = Depends(get_lobby), username = Depends(get_user_name)):
     if lobby == None:
@@ -99,29 +86,20 @@ def join_lobby(lobby: Lobby = Depends(get_lobby), username = Depends(get_user_na
     except:
         raise HTTPException(status_code=422, detail="lobby is locked")
     
-        
     USERNAME_TO_LOBBY_KEY[username] = lobby.key
     
-
-# For example
-# http://127.0.0.1:8000/api/2/lobbies/create_lobby/? ...
 
 # TODO maybe later save the creator of the lobby
 def create_lobby(game_name:str, prize:int, max_players:int = 9999):
     key = get_unused_id(LOBBIES)
     lobby = Lobby(game_name, max_players, key, prize)
-    
-    
     LOBBIES[key] = lobby
-    # LOBBIES[lobby_key] = Lobby()
-    
     
     return lobby, key
 
 
 
 
-# /blackjack/?prize=100&max_players=4
 from logics.card_game import BlackJack
 @create_lobby_router.post("/blackjack")
 def blackjack(prize: int , max_players: int):#, username = Depends(get_user_name)):
@@ -130,11 +108,9 @@ def blackjack(prize: int , max_players: int):#, username = Depends(get_user_name
     bj = BlackJack(lobby, prize, max_players)
     
     session_key = get_unused_id(SESSIONS)
+    
     SESSIONS[session_key] = bj
     LOBBY_TO_SESSION[lobby_key] = session_key
-    
-    # LOG(LOBBIES)
-    # LOG(SESSIONS)
     
     return {
         'lobby_key' : lobby_key,
@@ -157,6 +133,11 @@ def set_ready(lobby_key:str = Path(), lobby: Lobby = Depends(get_lobby), usernam
         lobby.set_ready(username)
         if lobby.is_ready():
             try:
+                LOG(SESSIONS)
+                
+                LOG(f"{LOBBY_TO_SESSION[lobby_key]=}")
+                LOG(f"{lobby_key}")
+                
                 SESSIONS[LOBBY_TO_SESSION[lobby_key]].start_game()
                 return {"result" : "Ready!"}
                 
@@ -169,7 +150,6 @@ def set_ready(lobby_key:str = Path(), lobby: Lobby = Depends(get_lobby), usernam
     
 @specific_lobby_router.get("/is_game_started")
 def is_started(lobby_key:str = Path()):
-    # raise Exception("started game")
     return {
         "is_started" : SESSIONS[LOBBY_TO_SESSION[lobby_key]].is_started(),
         "session_key" : LOBBY_TO_SESSION[lobby_key]
@@ -187,23 +167,6 @@ async def wait_for_players(lobby: Lobby = Depends(get_lobby)):
     player_added_event.clear()
     await player_added_event.wait()
     return {"players": lobby.get_players()}
-
-# # For example
-# # http://127.0.0.1:8000/api/2/lobbies/start_game/
-# @specific_lobby_router.post("/start_game") 
-# async def start_game(lobby: Lobby = Depends(get_lobby)):
-#     if game != None:
-#         id = get_unused_id(SESSIONS)
-#         SESSIONS[id] = game(lobby, prize)
-#         return {}
-    
-    
-# @router.get("/start_game") 
-# async def start_game(lobby: Lobby = Depends(get_lobby), game: type = Depends(get_game), prize: int | None = None):
-#     LOG(kwargs)
-        
-    
-
 
 
 router.include_router(create_lobby_router, prefix='/create_lobby')

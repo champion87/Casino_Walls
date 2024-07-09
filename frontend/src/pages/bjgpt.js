@@ -3,34 +3,60 @@ import './bjgpt.css';
 import { call_api } from 'src/lib/utils';
 import { useNavigate, useParams } from 'react-router-dom';
 
-const suits = ['Hearts', 'Diamonds', 'Clubs', 'Spades'];
-const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
-
-const getCardValue = (card) => {
-  if (['J', 'Q', 'K'].includes(card.value)) return 10;
-  if (card.value === 'A') return 11;
-  return parseInt(card.value);
-};
-
-
 function BJ_GPT() {
   const navigate = useNavigate();
 
-  // const [ game_key ] = useParams();
   let { game_key } = useParams();
-  // const [deck, setDeck] = useState(createDeck());
-
   const [isGameOver, setIsGameOver] = useState(false);
-
-
+  const [hasExecuted, setHasExecuted] = useState(false);
   const [dealerHand, setDealerHand] = useState([]);
   const [playerHand, setPlayerHand] = useState([]);
-
-  const [hands, setHands] = useState({ 'hello': ["world"] });
-
+  const [hands, setHands] = useState({});
   const [dealerScore, setDealerScore] = useState(0);
   const [playerScore, setPlayerScore] = useState(0);
   const [message, setMessage] = useState('');
+
+
+  useEffect(() => {
+    startNewGame();
+  }, []);
+
+  useEffect(() => {
+    fetchHands();
+    const intervalId = setInterval(fetchHands, 1000); // Fetch every 1 seconds
+    return () => clearInterval(intervalId); // Cleanup on unmount
+  }, [isGameOver]);
+
+  useEffect(() => {
+    if (isGameOver && !hasExecuted) {
+      // Your code to be executed once
+      console.log('Game Over! Code executed only once.');
+      async function endgame() {
+        setDealerHand(await getDealerHand());
+
+        let newDealerScore = await getDealerScore()
+        let yourScore = await getScore()
+        setDealerScore(newDealerScore);
+
+        if (yourScore > 21) {
+          setMessage('Player Busted!');
+        } else if (newDealerScore > 21) {
+          setMessage('Dealer Busted! Player Wins!');
+        } else if (newDealerScore > yourScore) {
+          setMessage('Dealer Wins!');
+        } else if (newDealerScore < yourScore) {
+          setMessage('Player Wins!');
+        } else {
+          setMessage('Tie!');
+        }
+
+      }
+      endgame()
+      // Set hasExecuted to true to prevent re-execution
+      setHasExecuted(true);
+    }
+  }, [isGameOver, hasExecuted]);
+
 
   async function getScore() {
     const response = await call_api(`/api/games/${game_key}/blackjack/get_score`, "get")
@@ -75,9 +101,6 @@ function BJ_GPT() {
     await call_api(`/api/games/${game_key}/blackjack/abort`, "post")
     const response = await call_api(`/api/lobbies/my_lobby`, "get")
     const data = response.json()
-    // await call_api(`/api/lobbies/${data.lobby_key}/leave_lobby`, "post")
-
-
     navigate("/blackjack_main")
   }
 
@@ -89,43 +112,7 @@ function BJ_GPT() {
     navigate(`/lobby/${data.lobby_key}`)
   }
 
-
-  useEffect(() => {
-    startNewGame();
-  }, []);
-
-  const [hasExecuted, setHasExecuted] = useState(false);
-  useEffect(() => {
-    if (isGameOver && !hasExecuted) {
-      // Your code to be executed once
-      console.log('Game Over! Code executed only once.');
-      async function endgame() {
-        setDealerHand(await getDealerHand());
-
-        let newDealerScore = await getDealerScore()
-        let yourScore = await getScore()
-        setDealerScore(newDealerScore);
-
-        if (yourScore > 21) {
-          setMessage('Player Busted!');
-        } else if (newDealerScore > 21) {
-          setMessage('Dealer Busted! Player Wins!');
-        } else if (newDealerScore > yourScore) {
-          setMessage('Dealer Wins!');
-        } else if (newDealerScore < yourScore) {
-          setMessage('Player Wins!');
-        } else {
-          setMessage('Tie!');
-        }
-
-      }
-      endgame()
-      // Set hasExecuted to true to prevent re-execution
-      setHasExecuted(true);
-    }
-  }, [isGameOver, hasExecuted]);
-
-  const fetchHands = async () => {
+  async function fetchHands() {
     if (isGameOver) {
       console.log("over")
       return
@@ -155,20 +142,6 @@ function BJ_GPT() {
     }
   };
 
-
-  useEffect(() => {
-    // if (!isGameOver) {
-    //   console.log("hey")
-    //   fetchHands();
-    // }
-
-    const intervalId = setInterval(fetchHands, 1000); // Fetch every 1 seconds
-
-    console.log("endddddddd")
-
-    return () => clearInterval(intervalId); // Cleanup on unmount
-  }, [isGameOver]);
-
   async function startNewGame() {
 
     await call_api(`/api/games/${game_key}/blackjack/try_restart_game`, "post")
@@ -178,7 +151,6 @@ function BJ_GPT() {
 
     console.log(newPlayerHand)
     console.log(typeof newPlayerHand)
-
 
     setDealerHand(newDealerHand);
     setPlayerHand(newPlayerHand);
@@ -225,17 +197,12 @@ function BJ_GPT() {
       <div className="player">
         <h2>Your Hand</h2>
         <div id="player-cards" className="cards">
-          {/* {console.log(playerHand)} */}
           {playerHand.map((card) => (
-            // <div key={index} className="card">{card}</div>
             <div key={card} className="card">{card}</div>
-
           ))}
-
         </div>
         <div id="player-score" className="score">{playerScore}</div>
       </div>
-
 
 
 
@@ -244,12 +211,8 @@ function BJ_GPT() {
         <button onClick={stand} disabled={message !== ''}>Stand</button>
         <button onClick={BackToLobby}>Back to Lobby</button>
         <button onClick={BackToMainPage}>Main page</button>
-
-        {/* {is_single_player ? 
-        (<button onClick={startNewGame}>New Game</button>) : 
-        (<button onClick={BackToLobby}>Back to Lobby</button>)} */}
-
       </div>
+
       <div id="message" className="message">{message}</div>
 
       <div>

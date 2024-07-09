@@ -30,7 +30,6 @@ const Lobby = () => {
         const data = await response.json();
 
         if (data.is_started) {
-          // console.log("game already started????")
           navigate(`/bjGPT/${data["session_key"]}`)
         }
         setLoading(false);
@@ -43,8 +42,6 @@ const Lobby = () => {
         const data = await response.json();
         setPlayers(data.players);
         setLoading(false);
-        console.log("players:")
-        console.log(data.players)
       } catch (error) {
         console.error('Error fetching players:', error);
         setLoading(false);
