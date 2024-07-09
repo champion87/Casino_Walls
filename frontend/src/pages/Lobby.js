@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { call_api } from 'src/lib/utils';
 import { useNavigate } from 'react-router-dom';
 
-const Lobby = ({gameName}) => {
+const Lobby = ({ gameName }) => {
   let { lobby_key } = useParams();
 
   const [message, setMessage] = useState('');
@@ -13,7 +13,7 @@ const Lobby = ({gameName}) => {
 
   const navigate = useNavigate();
 
-  async function get_coins(){
+  async function get_coins() {
     const coin_res = await call_api("/api/coins/", "GET").then(response => response.json());
     setCoinAmount(parseInt(coin_res.coins));
   }
@@ -60,6 +60,11 @@ const Lobby = ({gameName}) => {
     navigate(`/${gameName}_main`)
   }
 
+  async function test() {
+    console.log(gameName)
+    console.log(lobby_key)
+  }
+
   // const startGame = () => {
   //   console.log('Game started');
   //   call_api(`/api/lobbies/${lobby_key}/start_game`, "post")
@@ -93,7 +98,7 @@ const Lobby = ({gameName}) => {
       {/* <button onClick={startGame} style={styles.startButton}>Start Game</button> */}
       <button onClick={goReady} style={styles.startButton}>Ready!</button>
       <div id="message" className="message">{message}</div>
-
+      <button onClick={test} style={styles.startButton}>test</button>
     </div>
   );
 };

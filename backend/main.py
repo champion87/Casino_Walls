@@ -22,7 +22,7 @@ def clear_lobbies():
             
             
 scheduler = BackgroundScheduler()
-# scheduler.add_job(my_job, 'interval', seconds=1)
+scheduler.add_job(my_job, 'interval', seconds=1)
 # scheduler.add_job(clear_lobbies, 'interval', seconds=1)
 
 scheduler.start()
