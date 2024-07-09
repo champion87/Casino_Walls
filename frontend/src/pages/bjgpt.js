@@ -19,8 +19,13 @@ function BJ_GPT() {
   // const [ game_key ] = useParams();
   let { game_key } = useParams();
   // const [deck, setDeck] = useState(createDeck());
+
+  const [isGameOver, setIsGameOver] = useState(false);
+
+
   const [dealerHand, setDealerHand] = useState([]);
   const [playerHand, setPlayerHand] = useState([]);
+
   const [hands, setHands] = useState({ 'hello': ["world"] });
 
   const [dealerScore, setDealerScore] = useState(0);
@@ -89,51 +94,80 @@ function BJ_GPT() {
     startNewGame();
   }, []);
 
+  const [hasExecuted, setHasExecuted] = useState(false);
   useEffect(() => {
-    const fetchHands = async () => {
-      try {
-        const response = await call_api(`/api/games/${game_key}/blackjack/get_other_hands`, "get");
-        const data = await response.json();
-        setHands(data.hands);
+    if (isGameOver && !hasExecuted) {
+      // Your code to be executed once
+      console.log('Game Over! Code executed only once.');
+      async function endgame() {
+        setDealerHand(await getDealerHand());
 
-        const response2 = await call_api(`/api/games/${game_key}/blackjack/is_game_over`, "get");
-        const data2 = await response2.json();
+        let newDealerScore = await getDealerScore()
+        let yourScore = await getScore()
+        setDealerScore(newDealerScore);
 
-        console.log("data2.is_game_over")
-
-        console.log(data2.is_game_over)
-
-        if (data2.is_game_over) {
-          setDealerHand(await getDealerHand());
-
-          let newDealerScore = await getDealerScore()
-          let yourScore = await getScore()
-          setDealerScore(newDealerScore);
-
-          if (yourScore > 21) {
-            setMessage('Player Busted!');
-          } else if (newDealerScore > 21) {
-            setMessage('Dealer Busted! Player Wins!');
-          } else if (newDealerScore > yourScore) {
-            setMessage('Dealer Wins!');
-          } else if (newDealerScore < yourScore) {
-            setMessage('Player Wins!');
-          } else {
-            setMessage('Tie!');
-          }
+        if (yourScore > 21) {
+          setMessage('Player Busted!');
+        } else if (newDealerScore > 21) {
+          setMessage('Dealer Busted! Player Wins!');
+        } else if (newDealerScore > yourScore) {
+          setMessage('Dealer Wins!');
+        } else if (newDealerScore < yourScore) {
+          setMessage('Player Wins!');
+        } else {
+          setMessage('Tie!');
         }
 
-      } catch (error) {
-        console.error('Error fetching other hands:', error);
       }
-    };
+      endgame()
+      // Set hasExecuted to true to prevent re-execution
+      setHasExecuted(true);
+    }
+  }, [isGameOver, hasExecuted]);
 
-    fetchHands();
+  const fetchHands = async () => {
+    if (isGameOver) {
+      console.log("over")
+      return
+    }
+    console.log("is game over")
+    console.log(isGameOver)
 
-    const intervalId = setInterval(fetchHands, 1000); // Fetch every 5 seconds
+    try {
+      const response = await call_api(`/api/games/${game_key}/blackjack/get_other_hands`, "get");
+      const data = await response.json();
+      setHands(data.hands);
+
+      const response2 = await call_api(`/api/games/${game_key}/blackjack/is_game_over`, "get");
+      const data2 = await response2.json();
+
+      console.log("data2.is_game_over")
+
+      console.log(data2.is_game_over)
+
+      if (data2.is_game_over) {
+        console.log("I set")
+        setIsGameOver(true);
+      }
+
+    } catch (error) {
+      console.error('Error fetching other hands:', error);
+    }
+  };
+
+
+  useEffect(() => {
+    // if (!isGameOver) {
+    //   console.log("hey")
+    //   fetchHands();
+    // }
+
+    const intervalId = setInterval(fetchHands, 1000); // Fetch every 1 seconds
+
+    console.log("endddddddd")
 
     return () => clearInterval(intervalId); // Cleanup on unmount
-  }, []);
+  }, [isGameOver]);
 
   async function startNewGame() {
 
@@ -163,7 +197,7 @@ function BJ_GPT() {
     setPlayerHand(newPlayerHand);
     setPlayerScore(newPlayerScore);
 
-    if (newPlayerScore > 21){
+    if (newPlayerScore > 21) {
       setMessage("Player busted!")
     }
   };

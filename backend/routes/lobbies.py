@@ -151,7 +151,7 @@ def blackjack(prize: int , max_players: int):#, username = Depends(get_user_name
     
 @specific_lobby_router.post("/set_ready_for_start_game")
 def set_ready(lobby_key:str = Path(), lobby: Lobby = Depends(get_lobby), username = Depends(get_user_name)):
-    if COINS[username] <= lobby.prize:
+    if COINS[username] < lobby.prize:
         return {"result" : f"Not enough money! Need {lobby.prize} coins..."}
     else:
         lobby.set_ready(username)

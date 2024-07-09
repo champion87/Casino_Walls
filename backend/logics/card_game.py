@@ -263,6 +263,7 @@ class BlackJack(Game):
             
         
         if self.is_game_over():
+            LOG("game over draw")
             self.end_game()
     
     def fold(self, username:str):
@@ -272,6 +273,7 @@ class BlackJack(Game):
         LOG(f"{username} FOLDDDD")
         
         if self.is_game_over():
+            LOG("game over fold")
             self.end_game()
 
         
