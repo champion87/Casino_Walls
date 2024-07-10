@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.5f452951.css",
-    "main.js": "/static/js/main.1ee01abc.js",
+    "main.js": "/static/js/main.d9435fd0.js",
     "static/js/453.8ab44547.chunk.js": "/static/js/453.8ab44547.chunk.js",
     "static/media/wall_background.jpg": "/static/media/wall_background.c1cdc0c06e9ddcd9bbe3.jpg",
     "static/media/wheelpic.png": "/static/media/wheelpic.9bf391f8488f1c054644.png",
@@ -13,11 +13,11 @@
     "static/media/casino.ttf": "/static/media/casino.a2d2af13763c4348e773.ttf",
     "index.html": "/index.html",
     "main.5f452951.css.map": "/static/css/main.5f452951.css.map",
-    "main.1ee01abc.js.map": "/static/js/main.1ee01abc.js.map",
+    "main.d9435fd0.js.map": "/static/js/main.d9435fd0.js.map",
     "453.8ab44547.chunk.js.map": "/static/js/453.8ab44547.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.5f452951.css",
-    "static/js/main.1ee01abc.js"
+    "static/js/main.d9435fd0.js"
   ]
 }
