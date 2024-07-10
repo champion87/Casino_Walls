@@ -16,7 +16,7 @@ import { Label } from '@radix-ui/react-label';
 import { call_api } from 'src/lib/utils';
 import BJRulesButton from 'src/components/BJRulesButton';
 import LobbyCard from 'src/components/LobbyCard';
-import { fetchLobbies, create_lobby, join_lobby } from 'src/lib/main_page_utils';
+import { fetchLobbies, create_lobby } from 'src/lib/main_page_utils';
 import { LobbyList } from 'src/components/LobbyList';
 
 export const BlackJackMainPage = () => {
@@ -34,7 +34,6 @@ export const BlackJackMainPage = () => {
   async function play_singleplayer_bj() {
     const response = await call_api("/api/lobbies/create_lobby/blackjack/?prize=10&max_players=1", "post") // TODO generalize
     const data = await response.json()
-    await call_api(`/api/lobbies/${data["lobby_key"]}/join_lobby/`, "post");
     await call_api(`/api/lobbies/${data["lobby_key"]}/start_game/`, "post");
     console.log("started game$$$$$$$$$$$$$$$$$")
     navigate(`/games/${data["session_key"]}/blackjack`) // TODO change to the real route
@@ -53,15 +52,6 @@ export const BlackJackMainPage = () => {
         <div className="my-4">
           <h1 className="text-3xl font-bold text-yellow-400">On Going Lobbies</h1>
           <LobbyList gameName="blackjack" lobbies={lobbies}/>
-          {/* {lobbies.map((lobby) => (
-              <LobbyCard
-                lobby_key={lobby.key}
-                game_name={lobby.game_name}
-                max_players={lobby.max_players}
-                prize={lobby.prize}
-                onJoin={async () => {navigate(`/blackjack_lobby/${await join_lobby(lobby.key)}`)}}
-              />
-          ))} */}
         </div>
 
 

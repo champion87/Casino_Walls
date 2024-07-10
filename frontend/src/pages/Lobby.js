@@ -20,6 +20,13 @@ const Lobby = ({ gameName }) => {
 
   useEffect(() => {
     get_coins();
+    console.log("loaded")
+    call_api(`/api/lobbies/${lobby_key}/join_lobby/`, "post");
+    
+
+    
+    return () => {call_api(`/api/lobbies/${lobby_key}/leave_lobby`, "post"); console.log("bye bye")} // Cleanup on component unmount
+
   }, []);
 
   useEffect(() => {
@@ -55,7 +62,6 @@ const Lobby = ({ gameName }) => {
   }, []);
 
   async function BackToMainPage() {
-    call_api(`/api/lobbies/${lobby_key}/leave_lobby`, "post")
     console.log(gameName)
     navigate(`/${gameName}_main`)
   }

@@ -18,8 +18,8 @@ class Lobby:#(BaseModel):
         self.ready = {}
         self.old_users = []
         
-    def kick_all_players(self):
-        self.usernames = []
+    # def kick_all_players(self):
+    #     self.usernames = []
 
     def add(self, user: str):
         if len(self.usernames) >= self.max_players:

@@ -201,5 +201,5 @@ class CardGame(Game):
             
         self.usernames = self.lobby.get_players().copy()
             
-        self.lobby.kick_all_players()  
+        # self.lobby.kick_all_players()  
 

@@ -75,14 +75,20 @@ def get_player_count(lobby: Lobby = Depends(get_lobby)):
 
 @specific_lobby_router.post("/leave_lobby")
 def leave_lobby(lobby: Lobby = Depends(get_lobby), username = Depends(get_user_name)):
-    lobby.pop_user(username)
+    try:
+        lobby.pop_user(username)
+    except:
+        # raise HTTPException(status_code=422, detail="player is not in the lobby")
+        pass
+        
 
 @specific_lobby_router.post("/join_lobby")
 def join_lobby(lobby: Lobby = Depends(get_lobby), username = Depends(get_user_name)):
     if lobby == None:
         raise HTTPException(status_code=422, detail="no such lobby")
     if username in lobby.get_players(): #player is already in
-        raise HTTPException(status_code=422, detail="FUCKKKK")
+        # raise HTTPException(status_code=422, detail="FUCKKKK")
+        pass
 
     if username in USERNAME_TO_LOBBY_KEY:
         try:

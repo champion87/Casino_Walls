@@ -17,18 +17,5 @@ export async function create_lobby(gameName) {
     const data = await response.json()
     console.log("created lobby with key: " + data["lobby_key"])
     console.log("gamename: " + gameName)
-
-    await join_lobby(data["lobby_key"])
     return data["lobby_key"]
-}
-
-export async function join_lobby(key) {
-    try {
-        await call_api(`/api/lobbies/${key}/join_lobby/`, "post");
-        console.log(`Joined lobby with key: ${key}`);
-        return key
-    } catch (error) {
-        console.error(`Failed to join lobby with key ${key}:`, error);
-        throw "oof"
-    }
 }

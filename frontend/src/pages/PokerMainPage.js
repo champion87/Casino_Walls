@@ -16,7 +16,7 @@ import { Label } from '@radix-ui/react-label';
 import { call_api } from 'src/lib/utils';
 import BJRulesButton from 'src/components/BJRulesButton';
 import LobbyCard from 'src/components/LobbyCard';
-import { fetchLobbies, create_lobby, join_lobby } from 'src/lib/main_page_utils';
+import { fetchLobbies, create_lobby } from 'src/lib/main_page_utils';
 import { LobbyList } from 'src/components/LobbyList';
 import PokerRulesButton from 'src/components/PokerRules';
 
