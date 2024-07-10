@@ -66,7 +66,7 @@ def get_user(user_name :str = Depends(get_user_name)):
     return {"user" : user_name}
 
 
-@router.get("/create_guest_acount/")
+@router.post("/create_guest_acount/")
 async def create_guest_acount(response: Response):
     my_api_key = key_gen()
     username = "guest" + str(len(API_KEYS))
@@ -109,7 +109,7 @@ async def login(response: Response, username: str = Form(), password: str = Form
     return {"status": "ok"}
 
 
-@router.get("/logout/")
+@router.post("/logout/")
 async def logout(response: Response, api_key: str = Security(get_api_key)):
 
     API_KEYS.pop(api_key)

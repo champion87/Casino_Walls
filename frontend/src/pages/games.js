@@ -28,10 +28,11 @@ export const GamesLobbyPage = () =>  {
   }
   
   async function logout(){
-    await fetch('http://127.0.0.1:8000/api/auth/logout/',{
-      mode: "cors",
-      credentials: "include"
-    });
+    call_api("/api/auth/logout/", "post");
+    // await fetch('http://127.0.0.1:8000/api/auth/logout/',{
+    //   mode: "cors",
+    //   credentials: "include"
+    // });
     await forceUpdate();
     navigate('/')
   }
