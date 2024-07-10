@@ -1,0 +1,23 @@
+{
+  "files": {
+    "main.css": "/static/css/main.5f452951.css",
+    "main.js": "/static/js/main.1ee01abc.js",
+    "static/js/453.8ab44547.chunk.js": "/static/js/453.8ab44547.chunk.js",
+    "static/media/wall_background.jpg": "/static/media/wall_background.c1cdc0c06e9ddcd9bbe3.jpg",
+    "static/media/wheelpic.png": "/static/media/wheelpic.9bf391f8488f1c054644.png",
+    "static/media/casino.png": "/static/media/casino.3ff587c57877acca9658.png",
+    "static/media/wall_background_2.jpg": "/static/media/wall_background_2.4b90c84055a83fade9b6.jpg",
+    "static/media/possible_banner.png": "/static/media/possible_banner.78170fb610a9cd5eaad3.png",
+    "static/media/Playing-Cards.jpg": "/static/media/Playing-Cards.1d951d663e04122c268e.jpg",
+    "static/media/coinpic.png": "/static/media/coinpic.251eecd396cfd95e2a9d.png",
+    "static/media/casino.ttf": "/static/media/casino.a2d2af13763c4348e773.ttf",
+    "index.html": "/index.html",
+    "main.5f452951.css.map": "/static/css/main.5f452951.css.map",
+    "main.1ee01abc.js.map": "/static/js/main.1ee01abc.js.map",
+    "453.8ab44547.chunk.js.map": "/static/js/453.8ab44547.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.5f452951.css",
+    "static/js/main.1ee01abc.js"
+  ]
+}
