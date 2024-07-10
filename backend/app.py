@@ -23,12 +23,12 @@ import math
 import string
 from utils.my_log import LOG
 import datetime
+from fastapi.staticfiles import StaticFiles
 
 
 def create_app():
 
     app_ = FastAPI(openapi_url="/api/openapi.json", docs_url="/api/docs")
-
     #############
     ### REACT ###
     #############
@@ -38,7 +38,10 @@ def create_app():
         "localhost:3000",
         "http://localhost:3000/games",
         "localhost:3000/games",
+        "http://localhost:8000"
     ]
+    
+    # origins = ["*"]
 
     app_.add_middleware(
         CORSMiddleware,
@@ -63,5 +66,7 @@ def create_app():
     from routes.coins import router as coins_router
 
     app_.include_router(coins_router, prefix="/api/coins")
+
+    # app_.mount("/", StaticFiles(directory=r"C:\Users\lidor\me\arazim\casino\Casino_Walls\frontend\build", html=True), name="static")
 
     return app_

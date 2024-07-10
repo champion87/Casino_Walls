@@ -73,7 +73,9 @@ async def create_guest_acount(response: Response):
     API_KEYS[my_api_key] = username
     COINS[username] = 100
     # LOG('got here')
-    response.set_cookie(key="api_key", value=my_api_key, samesite='none', secure=True)
+    # response.set_cookie(key="api_key", value=my_api_key, samesite='none', secure=True)
+    response.set_cookie(key="api_key", value=my_api_key)
+
     return {"status": "ok"}
 
 
@@ -87,7 +89,9 @@ async def create_account(
     API_KEYS[my_api_key] = username
     COINS[username] = 100
 
-    response.set_cookie(key="api_key", value=my_api_key, samesite='none', secure=True)
+    # response.set_cookie(key="api_key", value=my_api_key, samesite='none', secure=True)
+    response.set_cookie(key="api_key", value=my_api_key)
+
     return {"status": "ok"}
 
 
@@ -105,7 +109,9 @@ async def login(response: Response, username: str = Form(), password: str = Form
     my_api_key = key_gen()
     API_KEYS[my_api_key] = username
 
-    response.set_cookie(key="api_key", value=my_api_key, samesite='none', secure=True)
+    # response.set_cookie(key="api_key", value=my_api_key, samesite='none', secure=True)
+    response.set_cookie(key="api_key", value=my_api_key)
+
     return {"status": "ok"}
 
 

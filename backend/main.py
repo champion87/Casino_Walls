@@ -4,3 +4,7 @@ from db import LOBBIES, SESSIONS
 
 
 app = create_app()
+
+@app.post("/hello")
+def hello():
+    pass
