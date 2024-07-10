@@ -48,6 +48,9 @@ def get_unused_id(data):
 ######################
 
 # TODO delete empty lobbies
+@router.delete("/delete_all")
+def delete_lobbies():
+    LOBBIES.clear()
 
 @router.get("/")
 def get_lobbies():
