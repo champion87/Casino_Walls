@@ -26,7 +26,7 @@ export const LoginPage = () => {
     //   mode: 'cors',
     //   credentials: 'include'
     // });
-    const res = call_api("/api/auth/create_guest_acount/", "post")
+    const res = await call_api("/api/auth/create_guest_acount/", "post")
     await forceUpdate();
     console.log("going to log in")
     if (page_address)

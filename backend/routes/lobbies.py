@@ -1,3 +1,4 @@
+import pdb
 from typing import List, Dict
 from fastapi.params import Path, Query
 import asyncio
@@ -74,6 +75,7 @@ def get_my_lobby(username = Depends(get_user_name)):
 
 @specific_lobby_router.get("/player_count")
 def get_player_count(lobby: Lobby = Depends(get_lobby)):
+    LOG("IM THE TROUBLE")
     return {'count' : len(lobby.get_players())}
 
 @specific_lobby_router.post("/leave_lobby")
@@ -139,27 +141,29 @@ from logics.blackjack_logic import BlackJack
 @create_lobby_router.post("/blackjack")
 def blackjack(prize: int , max_players: int):
     lobby, lobby_key = create_lobby("blackjack", prize, max_players)
+    LOG("WOWWPWOWJFOIDSAJLKJSL")
+    pdb.set_trace()
     game = BlackJack(lobby, prize, max_players)
     return {
         'lobby_key' : lobby_key,
         'session_key' : save_session(game, lobby_key)
     }   
 
-@create_lobby_router.post("/blackjack")
-def blackjack(prize: int , max_players: int):#, username = Depends(get_user_name)):
-    lobby, lobby_key = create_lobby("BlackJack", prize, max_players)
+# @create_lobby_router.post("/blackjack")
+# def blackjack(prize: int , max_players: int):#, username = Depends(get_user_name)):
+#     lobby, lobby_key = create_lobby("BlackJack", prize, max_players)
     
-    bj = BlackJack(lobby, prize, max_players)
+#     bj = BlackJack(lobby, prize, max_players)
     
-    session_key = get_unused_id(SESSIONS)
+#     session_key = get_unused_id(SESSIONS)
     
-    SESSIONS[session_key] = bj
-    LOBBY_TO_SESSION[lobby_key] = session_key
+#     SESSIONS[session_key] = bj
+#     LOBBY_TO_SESSION[lobby_key] = session_key
     
-    return {
-        'lobby_key' : lobby_key,
-        'session_key' : session_key
-    }
+#     return {
+#         'lobby_key' : lobby_key,
+#         'session_key' : session_key
+#     }
     
 
     
@@ -196,6 +200,11 @@ def set_ready(lobby_key:str = Path(), lobby: Lobby = Depends(get_lobby), usernam
     
 @specific_lobby_router.get("/is_game_started")
 def is_started(lobby_key:str = Path()):
+    if not lobby_key in LOBBY_TO_SESSION.keys():
+        raise HTTPException(status_code=404, detail="no such lobby")
+    if not LOBBY_TO_SESSION[lobby_key] in SESSIONS.keys():
+        raise HTTPException(status_code=500, detail="the lobby was found but there's no availabe session attached to it")
+        
     return {
         "is_started" : SESSIONS[LOBBY_TO_SESSION[lobby_key]].is_started(),
         "session_key" : LOBBY_TO_SESSION[lobby_key]
@@ -216,4 +225,4 @@ async def wait_for_players(lobby: Lobby = Depends(get_lobby)):
 
 
 router.include_router(create_lobby_router, prefix='/create_lobby')
-router.include_router(specific_lobby_router, prefix='/{lobby_key}')
+router.include_router(specific_lobby_router, prefix='/lobby/{lobby_key}')
