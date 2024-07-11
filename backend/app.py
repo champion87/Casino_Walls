@@ -8,6 +8,7 @@ from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Stre
 import starlette
 from starlette.exceptions import HTTPException
 from fastapi import (
+    Query,
     status,
     Security,
     FastAPI,
@@ -37,6 +38,8 @@ class ReactStaticFiles(StaticFiles):
         except HTTPException as e:
             if e.status_code == 404:
                 return await super().get_response('.', scope)
+            if e.status_code == 405:
+                return JSONResponse({"BASA":"SABABA"})
             raise 
     
     
@@ -71,6 +74,8 @@ def create_app():
 
     from routes.lobbies import router as lobbies_router
 
+    
+
     app_.include_router(lobbies_router, prefix="/api/lobbies")
 
     from routes.games import router as games_router
@@ -80,6 +85,8 @@ def create_app():
     from routes.coins import router as coins_router
 
     app_.include_router(coins_router, prefix="/api/coins")
+
+    
 
     app_.mount("/", ReactStaticFiles(directory=r"C:\Users\lidor\me\arazim\casino\Casino_Walls\frontend\build", html=True), name="static")
 

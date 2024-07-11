@@ -2,6 +2,8 @@ import pdb
 from typing import List, Dict
 from fastapi.params import Path, Query
 import asyncio
+
+from fastapi.responses import HTMLResponse, JSONResponse
 from logics.game import Game
 from logics.lobby import Lobby
 from routes.auth import get_user_name, key_gen
@@ -17,6 +19,12 @@ router = APIRouter()
 create_lobby_router = APIRouter()
 specific_lobby_router = APIRouter()
 
+
+
+
+@create_lobby_router.get("/hello")
+def hello(q=Query()):
+    return {"4":"world"}
     
 # ###########################
 # ### Dependency Handlers ###
@@ -31,7 +39,10 @@ def set_session(key, game):
 # TODO current default behavior is create new Lobby if not found
 def get_lobby(lobby_key: str = Path()):
     if lobby_key not in LOBBIES.keys():
-        return None
+        # return None
+        raise HTTPException(status_code=404, detail="lobby was not found")
+        # 
+
     return LOBBIES[lobby_key]
 
 def set_lobby(key, lobby):
@@ -53,30 +64,30 @@ def get_unused_id(data):
 def delete_lobbies():
     LOBBIES.clear()
 
-@router.get("/")
-def get_lobbies():
-    LOG({'lobbies' : [lobby.export() for lobby in LOBBIES.values()]})
-    return {'lobbies' : [lobby.export() for lobby in LOBBIES.values() if lobby.is_available()]}
+# @router.get("/")
+# def get_lobbies():
+#     LOG({'lobbies' : [lobby.export() for lobby in LOBBIES.values()]})
+#     return {'lobbies' : [lobby.export() for lobby in LOBBIES.values() if lobby.is_available()]}
 
-@router.get("/game/{game_name}")
-def get_lobbies(game_name:str = Path()):
-    LOG({'lobbies' : [lobby.export() for lobby in LOBBIES.values()]})
-    return {'lobbies' : [lobby.export() for lobby in LOBBIES.values() if lobby.is_available() and lobby.game_name == game_name]}
+# @router.get("/game/{game_name}")
+# def get_lobbies(game_name:str = Path()):
+#     LOG({'lobbies' : [lobby.export() for lobby in LOBBIES.values()]})
+#     return {'lobbies' : [lobby.export() for lobby in LOBBIES.values() if lobby.is_available() and lobby.game_name == game_name]}
 
  
-@router.get("/my_lobby")
-def get_my_lobby(username = Depends(get_user_name)):
-    # LOG(USERNAME_TO_LOBBY_KEY)
-    # LOG({'lobbies' : [lobby.export() for lobby in LOBBIES.values()]})
-    LOG("wow\n")
-    return { "lobby_key" : USERNAME_TO_LOBBY_KEY[username] }
-    # return { "lobby_key" : "WOW" }
+# @router.get("/my_lobby")
+# def get_my_lobby(username = Depends(get_user_name)):
+#     # LOG(USERNAME_TO_LOBBY_KEY)
+#     # LOG({'lobbies' : [lobby.export() for lobby in LOBBIES.values()]})
+#     LOG("wow\n")
+#     return { "lobby_key" : USERNAME_TO_LOBBY_KEY[username] }
+#     # return { "lobby_key" : "WOW" }
     
 
-@specific_lobby_router.get("/player_count")
-def get_player_count(lobby: Lobby = Depends(get_lobby)):
-    LOG("IM THE TROUBLE")
-    return {'count' : len(lobby.get_players())}
+# @specific_lobby_router.get("/player_count")
+# def get_player_count(lobby: Lobby = Depends(get_lobby)):
+#     LOG("IM THE TROUBLE")
+#     return {'count' : len(lobby.get_players())}
 
 @specific_lobby_router.post("/leave_lobby")
 def leave_lobby(lobby: Lobby = Depends(get_lobby), username = Depends(get_user_name)):
@@ -127,6 +138,12 @@ def save_session(game: Game, lobby_key: str):
 
 
 from logics.poker_logic import Poker
+
+@create_lobby_router.post("/wow")
+def hello(q:int=Query(), p:int=Query()):
+    LOG("WOW OMG")
+    return JSONResponse(f"crazy {q} {p}")
+
 @create_lobby_router.post("/poker")
 def poker(max_players: int):#, username = Depends(get_user_name)):
     lobby, lobby_key = create_lobby("poker", 0, max_players) # 0 is default value for prize since poker doesnt care about prize
@@ -139,7 +156,7 @@ def poker(max_players: int):#, username = Depends(get_user_name)):
 
 from logics.blackjack_logic import BlackJack
 @create_lobby_router.post("/blackjack")
-def blackjack(prize: int , max_players: int):
+def blackjack(prize: int = Query() , max_players: int = Query()):
     lobby, lobby_key = create_lobby("blackjack", prize, max_players)
     LOG("WOWWPWOWJFOIDSAJLKJSL")
     pdb.set_trace()
@@ -198,30 +215,30 @@ def set_ready(lobby_key:str = Path(), lobby: Lobby = Depends(get_lobby), usernam
 
     
     
-@specific_lobby_router.get("/is_game_started")
-def is_started(lobby_key:str = Path()):
-    if not lobby_key in LOBBY_TO_SESSION.keys():
-        raise HTTPException(status_code=404, detail="no such lobby")
-    if not LOBBY_TO_SESSION[lobby_key] in SESSIONS.keys():
-        raise HTTPException(status_code=500, detail="the lobby was found but there's no availabe session attached to it")
+# @specific_lobby_router.get("/is_game_started")
+# def is_started(lobby_key:str = Path()):
+#     if not lobby_key in LOBBY_TO_SESSION.keys():
+#         raise HTTPException(status_code=404, detail="no such lobby")
+#     if not LOBBY_TO_SESSION[lobby_key] in SESSIONS.keys():
+#         raise HTTPException(status_code=500, detail="the lobby was found but there's no availabe session attached to it")
         
-    return {
-        "is_started" : SESSIONS[LOBBY_TO_SESSION[lobby_key]].is_started(),
-        "session_key" : LOBBY_TO_SESSION[lobby_key]
-    }
+#     return {
+#         "is_started" : SESSIONS[LOBBY_TO_SESSION[lobby_key]].is_started(),
+#         "session_key" : LOBBY_TO_SESSION[lobby_key]
+#     }
     
     
-# http://127.0.0.1:8000/api/2/lobbies/current_players
-@specific_lobby_router.get("/current_players")
-def players(lobby: Lobby = Depends(get_lobby)):
-    LOG(lobby.get_players())
-    return {"players": lobby.get_players()}
+# # http://127.0.0.1:8000/api/2/lobbies/current_players
+# @specific_lobby_router.get("/current_players")
+# def players(lobby: Lobby = Depends(get_lobby)):
+#     LOG(lobby.get_players())
+#     return {"players": lobby.get_players()}
 
-@specific_lobby_router.get("/wait_for_players")
-async def wait_for_players(lobby: Lobby = Depends(get_lobby)):
-    player_added_event.clear()
-    await player_added_event.wait()
-    return {"players": lobby.get_players()}
+# @specific_lobby_router.get("/wait_for_players")
+# async def wait_for_players(lobby: Lobby = Depends(get_lobby)):
+    # player_added_event.clear()
+    # await player_added_event.wait()
+    # return {"players": lobby.get_players()}
 
 
 router.include_router(create_lobby_router, prefix='/create_lobby')
