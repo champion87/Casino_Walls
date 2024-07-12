@@ -71,3 +71,8 @@ http://127.0.0.1:8000/
 
 react server:
 http://localhost:3000  
+
+
+app.py: mount
+call_api: adress, cors
+cookies

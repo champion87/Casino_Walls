@@ -92,7 +92,7 @@ def create_app():
         return HTMLResponse("world")
     
 
-    app_.mount("/", ReactStaticFiles(directory=r"frontend/build", html=True), name="static")
+    # app_.mount("/", ReactStaticFiles(directory=r"frontend/build", html=True), name="static")
 
 
 

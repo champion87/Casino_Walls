@@ -13,10 +13,10 @@ export async function call_api(path, the_method) {
 
   if (the_method == undefined) { throw "you forgot the method parameter" }
   try {
-    // return await fetch(`http://127.0.0.1:8000${path}`, {
-    return await fetch(`${path}`, {
+    return await fetch(`http://127.0.0.1:8000${path}`, {
+    // return await fetch(`${path}`, {
       method: the_method,
-      // mode: 'cors',
+      mode: 'cors',
       credentials: 'include'
     });
   } catch (error) {
