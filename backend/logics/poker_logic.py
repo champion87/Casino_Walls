@@ -27,7 +27,7 @@ class Poker(CardGame):
         best_hand = ""
         winner_list : List[str] = []
 
-        if (winner)
+
 
         for username in self.usernames:
             if self.is_out[username]:
