@@ -14,18 +14,25 @@ const Lobby = ({ gameName }) => {
   const navigate = useNavigate();
 
   async function get_coins() {
-    const coin_res = await call_api("/api/coins/", "GET").then(response => response.json());
+    const coin_res = await call_api("/api/coins", "GET").then(response => response.json());
     setCoinAmount(parseInt(coin_res.coins));
   }
 
   useEffect(() => {
     get_coins();
+    console.log("loaded")
+    call_api(`/api/lobbies/lobby/${lobby_key}/join_lobby`, "post");
+    
+
+    
+    return () => {call_api(`/api/lobbies/lobby/${lobby_key}/leave_lobby`, "post"); console.log("bye bye")} // Cleanup on component unmount
+
   }, []);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await call_api(`/api/lobbies/${lobby_key}/is_game_started`, "get");
+        const response = await call_api(`/api/lobbies/lobby/${lobby_key}/is_game_started`, "get");
         const data = await response.json();
 
         if (data.is_started) {
@@ -37,7 +44,7 @@ const Lobby = ({ gameName }) => {
       }
 
       try {
-        const response = await call_api(`/api/lobbies/${lobby_key}/current_players`, "get");
+        const response = await call_api(`/api/lobbies/lobby/${lobby_key}/current_players`, "get");
         const data = await response.json();
         setPlayers(data.players);
         setLoading(false);
@@ -55,7 +62,6 @@ const Lobby = ({ gameName }) => {
   }, []);
 
   async function BackToMainPage() {
-    call_api(`/api/lobbies/${lobby_key}/leave_lobby`, "post")
     console.log(gameName)
     navigate(`/${gameName}_main`)
   }
@@ -71,7 +77,7 @@ const Lobby = ({ gameName }) => {
   // };
 
   async function goReady() {
-    const response = await call_api(`/api/lobbies/${lobby_key}/set_ready_for_start_game`, "post")
+    const response = await call_api(`/api/lobbies/lobby/${lobby_key}/set_ready_for_start_game`, "post")
     const data = await response.json()
     console.log(data)
     setMessage(data.result);

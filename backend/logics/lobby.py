@@ -18,10 +18,12 @@ class Lobby:#(BaseModel):
         self.ready = {}
         self.old_users = []
         
-    def kick_all_players(self):
-        self.usernames = []
+    # def kick_all_players(self):
+    #     self.usernames = []
 
     def add(self, user: str):
+        LOG(f"{self.old_users=}")    
+        LOG(f"{self.usernames=}")
         if len(self.usernames) >= self.max_players:
             raise Exception(f"Lobby <{self.key}> is full!")
         if user not in self.old_users and self.is_locked:
@@ -30,13 +32,14 @@ class Lobby:#(BaseModel):
             if user not in self.usernames:
                 self.usernames.append(user)
                 self.old_users.append(user)
-            LOG("HEYYYYYYYYYYYYY")
-            LOG(self.usernames)
+        LOG(f"{self.old_users=}")    
+        LOG(f"{self.usernames=}")
             
     def set_ready(self, username: str):
         self.ready[username] = True
     
     def is_ready(self):
+        LOG(f"lobby.is_ready(): users: {self.usernames}")
         for user in self.usernames:
             if not self.ready.get(user, False):
                 LOG(f"{user} is not ready")
@@ -63,7 +66,7 @@ class Lobby:#(BaseModel):
     def pop_user(self, username):
         if username in self.usernames:
             self.usernames.remove(username)
-            self.old_users.remove(username)
+            self.ready.pop(username, None)
         else:
             raise Exception(f"User <{username}> is not in Lobby <{self.key}>!")
     

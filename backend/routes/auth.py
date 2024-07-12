@@ -55,7 +55,8 @@ def get_api_key(
 def get_user_name(
     api_key: str = Security(api_key_query),
 ) -> str:
-    # LOG(f"{api_key = }")    # # LOG(API_KEYS)
+    LOG(f"{api_key = }") 
+    LOG(API_KEYS)
     if api_key in API_KEYS.keys():
         return API_KEYS[api_key]
     raise HTTPException(status_code=401, detail="no valid token")
@@ -66,18 +67,20 @@ def get_user(user_name :str = Depends(get_user_name)):
     return {"user" : user_name}
 
 
-@router.get("/create_guest_acount/")
+@router.post("/create_guest_acount")
 async def create_guest_acount(response: Response):
     my_api_key = key_gen()
     username = "guest" + str(len(API_KEYS))
     API_KEYS[my_api_key] = username
     COINS[username] = 100
     # LOG('got here')
-    response.set_cookie(key="api_key", value=my_api_key, samesite='none', secure=True)
+    # response.set_cookie(key="api_key", value=my_api_key, samesite='none', secure=True)
+    response.set_cookie(key="api_key", value=my_api_key)
+
     return {"status": "ok"}
 
 
-@router.post("/create_account/")
+@router.post("/create_account")
 async def create_account(
     response: Response, username: str = Form(), password: str = Form()):
     if(username in USERNAME_TO_PASSWORD.keys()):
@@ -87,11 +90,13 @@ async def create_account(
     API_KEYS[my_api_key] = username
     COINS[username] = 100
 
-    response.set_cookie(key="api_key", value=my_api_key, samesite='none', secure=True)
+    # response.set_cookie(key="api_key", value=my_api_key, samesite='none', secure=True)
+    response.set_cookie(key="api_key", value=my_api_key)
+
     return {"status": "ok"}
 
 
-@router.post("/login/")
+@router.post("/login")
 async def login(response: Response, username: str = Form(), password: str = Form()):
     if username not in USERNAME_TO_PASSWORD.keys():
         # LOG("user doesn't exist")
@@ -105,11 +110,13 @@ async def login(response: Response, username: str = Form(), password: str = Form
     my_api_key = key_gen()
     API_KEYS[my_api_key] = username
 
-    response.set_cookie(key="api_key", value=my_api_key, samesite='none', secure=True)
+    # response.set_cookie(key="api_key", value=my_api_key, samesite='none', secure=True)
+    response.set_cookie(key="api_key", value=my_api_key)
+
     return {"status": "ok"}
 
 
-@router.get("/logout/")
+@router.post("/logout")
 async def logout(response: Response, api_key: str = Security(get_api_key)):
 
     API_KEYS.pop(api_key)

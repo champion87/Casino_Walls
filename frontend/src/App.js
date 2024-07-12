@@ -31,19 +31,22 @@ const App = () => {
     <div className='App'>
       <Toaster />
       <UserContextProvider>
+        {/* <Router basename='/static'> */}
         <Router>
+
           <Routes>
-            <Route path="/login" element={<LoginPage />} />
+            <Route path="/login/:prevPath?" element={<LoginPage />} />
 
             {/* TESTING */}
             {/* <Route path="/lobby/:lobby_key" element={<Lobby />} /> */}
             {/* TESTING */}
 
             <Route element={<PrivateRoute />}>
-              <Route exact path="/" element={<HomePage />} />
+
+              <Route exact path="/" element={<HomePage />}/>
               <Route path="/blackjack_main" element={<BlackJackMainPage />} />
               <Route path="/poker_main" element={<PokerMainPage />} />
-              <Route path="/poker_lobby/:lobby_key" element={<Lobby gameName="poker"/>} />
+              <Route path="/poker_lobby/:lobby_key" element={<Lobby gameName="poker" />} />
               <Route path="/blackjack_lobby/:lobby_key" element={<Lobby gameName="blackjack" />} />
 
               <Route path="games/:game_key?" element={<GamesLobbyPage />}>
@@ -52,6 +55,9 @@ const App = () => {
                 <Route path="wheel_of_fortune" element={<Wheel_of_fortune />} />
               </Route>
             </Route>
+
+
+
           </Routes>
         </Router>
       </UserContextProvider>

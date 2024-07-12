@@ -107,8 +107,8 @@ function BJ_GPT() {
   async function BackToLobby() {
     const response = await call_api(`/api/lobbies/my_lobby`, "get")
     const data = await response.json()
+    console.log(data.lobby_key)
     await call_api(`/api/games/${game_key}/blackjack/abort`, "post")
-    await call_api(`/api/lobbies/${data.lobby_key}/join_lobby`, "post")
     navigate(`/blackjack_lobby/${data.lobby_key}`)
   }
 
@@ -210,7 +210,7 @@ function BJ_GPT() {
       <div className="controls">
         <button onClick={hit} disabled={message !== ''}>Hit</button>
         <button onClick={stand} disabled={message !== ''}>Stand</button>
-        <button onClick={BackToLobby}>Back to Lobby</button>
+        <button onClick={BackToLobby}>Back To Lobby</button>
         <button onClick={BackToMainPage}>Main page</button>
       </div>
 

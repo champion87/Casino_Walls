@@ -6,6 +6,7 @@ import React, {
   useContext,
   useReducer }from 'react';
 import { Outlet, Navigate, useLocation } from 'react-router-dom';
+import { call_api } from 'src/lib/utils';
 
 
 export const userContext = createContext({})
@@ -21,10 +22,11 @@ export const UserContextProvider = ({children}) => {
 
   useEffect(() => {
     console.log("loading the context provider")
-    fetch('http://127.0.0.1:8000/api/auth/user', {
-      mode: 'cors',
-      credentials: 'include'
-    }).then(res => {
+    // fetch('http://127.0.0.1:8000/api/auth/user', {
+      // mode: 'cors',
+      // credentials: 'include'
+      // })
+    call_api("/api/auth/user", "get").then(res => {
       res.json().then(json => {
         setUserData({user: json.user, loading: false});
       })
