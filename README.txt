@@ -69,5 +69,10 @@ http://127.0.0.1:81/api/docs
 python server:
 http://127.0.0.1:8000/
 
+
 react server:
 http://localhost:3000  
+
+
+uvicorn main:app --host 0.0.0.0 --port 81
+npm run build
