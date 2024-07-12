@@ -64,7 +64,7 @@ def get_unused_id(data):
 def delete_lobbies():
     LOBBIES.clear()
 
-@router.get("/")
+@router.get("")
 def get_lobbies():
     LOG({'lobbies' : [lobby.export() for lobby in LOBBIES.values()]})
     return {'lobbies' : [lobby.export() for lobby in LOBBIES.values() if lobby.is_available()]}

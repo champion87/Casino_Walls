@@ -6,7 +6,7 @@ router = APIRouter()
 
 
 last_claimed= {}
-@router.get('/')
+@router.get('')
 def get_coins(user_name: str = Depends(get_user_name)):
     return { "coins": COINS[user_name]}
 

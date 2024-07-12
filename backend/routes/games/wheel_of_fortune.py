@@ -41,7 +41,7 @@ def get_coins(username=Depends(get_user_name)):
     return {"prize": message}
 
 
-@router.get("/", response_class=HTMLResponse)
+@router.get("", response_class=HTMLResponse)
 def read_item(username=Depends(get_user_name)):
     return FileResponse("/")  # HTML_files/wheel_of_fortune.html
 
