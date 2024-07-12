@@ -31,6 +31,22 @@ POKER_CARD_SYMBOLS = {
     Symbol.SPADES : "s",
 }
 
+POKER_CARD_VALUES = {
+    2 : "2" ,
+    3 : "3" ,
+    4 : "4" ,
+    5 : "5" ,
+    6 : "6" ,
+    7 : "7" ,
+    8 : "8" ,
+    9 : "9" ,
+    10 : "T",
+    11 : "J" ,
+    12 : "Q" ,
+    13 : "K" ,
+    1 : "A" ,
+}
+
 BJ_CARD_VALUES = {
     "2" : 2 ,
     "3" : 3 ,
@@ -82,7 +98,7 @@ class Card:
         return BJ_CARD_VALUES[CARD_VALUES[self.number]]
     
     def get_Poker_string(self):
-        return CARD_VALUES[self.number] + POKER_CARD_SYMBOLS[self.symbol]
+        return POKER_CARD_VALUES[self.number] + POKER_CARD_SYMBOLS[self.symbol]
 
 
 NEW_DECK = [Card(symb, num) for (symb, num) in itertools.product(CARD_SYMBOLS.keys(), CARD_VALUES.keys())]
@@ -136,9 +152,11 @@ class Hand:
             raise Exception("cant get score without a board")
         
         card_list = self.to_poker_list_of_str() + board.to_poker_list_of_str()
+        LOG(card_list)
         my_hand = [eval7.Card(s) for s in card_list]
-            
-        return eval7.evaluate(my_hand)
+        
+        hand_evaluation = eval7.evaluate(my_hand)
+        return hand_evaluation , eval7.handtype(hand_evaluation)
     
     
     
@@ -172,6 +190,9 @@ class CardGame(Game):
     
     def end_game(self):
         self.status = GameStatus.NO_GAME
+
+    def get_player_num(self, username : str):
+        return [i for i,x in enumerate(self.usernames) if x == username][0]
         
     def get_hands_for_show(self, username: str):
         res = {}

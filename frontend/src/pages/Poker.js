@@ -1,35 +1,58 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { call_api } from 'src/lib/utils';
 import { useParams } from 'react-router-dom';
-import { Toast } from '@radix-ui/react-toast';
 import { useToast } from 'src/components/ui/use-toast';
 import { ToastAction } from '@radix-ui/react-toast';
+import { Button } from 'src/components/ui/button';
 
 const PokerTable = () => {
-    const toast = useToast()
+    const { toast } = useToast()
 
     let { game_key } = useParams();
-    const [playerCards, setPlayerCards] = useState(['', '']); // Initial player cards
-    const [boardCards, setBoardCards] = useState(['', '', '', '', '']); // Initial Board cards
+    const [playerCards, setPlayerCards] = useState({}); // Initial player cards
+    const [boardCards, setBoardCards] = useState([]); // Initial Board cards
     const [pot, setPot] = useState(0); // Initial pot amount
     const [currentPlayer, setCurrentPlayer] = useState(0); // Index of current player
+    const [currentPlayerName, setCurrentPlayerName] = useState(''); // Index of current player
     const [gamePhase, setGamePhase] = useState('deal'); // Game phase: 'deal', 'flop', 'turn', 'river', 'showdown'
     const [playerBet, setPlayerBet] = useState(0); // Amount player bets in current round
     const [myBet, setMyBet] = useState(0); // Amount this player betted in current round
+    const [bets, setBets] = useState([]); // Amount all players betted in current round
+    const [myPlayerNum, setMyPlayerNum] = useState(0); // the number of this player
+    const [reload, setReload] = useState(0); // used to refetch information from the server
+    const [myUsername, setMyUsername] = useState(""); // used to know the users username
+    const [winners, setWinners] = useState([]); // The winners of the round
+    const [winningHand, setWinningHand] = useState(""); // The hand type of the winner
+
+    const updatePage = async () => {
+        const info = await call_api(`/api/games/${game_key}/poker/info`, "GET").then(res => res.json())
+        setBoardCards(info.board);
+        setPlayerCards(info.hands);
+        setPot(info.pot);
+        setPlayerBet(info.current_bet);
+        setCurrentPlayer(info.player);
+        setCurrentPlayerName(info.player_name);
+        setGamePhase(info.phase);
+        setBets(info.bets);
+        setMyPlayerNum(info.num);
+        setMyUsername(info.username)
+        setMyBet(bets[myUsername])
+        setWinners(info.winners)
+        setWinningHand(info.winning_hand)
+    }
+
+    const refresh = () => {
+        setReload((reload + 1) % 10)
+    }
 
 
-    const dealCards = () => {
+    useEffect(() => {
+        updatePage()
+        const intervalId = setInterval(refresh, 1000); // Fetch every 1 seconds
+        return () => clearInterval(intervalId); // unmountCleanup on 
+    }, [reload]);
 
-        const playerCards = ['Ac', 'As']; //TODO
-        const cardsOnBoard = ['2s', '2c', '2h', '2d', '3s']; //TODO
-
-        setPlayerCards(playerCards);
-        setBoardCards(cardsOnBoard);
-        setGamePhase('flop');
-        setCurrentPlayer(0); // Reset to player 0 after dealing
-    };
-
-    const check = () => {
+    const check = async () => {
         if (myBet < playerBet) {
             toast({
                 title: "Can't check",
@@ -41,39 +64,37 @@ const PokerTable = () => {
             });
             return;
         }
+        await call_api(`/api/games/${game_key}/poker/check`, "POST")
         console.log(`Player ${currentPlayer} checks.`);
         nextPlayer();
     };
 
-    async function call(){
-        await call_api(`api/games/${game_key}/poker/call`)
+    const call = async () => {
+        await call_api(`/api/games/${game_key}/poker/call`, "POST")
         console.log(`Player ${currentPlayer} calls.`);
         setPot(pot + playerBet - myBet);
         setMyBet(playerBet)
         nextPlayer();
     };
 
-    async function raise(raiseAmount) {
-        await call_api(`api/games/${game_key}/poker/raise`)
-        // In a real game, this might involve increasing the current bet amount and deducting chips from the player
-        const newBet = playerBet + raiseAmount; // Example: Increase bet by 10 for demonstration
+    const raise = async (raiseAmount) => {
+        await call_api(`/api/games/${game_key}/poker/raise`, "POST")
+        const newBet = playerBet + raiseAmount;
         console.log(`Player ${currentPlayer} raises to ${newBet}.`);
-        setPot(pot + newBet);
-        setPlayerBet(newBet);
         nextPlayer();
     };
 
-    const fold = () => {
-        // Logic for a player folding (removing player from the round)
-        // In a real game, this might involve removing the player's cards from the table
+    const fold = async () => {
+        await call_api(`/api/games/${game_key}/poker/fold`, "POST")
+        // remove the player's cards from the table
         console.log(`Player ${currentPlayer} folds.`);
-        // Implement logic to handle fold, perhaps skip player in future rounds or mark as folded
         nextPlayer();
     };
 
-    const nextPlayer = () => {
-        // Move to the next player in sequence
-        const nextPlayerIndex = currentPlayer % 2 + 1; // Assuming 2 players for simplicity
+    const nextPlayer = async () => {
+        // Move locally to the next player in sequence
+        const player_amount = await call_api(`/api/games/${game_key}/poker/get_player_amount`, "GET").then(res => res.json())
+        const nextPlayerIndex = (currentPlayer + 1) % player_amount.amount;
         setCurrentPlayer(nextPlayerIndex);
     };
 
@@ -82,38 +103,56 @@ const PokerTable = () => {
             <h1>Poker Table</h1>
             <div className="game-info">
                 <p>Current Phase: {gamePhase}</p>
-                <p>Current Player: Player {currentPlayer}</p>
+                <p>Current Player: {currentPlayerName}</p>
                 <p>Pot: ${pot}</p>
                 <p>Current Bet: ${playerBet}</p>
             </div>
 
             <div className="player-section">
-                <h2>Player {currentPlayer}</h2>
-                <div className="player-cards">
-                    {playerCards.map((card, index) => (
-                        <div key={index} className="card">{card}</div>
+                <div className="player-cards flex-col">
+                    {Object.entries(playerCards).map(([key, hand]) => (
+                        <>
+                            <div className='inline-block m-5'>
+                                <h2>{key}'s Hand</h2>
+                                <div id="player-cards" className="cards">
+                                    {hand.map((card, index) => (
+                                        <div key={index} className="card">{card}</div>))}
+                                </div>
+                                <h2>{key}'s Bet: {bets[key]}</h2>
+                            </div>
+                        </>
                     ))}
                 </div>
                 <div className="player-actions">
-                    {/* Buttons for player actions */}
-                    <button onClick={check} disabled={currentPlayer !== 1 || gamePhase !== 'flop'}>Check</button>
-                    <button onClick={call} disabled={currentPlayer !== 1 || gamePhase !== 'flop' || playerBet === 0}>Call</button>
-                    <button onClick={raise} disabled={currentPlayer !== 1 || gamePhase !== 'flop'}>Raise</button>
-                    <button onClick={fold} disabled={currentPlayer !== 1 || gamePhase !== 'flop'}>Fold</button>
+                    <Button onClick={check} disabled={currentPlayer !== myPlayerNum || gamePhase === 'showdown' || myBet < playerBet}>Check</Button>
+                    <Button onClick={call} disabled={currentPlayer !== myPlayerNum || gamePhase === 'showdown' || playerBet === myBet}>Call</Button>
+                    <Button onClick={() => raise(10)} disabled={currentPlayer !== myPlayerNum || gamePhase === 'showdown'}>Raise</Button>
+                    <Button onClick={fold} disabled={currentPlayer !== myPlayerNum || gamePhase === 'showdown'}>Fold</Button>
                 </div>
             </div>
 
-            <div className="community-cards">
+            <div className="community-cards flex-col items-center justify-center">
                 <h2>Board</h2>
+                <div className="flex ">
                 {boardCards.map((card, index) => (
-                    <div key={index} className="card">{card}</div>
+                    <div key={index} className="card ">{card}</div>
                 ))}
+                </div>
+            </div>
+
+            <div>
+                <div className={(gamePhase ===  "showdown") ? "flex-col" : "hidden"}>
+                    <h2>winners</h2>
+                    {winners.map((winner, index) => (
+                        <div key={index} className="card inline-block m-5">{winner}</div>
+                    ))}
+                    <div>
+                        with {winningHand}
+                    </div>
+                </div>
             </div>
 
             <div className="control-buttons">
-                {gamePhase === 'deal' && (
-                    <button onClick={dealCards}>Deal Cards</button>
-                )}
                 {/* Add buttons for other game phases (turn, river, showdown) */}
             </div>
         </div>
