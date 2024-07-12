@@ -147,7 +147,7 @@ const PokerTable = () => {
                         <div key={index} className="card inline-block m-5">{winner}</div>
                     ))}
                     <div>
-                        with {winningHand}
+                         {winningHand ? "with " + winningHand : ""}
                     </div>
                 </div>
             </div>

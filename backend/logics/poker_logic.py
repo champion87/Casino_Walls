@@ -20,30 +20,35 @@ class Poker(CardGame):
         self.winners : List[str] = []
         self.win_state : str = ""
     
-    def end_game(self, winner = None):
+    def end_game(self, winner_by_fold = None):
         super().end_game()
-        
+        LOG("end_game called")
         best_score = 0
         best_hand = ""
         winner_list : List[str] = []
+        self.phase = "showdown"
 
+        if winner_by_fold:
+            for username in self.usernames:
+                self.is_out[username] = True
+            
+            winner_list = [winner_by_fold]
+        else:
+            for username in self.usernames:
+                if self.is_out[username]:
+                    score = 0
+                    hand_type = ""
+                else:
+                    self.is_out[username] = True # just to make sure
+                    score , hand_type = self.hands[username].get_Poker_score(self.board)
 
-
-        for username in self.usernames:
-            if self.is_out[username]:
-                score = 0
-                hand_type = ""
-            else:
-                self.is_out[username] = True # just to make sure
-                score , hand_type = self.hands[username].get_Poker_score(self.board)
-
-            if score > best_score:
-                winner_list.clear()
-                winner_list.append(username)
-                best_score = score
-                best_hand = hand_type
-            elif score == best_score:
-                winner_list.append(username)
+                if score > best_score:
+                    winner_list.clear()
+                    winner_list.append(username)
+                    best_score = score
+                    best_hand = hand_type
+                elif score == best_score:
+                    winner_list.append(username)
 
         for winner in winner_list:
             COINS[winner] += self.pot // len(winner_list)
@@ -123,7 +128,7 @@ class Poker(CardGame):
     
     def stand(self, username: str) -> bool:
         LOG("another check")
-        if username != self.usernames[self.current_player]:
+        if username != self.usernames[self.current_player] or self.is_out[username]:
             return False
         
         if ((self.bets[username] < self.current_bet) and (COINS[username] != 0)):
@@ -139,7 +144,7 @@ class Poker(CardGame):
         return True
 
     def call(self, username: str) -> bool:
-        if username != self.usernames[self.current_player]:
+        if username != self.usernames[self.current_player] or self.is_out[username]:
             return False
         
         if self.current_bet == self.bets[username]:
@@ -159,7 +164,7 @@ class Poker(CardGame):
         return True
 
     def my_raise(self, username: str, raise_amount: int = 10) -> int: # raise_amount is amount of money added to the current bet of the table
-        if (username != self.usernames[self.current_player]) or (COINS[username] == 0):
+        if (username != self.usernames[self.current_player]) or (COINS[username] == 0) or (self.is_out[username]):
             return 0
         
         coins_to_reduce = min(self.current_bet - self.bets[username] + raise_amount, COINS[username])
@@ -196,7 +201,7 @@ class Poker(CardGame):
                     break
         else:
             self.end_game(not_standing_player)
-            return
+            return True
             
         if self.is_round_over():
             self.end_round()
