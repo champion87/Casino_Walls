@@ -39,6 +39,7 @@ class Lobby:#(BaseModel):
         self.ready[username] = True
     
     def is_ready(self):
+        LOG(f"lobby.is_ready(): users: {self.usernames}")
         for user in self.usernames:
             if not self.ready.get(user, False):
                 LOG(f"{user} is not ready")
@@ -65,7 +66,7 @@ class Lobby:#(BaseModel):
     def pop_user(self, username):
         if username in self.usernames:
             self.usernames.remove(username)
-            # self.old_users.remove(username)
+            self.ready.pop(username, None)
         else:
             raise Exception(f"User <{username}> is not in Lobby <{self.key}>!")
     

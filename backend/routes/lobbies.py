@@ -31,6 +31,8 @@ def hello(q=Query()):
 # ###########################
 
 def get_session(game_key: str = Path(..., description="game key ahhhh")):
+    if game_key not in SESSIONS.keys():
+        raise HTTPException(status_code=404, detail="session was not found")
     return SESSIONS[game_key]
 
 def set_session(key, game):
@@ -39,10 +41,7 @@ def set_session(key, game):
 # TODO current default behavior is create new Lobby if not found
 def get_lobby(lobby_key: str = Path()):
     if lobby_key not in LOBBIES.keys():
-        # return None
         raise HTTPException(status_code=404, detail="lobby was not found")
-        # 
-
     return LOBBIES[lobby_key]
 
 def set_lobby(key, lobby):
@@ -210,11 +209,13 @@ def set_ready(lobby_key:str = Path(), lobby: Lobby = Depends(get_lobby), usernam
                 LOG(f"{lobby_key}")
                 
                 SESSIONS[LOBBY_TO_SESSION[lobby_key]].start_game()
-                return {"result" : "Ready!"}
                 
             except:
+                raise HTTPException(404, "NO SESSION FOUND")
                 LOG("ERROR IN SET READY: NO SESSION FOUND")
                 return {}
+        return {"result" : "Ready!"}
+        
                     
 
     
