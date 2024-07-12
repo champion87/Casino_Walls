@@ -14,14 +14,14 @@ const Lobby = ({ gameName }) => {
   const navigate = useNavigate();
 
   async function get_coins() {
-    const coin_res = await call_api("/api/coins/", "GET").then(response => response.json());
+    const coin_res = await call_api("/api/coins", "GET").then(response => response.json());
     setCoinAmount(parseInt(coin_res.coins));
   }
 
   useEffect(() => {
     get_coins();
     console.log("loaded")
-    call_api(`/api/lobbies/lobby/${lobby_key}/join_lobby/`, "post");
+    call_api(`/api/lobbies/lobby/${lobby_key}/join_lobby`, "post");
     
 
     

@@ -23,26 +23,19 @@ export const GamesLobbyPage = () =>  {
   const [coinAmount, setCoinAmount] = useState(0);
 
   async function get_coins(){
-    const coin_res = await call_api("/api/coins/", "GET").then(response => response.json());
+    const coin_res = await call_api("/api/coins", "GET").then(response => response.json());
     setCoinAmount(parseInt(coin_res.coins));
   }
   
   async function logout(){
-    call_api("/api/auth/logout/", "post");
-    // await fetch('http://127.0.0.1:8000/api/auth/logout/',{
-    //   mode: "cors",
-    //   credentials: "include"
-    // });
+    call_api("/api/auth/logout", "post");
     await forceUpdate();
     navigate('/')
   }
 
   async function claim_coins(){
-    var got_coins = await fetch('http://127.0.0.1:8000/api/coins/claim/',{
-      mode: "cors",
-      credentials: "include",
-      method : "POST"
-    }).then(response => response.json());
+    
+    var got_coins = await call_api('/api/coins/claim', "POST").then(response => response.json());
     console.log(got_coins)
     if (got_coins.claimed == 'true'){
       setCoinAmount(coinAmount + 50)
@@ -130,12 +123,6 @@ export const GamesLobbyPage = () =>  {
             </div>
           </div>
         </div>
-        {/*<button onClick="location.href = '/games/wheel_of_fortune/';">Go to wheel of fortune</button>
-        <button onClick="location.href = '/games/black_jack/lobby1';">Go to black jack</button>
-        <button onClick="location.href = '/lobby2';">Try Lobby 2</button>
-        <button onClick={logout}>logout</button>
-        <button onClick={claim_coins}>claim free coins every hour!!!!</button>
-        <p>{coinStatus}</p>*/}
     </div>
   )
 }

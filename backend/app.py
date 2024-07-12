@@ -87,13 +87,15 @@ def create_app():
     app_.include_router(coins_router, prefix="/api/coins")
 
     
+    @app_.get("/test")
+    def test():
+        return HTMLResponse("world")
+    
 
     app_.mount("/", ReactStaticFiles(directory=r"C:\Users\lidor\me\arazim\casino\Casino_Walls\frontend\build", html=True), name="static")
 
 
 
-    
-    
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s [in %(pathname)s:%(lineno)d]",

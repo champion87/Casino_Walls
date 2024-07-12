@@ -22,11 +22,7 @@ export const LoginPage = () => {
 
   async function sign_as_guest(page_address) {
     console.log(page_address);
-    // const res = await fetch('http://127.0.0.1:8000/api/auth/create_guest_acount/', {
-    //   mode: 'cors',
-    //   credentials: 'include'
-    // });
-    const res = await call_api("/api/auth/create_guest_acount/", "post")
+    const res = await call_api("/api/auth/create_guest_acount", "post")
     await forceUpdate();
     console.log("going to log in")
     if (page_address)
@@ -109,7 +105,7 @@ export const LoginPage = () => {
               <Button
                 type="button"
                 className="w-full mt-6 bg-white text-black rounded-full hover:text-yellow-300"
-                onClick={() => form_action('http://127.0.0.1:8000/api/auth/' + ((pageState === "Login") ? "login" : "create_account") + "/", searchParams.get('prevPath'))}
+                onClick={() => form_action('/api/auth' + ((pageState === "Login") ? "login" : "create_account") + "/", searchParams.get('prevPath'))}
               >
                 {pageState}
               </Button>
@@ -156,8 +152,8 @@ export const LoginPage = () => {
         <input type="text" id="username" name="username" /><br />
         <label htmlFor="password">password:</label><br />
         <input type="password" id="password" name="password" /><br /><br />
-        <input type="button" onClick={() => form_action('http://127.0.0.1:8000/api/auth/create_acount/', '/')} value="create acount" />
-        <input type="button" onClick={() => form_action('http://127.0.0.1:8000/api/auth/login/', '/')} value="login" />
+        <input type="button" onClick={() => form_action('http://127.0.0.1:8000/api/auth/create_acount', '/')} value="create acount" />
+        <input type="button" onClick={() => form_action('http://127.0.0.1:8000/api/auth/login', '/')} value="login" />
       </form>*/}
     </div>
   );

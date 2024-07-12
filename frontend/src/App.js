@@ -31,7 +31,9 @@ const App = () => {
     <div className='App'>
       <Toaster />
       <UserContextProvider>
-        <Router basename='/'>
+        {/* <Router basename='/static'> */}
+        <Router>
+
           <Routes>
             <Route path="/login/:prevPath?" element={<LoginPage />} />
 
