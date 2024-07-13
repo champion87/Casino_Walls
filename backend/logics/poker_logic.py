@@ -25,12 +25,14 @@ class Poker(CardGame):
         LOG("end_game called")
         best_score = 0
         best_hand = ""
+        self.current_bet = 0
         winner_list : List[str] = []
         self.phase = "showdown"
 
         if winner_by_fold:
             for username in self.usernames:
                 self.is_out[username] = True
+                self.bets[username] = 0
             
             winner_list = [winner_by_fold]
         else:
@@ -55,6 +57,8 @@ class Poker(CardGame):
         
         self.winners = winner_list
         self.win_state = best_hand
+        self.pot = 0
+
         
     def start_game(self):
         '''Excepts if the game is already running'''
@@ -62,6 +66,9 @@ class Poker(CardGame):
         
         self.board = Hand(self.deck)
         self.phase = "deal"
+        self.round_num = 0
+        self.win_state = ""
+        self.winners = []
 
         for username in self.usernames:
             self.is_out[username] = False
@@ -96,11 +103,14 @@ class Poker(CardGame):
     def get_board(self)-> Hand:
         return self.board
     
-    def get_winners(self)-> Hand:
+    def get_winners(self)-> str:
         return self.winners
     
-    def get_winning_hand(self)-> Hand:
+    def get_winning_hand(self)-> str:
         return self.win_state
+    
+    def get_users_coins(self)-> Dict[str,int]:
+        return {username : COINS[username] for username in self.usernames}
     
     def get_pot(self)-> int:
         return self.pot

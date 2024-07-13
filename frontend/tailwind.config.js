@@ -82,9 +82,8 @@ module.exports = {
         'wheel2': "url('../Images/wheelpic2.png')",
         'cosmos': "url('../Images/cosmos.png')",
         'cards': "url('../Images/Playing-Cards.jpg')",
-
-
-
+        'chips': "url('../Images/chips.png')",
+        'chips2': "url('../Images/chips2.png')",
       },
     },
   },

@@ -16,7 +16,8 @@ def get_hand(game:Poker = Depends(get_session), username: str = Depends(get_user
             "current_bet" : game.get_current_bet(), "player" : game.get_current_player(),
             "phase" : game.get_game_phase(), "bets" : game.get_bets(), "num" : game.get_player_num(username),
             "hands" : game.get_hands_for_show(username), "player_name" : game.get_current_player_name(),
-            "username" : username, "winners" : game.get_winners(), "winning_hand" : game.get_winning_hand()}
+            "username" : username, "winners" : game.get_winners(), "winning_hand" : game.get_winning_hand(),
+            "coins" : game.get_users_coins()}
 
 @router.get('/get_hand')
 def get_hand(game:Poker = Depends(get_session), username: str = Depends(get_user_name)):
