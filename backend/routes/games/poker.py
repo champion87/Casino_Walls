@@ -11,8 +11,8 @@ router = APIRouter()
 
 @router.get('/info')
 def get_hand(game:Poker = Depends(get_session), username: str = Depends(get_user_name)):
-    return {"hand" : game.get_hand(username).to_list_of_str(), "my_bet" : game.get_player_bet(username),
-            "board" : game.get_board().to_list_of_str(), "pot" : game.get_pot(),
+    return {"hand" : game.get_hand(username), "my_bet" : game.get_player_bet(username),
+            "board" : game.export_board(), "pot" : game.get_pot(),
             "current_bet" : game.get_current_bet(), "player" : game.get_current_player(),
             "phase" : game.get_game_phase(), "bets" : game.get_bets(), "num" : game.get_player_num(username),
             "hands" : game.get_hands_for_show(username), "player_name" : game.get_current_player_name(),

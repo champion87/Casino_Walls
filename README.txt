@@ -36,6 +36,7 @@ Startup:
 >>> npm install -D tailwindcss
 >>> npm install @radix-ui/react-toast
 >>> npm install @radix-ui/react-slider
+>>> npm install @heruka_urgyen/react-playing-cards
 >>> and many more...
 
 React helpful links:
