@@ -21,7 +21,12 @@ const Lobby = ({ gameName }) => {
   useEffect(() => {
     get_coins();
     console.log("loaded")
-    call_api(`/api/lobbies/lobby/${lobby_key}/join_lobby`, "post");
+    call_api(`/api/lobbies/lobby/${lobby_key}/join_lobby`, "post")
+    .then(response => {
+      if (!response.ok) {
+        navigate(`/${gameName}_main`)
+      }
+    })
     
 
     

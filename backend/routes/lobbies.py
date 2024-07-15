@@ -67,6 +67,7 @@ def delete_lobbies():
     for key in LOBBIES.keys():
         if LOBBIES[key].is_deletable():
             del LOBBIES[key]
+            return
 
 @router.delete("/delete_all")
 def delete_lobbies():
