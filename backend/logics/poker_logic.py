@@ -1,8 +1,8 @@
-from typing import Dict, List
+from typing import Dict, List, Tuple
 from utils.my_log import LOG
 from logics.lobby import Lobby
 from routes.coins import COINS # TODO add to BJ CTOR
-from logics.card_game import Hand, CardGame, GameStatus
+from logics.card_game import BLANK_CARD, Hand, CardGame, GameStatus
 import time
 
 class Poker(CardGame):
@@ -87,21 +87,25 @@ class Poker(CardGame):
         return True
     
     def get_hands_for_show(self, username: str):
+        LOG("override")
         res = {}
-        if self.status == GameStatus.NO_GAME: # TODO make sure that this one isn't nonsense
+        if self.status == GameStatus.NO_GAME:
             for (name,hand) in self.hands.items():
-                res[name] = hand.to_list_of_str()
+                res[name] = hand.export()
         else:
             for (name,hand) in self.hands.items():
                 if name != username:
-                    res[name] = len(hand.to_list_of_str()) * ["xxxx\n"*3]
+                    res[name] = hand.export(True) # true means hidden
                 else:
-                    res[name] = hand.to_list_of_str()
+                    res[name] = hand.export()
                 
         return res
     
     def get_board(self)-> Hand:
         return self.board
+    
+    def export_board(self)-> List[Tuple[str, bool]]:
+        return self.board.export() + [BLANK_CARD] * (5 - len(self.board.cards))
     
     def get_winners(self)-> str:
         return self.winners

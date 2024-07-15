@@ -12,16 +12,12 @@ def get_score(game:BlackJack = Depends(get_session), username: str = Depends(get
 
 @router.get('/get_dealer_score')
 def BJ_restart_game(game:BlackJack = Depends(get_session)):
-    dealer_hand = game.get_dealer_hand()
-    if game.is_game_over():
-        return {"score" : dealer_hand.get_BJ_score()}
-    else:
-        return {"score" : dealer_hand.cards[0].get_BJ_value()}
+    return {"score" : game.get_dealer_score(game.is_game_over())}
 
 @router.get('/get_hand')
 def get_hand(game:BlackJack = Depends(get_session), username: str = Depends(get_user_name)):
     try:
-        return {"hand" : game.get_hand(username).to_list_of_str()}
+        return {"hand" : game.get_hand(username)}
     except:
         LOG(f"Player <{username}> called get_hand but it is no longer in the game")
 
@@ -33,11 +29,8 @@ def hands(game:BlackJack = Depends(get_session), username: str = Depends(get_use
 
 @router.get('/get_dealer_hand')
 def BJ_restart_game(game:BlackJack = Depends(get_session)):
-    dealer_hand = game.get_dealer_hand()
-    if game.is_game_over():
-        return {"hand" : dealer_hand.to_list_of_str()}
-    else:
-        return {"hand" : [str(dealer_hand.cards[0]), "xxxx\n"*3]}
+    return  {"hand" : game.get_dealer_hand(game.is_game_over())}
+
     
 @router.get('/is_game_over')
 def is_game_over(game:BlackJack = Depends(get_session)):
