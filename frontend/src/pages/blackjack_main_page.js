@@ -31,17 +31,6 @@ export const BlackJackMainPage = () => {
     return () => clearInterval(intervalId); // Cleanup on unmount
 }, []);
 
-  async function play_singleplayer_bj() {
-    const response = await call_api("/api/lobbies/create_lobby/blackjack/?prize=10&max_players=1", "post") // TODO generalize
-    const data = await response.json()
-    await call_api(`/api/lobbies/${data["lobby_key"]}/start_game`, "post");
-
-  }
-
-  async function test() {
-  
-  }
-
   return (
 
 
