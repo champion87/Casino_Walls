@@ -191,7 +191,7 @@ function BJ_GPT() {
         <h2>Dealer's Hand</h2>
         <div id="dealer-cards" className="cards">
           {dealerHand.map((card) => (
-            <Card card={card[0]} height="100px" back={card[1]} />
+            <Card key={card[0]} card={card[0]} height="100px" back={card[1]} />
             // <div key={card} className="card">{card}</div>
           ))}
         </div>
@@ -202,7 +202,7 @@ function BJ_GPT() {
         <div id="player-cards" className="cards">
           {playerHand.map((card) => (
             // <div key={card} className="card">{card}</div>
-            <Card card={card[0]} height="100px" back={card[1]} />
+            <Card key={card[0]} card={card[0]} height="100px" back={card[1]} />
 
           ))}
         </div>
@@ -229,7 +229,7 @@ function BJ_GPT() {
 
                 {console.log("hand")}{console.log(hand)}{console.log("hands")}{console.log(hands)}{
                   hand.map((card, index) => (
-                    <Card key={index} card={card[0]} height="100px" back={card[1]} />
+                    <Card key={card[0] + index} card={card[0]} height="100px" back={card[1]} />
                   ))}
               </div>
             </>

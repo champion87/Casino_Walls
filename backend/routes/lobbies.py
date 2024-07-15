@@ -123,8 +123,8 @@ def join_lobby(lobby: Lobby = Depends(get_lobby), username = Depends(get_user_na
             LOG("The user is not in that lobby anymore, but that's ok")
     try:
         lobby.add(username)
-    except:
-        raise HTTPException(status_code=422, detail="lobby is locked")
+    except Exception as e:
+        raise HTTPException(status_code=422, detail=e.args)
     
     USERNAME_TO_LOBBY_KEY[username] = lobby.key
     
