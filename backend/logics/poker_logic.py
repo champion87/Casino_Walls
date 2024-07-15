@@ -133,8 +133,18 @@ class Poker(CardGame):
     def get_bets(self):
         return self.bets
     
-    def get_player_num(self, username: str):
+    def get_player_num(self, username: str) -> int:
         return super().get_player_num(username)
+    
+    def can_call(self, username) -> bool:
+        if (self.current_bet == self.bets[username]) or (COINS[username] == 0):
+            return False
+        return True
+    
+    def can_check(self, username) -> bool:
+        if ((self.bets[username] < self.current_bet) and (COINS[username] != 0)):
+            return False
+        return True
     
     def stand(self, username: str) -> bool:
         LOG("another check")
@@ -157,7 +167,7 @@ class Poker(CardGame):
         if username != self.usernames[self.current_player] or self.is_out[username]:
             return False
         
-        if self.current_bet == self.bets[username]:
+        if self.current_bet == self.bets[username] or COINS[username] == 0:
             return False
         
         coins_to_reduce = min(self.current_bet - self.bets[username] , COINS[username])
@@ -171,7 +181,7 @@ class Poker(CardGame):
         else:
             self.next_player()
 
-        return True
+        return True 
 
     def my_raise(self, username: str, raise_amount: int = 10) -> int: # raise_amount is amount of money added to the current bet of the table
         if (username != self.usernames[self.current_player]) or (COINS[username] == 0) or (self.is_out[username]):

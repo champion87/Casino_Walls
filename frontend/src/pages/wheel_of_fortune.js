@@ -127,7 +127,7 @@ export const Wheel_of_fortune = () => {
             return [-1, 0, 0, 0];
         }
 
-        response = await call_api("/api/games/wheel_of_fortune/spin_wheel_slider" + bet, "get");
+        response = await call_api("/api/games/wheel_of_fortune/spin_wheel_slider/" + bet, "get");
         json = await response.json();
 
         prize = json.prize;

@@ -17,7 +17,8 @@ def get_hand(game:Poker = Depends(get_session), username: str = Depends(get_user
             "phase" : game.get_game_phase(), "bets" : game.get_bets(), "num" : game.get_player_num(username),
             "hands" : game.get_hands_for_show(username), "player_name" : game.get_current_player_name(),
             "username" : username, "winners" : game.get_winners(), "winning_hand" : game.get_winning_hand(),
-            "coins" : game.get_users_coins()}
+            "coins" : game.get_users_coins(), "can_check": game.can_check(username),
+            "can_call": game.can_call(username)}
 
 @router.get('/get_hand')
 def get_hand(game:Poker = Depends(get_session), username: str = Depends(get_user_name)):
@@ -69,9 +70,10 @@ def Poker_check(game:Poker = Depends(get_session), user_name: str = Depends(get_
 def Poker_call(game:Poker = Depends(get_session), user_name: str = Depends(get_user_name)):
     game.call(user_name) 
 
-@router.post('/raise')
-def Poker_raise(game:Poker = Depends(get_session), user_name: str = Depends(get_user_name)):
-    game.my_raise(user_name) 
+@router.post('/raise/{raise_amount}')
+def Poker_raise(raise_amount : str, game:Poker = Depends(get_session), user_name: str = Depends(get_user_name)):
+    if (raise_amount.isdigit()):
+        game.my_raise(user_name, int(raise_amount)) 
 
 @router.post('/fold')
 def Poker_fold(game:Poker = Depends(get_session), user_name: str = Depends(get_user_name)):
