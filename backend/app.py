@@ -9,7 +9,6 @@ from fastapi import (
 )
 from fastapi.middleware.cors import CORSMiddleware
 
-from starlette.types import Scope
 from utils.my_log import LOG
 from fastapi.staticfiles import StaticFiles
 
