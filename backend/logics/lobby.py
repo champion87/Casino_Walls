@@ -1,5 +1,3 @@
-from pydantic import BaseModel, Field
-from typing import List
 from utils.my_log import LOG
 
 class Lobby:#(BaseModel):
@@ -37,6 +35,10 @@ class Lobby:#(BaseModel):
             
     def set_ready(self, username: str):
         self.ready[username] = True
+    
+    def is_deletable(self):
+        return len(self.usernames) == 0 and not self.is_locked
+            
     
     def is_ready(self):
         LOG(f"lobby.is_ready(): users: {self.usernames}")
