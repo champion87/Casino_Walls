@@ -21,7 +21,12 @@ const Lobby = ({ gameName }) => {
   useEffect(() => {
     get_coins();
     console.log("loaded")
-    call_api(`/api/lobbies/lobby/${lobby_key}/join_lobby`, "post");
+    call_api(`/api/lobbies/lobby/${lobby_key}/join_lobby`, "post")
+    .then(response => {
+      if (!response.ok) {
+        navigate(`/${gameName}_main`)
+      }
+    })
     
 
     
@@ -70,11 +75,6 @@ const Lobby = ({ gameName }) => {
     console.log(gameName)
     console.log(lobby_key)
   }
-
-  // const startGame = () => {
-  //   console.log('Game started');
-  //   call_api(`/api/lobbies/${lobby_key}/start_game`, "post")
-  // };
 
   async function goReady() {
     const response = await call_api(`/api/lobbies/lobby/${lobby_key}/set_ready_for_start_game`, "post")

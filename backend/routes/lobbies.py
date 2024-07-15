@@ -58,10 +58,21 @@ def get_unused_id(data):
 ### Lobby Handlers ###
 ######################
 
-# TODO delete empty lobbies
 @router.delete("/delete_all")
 def delete_lobbies():
     LOBBIES.clear()
+
+@router.delete("/delete_empty_unlocked")
+def delete_lobbies():
+    for key in LOBBIES.keys():
+        if LOBBIES[key].is_deletable():
+            del LOBBIES[key]
+            return
+
+@router.delete("/delete_all")
+def delete_lobbies():
+    LOBBIES.clear()
+
 
 @router.get("")
 def get_lobbies():
@@ -161,39 +172,13 @@ from logics.blackjack_logic import BlackJack
 @create_lobby_router.post("/blackjack")
 def blackjack(prize: int = Query() , max_players: int = Query()):
     lobby, lobby_key = create_lobby("blackjack", prize, max_players)
-    # LOG("WOWWPWOWJFOIDSAJLKJSL")
-    # pdb.set_trace()
     game = BlackJack(lobby, prize, max_players)
     return {
         'lobby_key' : lobby_key,
         'session_key' : save_session(game, lobby_key)
     }   
-
-# @create_lobby_router.post("/blackjack")
-# def blackjack(prize: int , max_players: int):#, username = Depends(get_user_name)):
-#     lobby, lobby_key = create_lobby("BlackJack", prize, max_players)
-    
-#     bj = BlackJack(lobby, prize, max_players)
-    
-#     session_key = get_unused_id(SESSIONS)
-    
-#     SESSIONS[session_key] = bj
-#     LOBBY_TO_SESSION[lobby_key] = session_key
-    
-#     return {
-#         'lobby_key' : lobby_key,
-#         'session_key' : session_key
-#     }
     
 
-    
-@specific_lobby_router.post("/start_game")
-def start_game(lobby_key:str = Path()):
-    # raise Exception("started game")
-    try:
-        SESSIONS[LOBBY_TO_SESSION[lobby_key]].start_game()
-    except:
-        return {}
     
 @specific_lobby_router.post("/set_ready_for_start_game")
 def set_ready(lobby_key:str = Path(), lobby: Lobby = Depends(get_lobby), username = Depends(get_user_name)):
@@ -212,8 +197,6 @@ def set_ready(lobby_key:str = Path(), lobby: Lobby = Depends(get_lobby), usernam
                 
             except:
                 raise HTTPException(404, "NO SESSION FOUND")
-                LOG("ERROR IN SET READY: NO SESSION FOUND")
-                return {}
         return {"result" : "Ready!"}
         
                     

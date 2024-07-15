@@ -31,19 +31,6 @@ export const BlackJackMainPage = () => {
     return () => clearInterval(intervalId); // Cleanup on unmount
 }, []);
 
-  async function play_singleplayer_bj() {
-    const response = await call_api("/api/lobbies/create_lobby/blackjack/?prize=10&max_players=1", "post") // TODO generalize
-    const data = await response.json()
-    await call_api(`/api/lobbies/${data["lobby_key"]}/start_game`, "post");
-    console.log("started game$$$$$$$$$$$$$$$$$")
-    navigate(`/games/${data["session_key"]}/blackjack`) // TODO change to the real route
-
-  }
-
-  async function test() {
-  
-  }
-
   return (
 
 
@@ -62,10 +49,24 @@ export const BlackJackMainPage = () => {
           </div>
           <Button
             type="button"
-            onClick={async () => {navigate(`/blackjack_lobby/${await create_lobby("blackjack")}`)}}
+            onClick={async () => {navigate(`/blackjack_lobby/${await create_lobby("blackjack", 10)}`)}}
             className="w-44 mt-6 bg-black text-yellow-300 rounded-full hover:text-yellow-200"
           >
-            create lobby
+            new lobby - 10$
+          </Button>
+          <Button
+            type="button"
+            onClick={async () => {navigate(`/blackjack_lobby/${await create_lobby("blackjack", 25)}`)}}
+            className="w-44 mt-6 bg-black text-yellow-300 rounded-full hover:text-yellow-200"
+          >
+            new lobby - 25$
+          </Button>
+          <Button
+            type="button"
+            onClick={async () => {navigate(`/blackjack_lobby/${await create_lobby("blackjack", 100)}`)}}
+            className="w-44 mt-6 bg-black text-yellow-300 rounded-full hover:text-yellow-200"
+          >
+            new lobby - 100$
           </Button>
 
         </div>
@@ -76,18 +77,12 @@ export const BlackJackMainPage = () => {
           </div>
           <Button
             type="button"
-            onClick={play_singleplayer_bj}
+            onClick={async () => {navigate(`/blackjack_lobby/${await create_lobby("blackjack", 10, 1)}`)}}
             className="w-44 mt-6 bg-black text-yellow-300 rounded-full hover:text-yellow-200"
           >
-            play_bj
+            single player lobby - 10$
           </Button>
-          <Button
-            type="button"
-            onClick={test}
-            className="w-44 mt-6 bg-black text-yellow-300 rounded-full hover:text-yellow-200"
-          >
-            test
-          </Button>
+    
           <Button
             type="button"
             onClick={() => {navigate("/games")}}

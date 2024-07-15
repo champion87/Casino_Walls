@@ -12,8 +12,8 @@ export async function fetchLobbies(gameName, setLobbies) {
     }
 };
 
-export async function create_lobby(gameName) {
-    const response = await call_api(`/api/lobbies/create_lobby/${gameName}?prize=10&max_players=4`, "post") // TODO generalize
+export async function create_lobby(gameName, prize=0, max_players=4) {
+    const response = await call_api(`/api/lobbies/create_lobby/${gameName}?prize=${prize}&max_players=${max_players}`, "post") // TODO generalize
     const data = await response.json()
     console.log("created lobby with key: " + data["lobby_key"])
     console.log("gamename: " + gameName)
