@@ -10,10 +10,13 @@ import { Button } from '../components/ui/button';
 import { Slider } from "../components/ui/slider"
 import { call_api } from "../lib/utils"
 import Wheel2 from 'src/components/wheel2';
+import { useNavigate } from 'react-router-dom';
 
 
 
 export const Wheel_of_fortune = () => {
+    const navigate = useNavigate();
+
     const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
     const [betAmount, setBetAmount] = useState();
     const [betPercentage, setBetPercentage] = useState();
@@ -251,7 +254,13 @@ export const Wheel_of_fortune = () => {
                     <p id="prize_text" className='font-extrabold'></p>
                     <p id="message" className='font-extrabold'></p>
                 </div>
-
+                <Button
+                    type="button"
+                    onClick={() => { navigate("/games") }}
+                    className=' w-full mt-6 bg-white text-black rounded-full hover:text-yellow-300'
+                >
+                    back to games screen
+                </Button>
             </div>
 
         </div>
