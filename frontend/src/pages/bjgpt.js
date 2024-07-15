@@ -146,7 +146,12 @@ function BJ_GPT() {
 
   async function startNewGame() {
 
-    await call_api(`/api/games/${game_key}/blackjack/try_restart_game`, "post")
+    const response = await call_api(`/api/games/${game_key}/blackjack/try_restart_game`, "post")
+    if (!response.ok)
+    {
+      navigate("/blackjack_main")
+    }
+
 
     let newDealerHand = await getDealerHand()
     let newPlayerHand = await getHand();
