@@ -64,12 +64,6 @@ def create_app():
 
     app_.include_router(coins_router, prefix="/api/coins")
 
-    
-    @app_.get("/test")
-    def test():
-        return HTMLResponse("world")
-    
-
     # app_.mount("/", ReactStaticFiles(directory=r"frontend/build", html=True), name="static")
 
     return app_
