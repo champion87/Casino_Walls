@@ -128,10 +128,6 @@ export const HomePage = () => {
                         <CarouselNext />
                     </Carousel>
                     <div className="bg-green-300 bg-purple-300 bg-blue-300 bg-orange-300 bg-red-300"></div>
-                    <p>'אין אתר' ~ N. Atar</p>
-                    <p>🌟🌟🌟🌟🌟</p>
-                    <p>some reviews...</p>
-                    <p>some reviews...</p>
                 </div>
                 <div className="bg-[#961212] flex items-center justify-center flex-col text-yellow-300 rounded-t-3xl mt-10">
                     how to contact us

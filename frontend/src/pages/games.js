@@ -88,6 +88,13 @@ export const GamesLobbyPage = () => {
             <Label className='mt-6 text-yellow-300'>
               claim free coins every hour
             </Label>
+            <Button
+              type="button"
+              onClick={get_coins}
+              className="w-full bg-white text-black rounded-full hover:text-yellow-300"
+            >
+              Here
+            </Button>
             <div className="grid w-full h-full grid-cols-3">
               <Card className="flex flex-col relative items-center m-10 bg-cards bg-cover">
                 <CardHeader>

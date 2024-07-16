@@ -71,11 +71,6 @@ const Lobby = ({ gameName }) => {
     navigate(`/${gameName}_main`)
   }
 
-  async function test() {
-    console.log(gameName)
-    console.log(lobby_key)
-  }
-
   async function goReady() {
     const response = await call_api(`/api/lobbies/lobby/${lobby_key}/set_ready_for_start_game`, "post")
     const data = await response.json()
@@ -101,10 +96,8 @@ const Lobby = ({ gameName }) => {
           <li key={index} style={styles.playerItem}>{player}</li>
         ))}
       </ul>
-      {/* <button onClick={startGame} style={styles.startButton}>Start Game</button> */}
       <button onClick={goReady} style={styles.startButton}>Ready!</button>
       <div id="message" className="message">{message}</div>
-      <button onClick={test} style={styles.startButton}>test</button>
     </div>
   );
 };

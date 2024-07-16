@@ -34,8 +34,8 @@ export const BlackJackMainPage = () => {
   return (
 
 
-    <div className="bg-[#690d0d] h-screen items-center p-10">
-      <div className="bg-[#961212] flex items-center justify-center flex-col rounded-l-3xl">
+    <div className="bg-[#690d0d] h-screen w-screen items-center p-10">
+      <div className="bg-[#961212] flex items-center justify-center flex-col rounded-3xl">
         <div className="my-4">
           <h1 className="text-3xl font-bold text-yellow-400">On Going Lobbies</h1>
           <LobbyList gameName="blackjack" lobbies={lobbies}/>
