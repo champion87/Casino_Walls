@@ -31,7 +31,14 @@ const PokerTable = () => {
     const [raisePercentage, setRaisePercentage] = useState(0); // how much the user wants to raise by
 
     const updatePage = async () => {
-        const info = await call_api(`/api/games/${game_key}/poker/info`, "GET").then(res => res.json())
+        const info = await call_api(`/api/games/${game_key}/poker/info`, "GET")
+        .then(res => {
+            if (!res.ok)
+            {
+                navigate("/poker_main")
+            }
+            return res.json()
+        })
         setBoardCards(info.board);
         setPlayerCards(info.hands);
         setPot(info.pot);
