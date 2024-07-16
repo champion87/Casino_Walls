@@ -2,11 +2,11 @@ from utils.my_log import LOG
 
 class Lobby:#(BaseModel):
     # TODO 'creator' field
-    # usernames: List[str] = Field(default_factory=list)
 
     # TODO edge cases: max players is negative or zero
-    def __init__(self, game_name:str, max_players:int, key:str, prize="default_prize_valueXXX"):
+    def __init__(self, game_name:str, max_players:int, key:str, bots:int, prize="default_prize_valueXXX"):
         self.usernames = []
+        self.bots_count = bots
         self.is_locked = False
         self.is_full = False
         self.max_players = max_players
@@ -16,8 +16,6 @@ class Lobby:#(BaseModel):
         self.ready = {}
         self.old_users = []
         
-    # def kick_all_players(self):
-    #     self.usernames = []
 
     def add(self, user: str):
         LOG(f"{self.old_users=}")    
