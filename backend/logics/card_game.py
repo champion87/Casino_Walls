@@ -1,6 +1,7 @@
 from enum import Enum
 import itertools
 import random
+import string
 from typing import Dict, List, Tuple
 from fastapi.params import Path
 from pydantic import BaseModel
@@ -11,7 +12,9 @@ from routes.coins import COINS # TODO add to BJ CTOR
 import eval7
 
 def BOT_NAME(i):
-    return "bot" + str(i)
+    return "bot_" + "".join(
+        random.choice(string.ascii_letters + string.digits) for i in range(5)
+    )
 
 BLANK_CARD = ("xx", True) # True means showing the back
 
