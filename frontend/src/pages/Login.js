@@ -105,7 +105,7 @@ export const LoginPage = () => {
               <Button
                 type="button"
                 className="w-full mt-6 bg-white text-black rounded-full hover:text-yellow-300"
-                onClick={() => form_action('/api/auth/' + ((pageState === "Login") ? "login" : "create_account") + "/", searchParams.get('prevPath'))}
+                onClick={() => form_action('/api/auth/' + ((pageState === "Login") ? "login" : "create_account") , searchParams.get('prevPath'))}
               >
                 {pageState}
               </Button>
