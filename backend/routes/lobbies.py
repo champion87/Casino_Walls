@@ -130,9 +130,9 @@ def join_lobby(lobby: Lobby = Depends(get_lobby), username = Depends(get_user_na
     
 
 # TODO maybe later save the creator of the lobby
-def create_lobby(game_name:str, prize:int, max_players:int = 9999):
+def create_lobby(game_name:str, prize:int=0, max_players:int = 9999, bots:int = 0):
     key = get_unused_id(LOBBIES)
-    lobby = Lobby(game_name, max_players, key, prize)
+    lobby = Lobby(game_name=game_name, max_players=max_players, key=key, prize=prize, bots=bots)
     LOBBIES[key] = lobby
     
     return lobby, key
@@ -159,8 +159,8 @@ def hello(q:int=Query()):
     return JSONResponse("world")
 
 @create_lobby_router.post("/poker")
-def poker(max_players: int=Query()):#, username = Depends(get_user_name)):
-    lobby, lobby_key = create_lobby("poker", 0, max_players) # 0 is default value for prize since poker doesnt care about prize
+def poker(max_players: int=Query(), bots:int = Query()):
+    lobby, lobby_key = create_lobby(game_name="poker", max_players=max_players, bots=bots)
     game = Poker(lobby, max_players)
     return {
         'lobby_key' : lobby_key,
@@ -170,8 +170,8 @@ def poker(max_players: int=Query()):#, username = Depends(get_user_name)):
 
 from logics.blackjack_logic import BlackJack
 @create_lobby_router.post("/blackjack")
-def blackjack(prize: int = Query() , max_players: int = Query()):
-    lobby, lobby_key = create_lobby("blackjack", prize, max_players)
+def blackjack(max_players: int = Query(), prize: int = Query()):
+    lobby, lobby_key = create_lobby(game_name="blackjack", prize=prize, max_players=max_players)
     game = BlackJack(lobby, prize, max_players)
     return {
         'lobby_key' : lobby_key,
@@ -187,16 +187,16 @@ def set_ready(lobby_key:str = Path(), lobby: Lobby = Depends(get_lobby), usernam
     else:
         lobby.set_ready(username)
         if lobby.is_ready():
-            try:
-                LOG(SESSIONS)
+            
+            if not lobby_key in LOBBY_TO_SESSION.keys():
+                raise HTTPException(404, "LOBBY NOT FOUND")
+            if not LOBBY_TO_SESSION[lobby_key] in SESSIONS.keys():
+                raise HTTPException(404, "SESSION NOT FOUND")
+            # try:
+            SESSIONS[LOBBY_TO_SESSION[lobby_key]].start_game()
                 
-                LOG(f"{LOBBY_TO_SESSION[lobby_key]=}")
-                LOG(f"{lobby_key}")
-                
-                SESSIONS[LOBBY_TO_SESSION[lobby_key]].start_game()
-                
-            except:
-                raise HTTPException(404, "NO SESSION FOUND")
+            # except:
+            #     raise HTTPException(500, "FAILED TO START GAME")
         return {"result" : "Ready!"}
         
                     

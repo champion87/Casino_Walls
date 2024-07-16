@@ -114,7 +114,7 @@ class Poker(CardGame):
         return self.win_state
     
     def get_users_coins(self)-> Dict[str,int]:
-        return {username : COINS[username] for username in self.usernames}
+        return {username : COINS.get(username, -1) for username in self.usernames}
     
     def get_pot(self)-> int:
         return self.pot

@@ -10,6 +10,9 @@ from logics.lobby import Lobby
 from routes.coins import COINS # TODO add to BJ CTOR
 import eval7
 
+def BOT_NAME(i):
+    return "bot" + str(i)
+
 BLANK_CARD = ("xx", True) # True means showing the back
 
 class Symbol(Enum):
@@ -217,11 +220,12 @@ class CardGame(Game):
         self.lobby.lock()
         self.status = GameStatus.ONGOING
 
+        self.usernames = self.lobby.get_players().copy()
+        for i in range(self.lobby.bots_count):
+            self.usernames.append(BOT_NAME(i))
+            
         self.deck = Deck()
-        for username in self.lobby.get_players():
+        for username in self.usernames:
             self.hands[username] = Hand(self.deck)
             
-        self.usernames = self.lobby.get_players().copy()
             
-        # self.lobby.kick_all_players()  
-
