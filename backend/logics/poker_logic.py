@@ -184,8 +184,11 @@ class Poker(CardGame):
         return True 
 
     def my_raise(self, username: str, raise_amount: int = 10) -> int: # raise_amount is amount of money added to the current bet of the table
-        if (username != self.usernames[self.current_player]) or (COINS[username] == 0) or (self.is_out[username]):
+        if (username != self.usernames[self.current_player]) or (COINS[username] == 0) or (self.is_out[username]) or (raise_amount < 0):
             return 0
+        
+        if (raise_amount == 0):
+            return self.stand(username)
         
         coins_to_reduce = min(self.current_bet - self.bets[username] + raise_amount, COINS[username])
         COINS[username] -= coins_to_reduce
