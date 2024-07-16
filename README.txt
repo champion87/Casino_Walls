@@ -77,3 +77,5 @@ http://localhost:3000
 app.py: mount
 call_api: adress, cors
 cookies
+
+>>> curl -X "DELETE" "http://127.0.0.1/api/lobbies/delete_empty_unlocked
