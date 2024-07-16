@@ -40,11 +40,11 @@ export const LoginPage = () => {
     let form = document.getElementById("form");
     const formData = new FormData(form);
     console.log(Array.from(formData.entries()));
-    const res = await fetch("http://127.0.0.1:8000" + action, {
+    const res = await fetch(action, {
       method: 'POST',
-      body: new URLSearchParams(formData),
-      mode: 'cors',
-      credentials: 'include'
+      body: new URLSearchParams(formData)
+      // mode: 'cors',
+      //credentials: 'include'
     }).then(response => response.json());
     console.log(res.status);
     if (res.status === 'username_taken'){
@@ -105,7 +105,7 @@ export const LoginPage = () => {
               <Button
                 type="button"
                 className="w-full mt-6 bg-white text-black rounded-full hover:text-yellow-300"
-                onClick={() => form_action('/api/auth/' + ((pageState === "Login") ? "login" : "create_account") + "/", searchParams.get('prevPath'))}
+                onClick={() => form_action('/api/auth/' + ((pageState === "Login") ? "login" : "create_account") , searchParams.get('prevPath'))}
               >
                 {pageState}
               </Button>
