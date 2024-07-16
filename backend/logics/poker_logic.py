@@ -19,6 +19,7 @@ class Poker(CardGame):
         self.phase : str = ""
         self.winners : List[str] = []
         self.win_state : str = ""
+        self.bots : List[str] = []
     
     def end_game(self, winner_by_fold = None):
         super().end_game()
