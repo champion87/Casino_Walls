@@ -123,7 +123,7 @@ def move(game):
     if t > 0.7:
         pass
     elif 0.4 < t < 0.7:
-        prob_to_fold = 1 - rate * (rate - 1.2 * t) * (2 - t) / 2.4
+        prob_to_fold = min(0.85, fold_chance(1.3 * rate, t) - 0.15)
     else:
         prob_to_fold = min(0.7, fold_chance(1.3 * rate, t) - 0.3)
 

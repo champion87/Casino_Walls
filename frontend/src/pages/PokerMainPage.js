@@ -39,9 +39,8 @@ export const PokerMainPage = () => {
 
   return (
 
-
-    <div className="bg-[#690d0d] h-screen items-center p-10">
-      <div className="bg-[#961212] flex items-center justify-center flex-col rounded-l-3xl">
+    <div className="bg-wall bg-cover h-screen w-screen items-center p-10 overflow-y-scroll">
+      <div className="bg-black inline-block items-center justify-center p-5 flex-col rounded-3xl">
         <div className="my-4">
           <h1 className="text-3xl font-bold text-yellow-400">On Going Lobbies</h1>
           <LobbyList gameName="poker" lobbies={lobbies} />
@@ -50,34 +49,34 @@ export const PokerMainPage = () => {
 
 
 
-        <div className="bg-[#961212] flex items-center justify-center flex-col rounded-l-3xl">
+        <div className="flex items-center justify-center m-5 flex-col">
           <div className="my-4">
             <h1 className="text-3xl font-bold text-yellow-400">Create a New Lobby</h1>
           </div>
           <Button
             type="button"
             onClick={async () => { navigate(`/poker_lobby/${await create_lobby("poker")}`) }}
-            className="w-44 mt-6 bg-black text-yellow-300 rounded-full hover:text-yellow-200"
+            className="w-full mt-6 bg-white text-black rounded-full hover:text-yellow-300"
           >
             create lobby
           </Button>
           <Button
             type="button"
             onClick={() => {navigate("/games")}}
-            className="w-44 mt-6 bg-black text-yellow-300 rounded-full hover:text-yellow-200"
+            className="w-full mt-6 bg-white text-black rounded-full hover:text-yellow-300"
           >
             back to games screen
           </Button>
         </div>
 
-        <div className="bg-[#961212] flex items-center justify-center flex-col rounded-l-3xl">
+        <div className="flex items-center justify-center m-5 flex-col">
           <div className="my-4">
             <h1 className="text-3xl font-bold text-yellow-400">Single Player</h1>
           </div>
           <Button
             type="button"
             onClick={async () => { navigate(`/poker_lobby/${await create_lobby("poker", 0, 4, 2)}`) }}
-            className="w-44 mt-6 bg-black text-yellow-300 rounded-full hover:text-yellow-200"
+            className="w-full mt-6 bg-white text-black rounded-full hover:text-yellow-300"
           >
             play with bots
           </Button>

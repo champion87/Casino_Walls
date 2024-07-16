@@ -34,8 +34,8 @@ export const BlackJackMainPage = () => {
   return (
 
 
-    <div className="bg-[#690d0d] h-screen items-center p-10">
-      <div className="bg-[#961212] flex items-center justify-center flex-col rounded-l-3xl">
+    <div className="bg-wall bg-cover h-screen w-screen items-center p-10 overflow-y-scroll">
+      <div className="bg-black inline-block items-center justify-center p-5 flex-col rounded-3xl">
         <div className="my-4">
           <h1 className="text-3xl font-bold text-yellow-400">On Going Lobbies</h1>
           <LobbyList gameName="blackjack" lobbies={lobbies}/>
@@ -43,52 +43,52 @@ export const BlackJackMainPage = () => {
 
 
 
-        <div className="bg-[#961212] flex items-center justify-center flex-col rounded-l-3xl">
+        <div className=" flex items-center justify-center m-5 flex-col">
           <div className="my-4">
             <h1 className="text-3xl font-bold text-yellow-400">Create a New Lobby</h1>
           </div>
           <Button
             type="button"
             onClick={async () => {navigate(`/blackjack_lobby/${await create_lobby("blackjack", 10)}`)}}
-            className="w-44 mt-6 bg-black text-yellow-300 rounded-full hover:text-yellow-200"
+            className="w-full mt-6 bg-white text-black rounded-full hover:text-yellow-300"
           >
-            new lobby - 10$
+            New Lobby - 10$
           </Button>
           <Button
             type="button"
             onClick={async () => {navigate(`/blackjack_lobby/${await create_lobby("blackjack", 25)}`)}}
-            className="w-44 mt-6 bg-black text-yellow-300 rounded-full hover:text-yellow-200"
+            className="w-full mt-6 bg-white text-black rounded-full hover:text-yellow-300"
           >
-            new lobby - 25$
+            New Lobby - 25$
           </Button>
           <Button
             type="button"
             onClick={async () => {navigate(`/blackjack_lobby/${await create_lobby("blackjack", 100)}`)}}
-            className="w-44 mt-6 bg-black text-yellow-300 rounded-full hover:text-yellow-200"
+            className="w-full mt-6 bg-white text-black rounded-full hover:text-yellow-300"
           >
-            new lobby - 100$
+            New Lobby - 100$
           </Button>
+          </div>
 
-        </div>
 
-        <div className="bg-[#961212] flex items-center justify-center flex-col rounded-l-3xl">
+        <div className=" flex items-center justify-center m-5 flex-col">
           <div className="my-4">
             <h1 className="text-3xl font-bold text-yellow-400">Single Player</h1>
           </div>
           <Button
             type="button"
             onClick={async () => {navigate(`/blackjack_lobby/${await create_lobby("blackjack", 10, 1)}`)}}
-            className="w-44 mt-6 bg-black text-yellow-300 rounded-full hover:text-yellow-200"
+            className="w-full mt-6 bg-white text-black rounded-full hover:text-yellow-300"
           >
-            single player lobby - 10$
+            Single Player Lobby - 10$
           </Button>
     
           <Button
             type="button"
             onClick={() => {navigate("/games")}}
-            className="w-44 mt-6 bg-black text-yellow-300 rounded-full hover:text-yellow-200"
+            className="w-full mt-6 bg-white text-black rounded-full hover:text-yellow-300"
           >
-            back to games screen
+            Back to Games Screen
           </Button>
 
         </div>
