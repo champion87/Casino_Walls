@@ -19,6 +19,7 @@ class Poker(CardGame):
         self.phase : str = ""
         self.winners : List[str] = []
         self.win_state : str = ""
+        self.bots : List[str] = []
     
     def end_game(self, winner_by_fold = None):
         super().end_game()
@@ -75,6 +76,14 @@ class Poker(CardGame):
             self.standing[username] = False
             self.bets[username] = 0
             self.hands[username].draw_to_hand().draw_to_hand() # 2 initial cards in Poker
+
+        
+        for bot in self.bots:
+            self.is_out[bot] = False
+            self.standing[bot] = False
+            self.bets[bot] = 0
+            self.hands[bot].draw_to_hand().draw_to_hand() # 2 initial cards in Poker
+        
 
     
     # @return True iff all players except one are standing or out  
@@ -188,8 +197,11 @@ class Poker(CardGame):
         return True 
 
     def my_raise(self, username: str, raise_amount: int = 10) -> int: # raise_amount is amount of money added to the current bet of the table
-        if (username != self.usernames[self.current_player]) or (COINS[username] == 0) or (self.is_out[username]):
+        if (username != self.usernames[self.current_player]) or (COINS[username] == 0) or (self.is_out[username]) or (raise_amount < 0):
             return 0
+        
+        if (raise_amount == 0):
+            return self.stand(username)
         
         coins_to_reduce = min(self.current_bet - self.bets[username] + raise_amount, COINS[username])
         COINS[username] -= coins_to_reduce
@@ -257,11 +269,14 @@ class Poker(CardGame):
         self.next_player()
 
     def next_player(self):
-        self.current_player = (self.current_player + 1) % self.get_player_count()
+        self.current_player = (self.current_player + 1) % (self.get_player_count() + len(self.bots))
         
         while self.is_out[self.usernames[self.current_player]]:
             LOG("next player")
             time.sleep(0.5)
             self.current_player = (self.current_player + 1) % self.get_player_count()
+
+        if self.current_player >= self.get_player_count():
+            move(self)
 
         LOG(self.current_player)
