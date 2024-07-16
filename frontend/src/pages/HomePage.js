@@ -39,7 +39,7 @@ export const HomePage = () => {
                             onClick={goToGames}
                             className="w-fit m-4 bg-white inline-block text-black rounded-full hover:text-yellow-300"
                         >
-                            go to games screen
+                            Go to Games Screen
                         </Button>
                     </div>
                 </div>
@@ -95,7 +95,7 @@ export const HomePage = () => {
                     </div>
 
                 </div>
-                <div className="bg-black flex items-center justify-center flex-col text-yellow-300 rounded-3xl mt-10">
+                <div className="bg-black flex items-center p-4 justify-center flex-col text-yellow-300 rounded-3xl mt-10">
                     <Carousel
                         opts={{
                             align: "start",

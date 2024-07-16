@@ -5,6 +5,7 @@ from routes.coins import COINS # TODO add to BJ CTOR
 from logics.card_game import BLANK_CARD, Hand, CardGame, GameStatus
 from logics.poker_bot import move
 import time
+from logics.poker_bot import move
 
 class Poker(CardGame):
     def __init__(self, lobby: Lobby, max_players):
@@ -13,14 +14,14 @@ class Poker(CardGame):
         self.standing : Dict[str:bool] = {} # username : did he stand
         self.pot: int = 0
         self.current_bet: int = 0
-        self.current_player = 0
+        self.current_player: int = 0
         self.board: Hand = None
         self.round_num: int = 0
         self.bets : Dict[str:int] = {}
         self.phase : str = ""
         self.winners : List[str] = []
         self.win_state : str = ""
-        self.bots : List[str] = []
+        self.bot_amount : int = 0
     
     def end_game(self, winner_by_fold = None):
         super().end_game()
@@ -61,6 +62,9 @@ class Poker(CardGame):
         self.win_state = best_hand
         self.pot = 0
 
+    def get_hand_as_object(self, username):
+        return self.hands[username]
+
         
     def start_game(self):
         '''Excepts if the game is already running'''
@@ -71,20 +75,20 @@ class Poker(CardGame):
         self.round_num = 0
         self.win_state = ""
         self.winners = []
+        self.bot_amount = self.lobby.bots_count
+        self.current_player = 0
+        bot_money = sum([COINS[username] for username in self.usernames[:self.get_player_count() - self.bot_amount]]) // (self.get_player_count() - self.bot_amount) + 1
 
         for username in self.usernames:
+            LOG(username)
             self.is_out[username] = False
             self.standing[username] = False
             self.bets[username] = 0
             self.hands[username].draw_to_hand().draw_to_hand() # 2 initial cards in Poker
 
         
-        for bot in self.bots:
-            self.is_out[bot] = False
-            self.standing[bot] = False
-            self.bets[bot] = 0
-            self.hands[bot].draw_to_hand().draw_to_hand() # 2 initial cards in Poker
-        
+        for bot in self.usernames[self.get_player_count() - self.bot_amount:]:
+            COINS[bot] = bot_money
 
     
     # @return True iff all players except one are standing or out  
@@ -270,14 +274,15 @@ class Poker(CardGame):
         self.next_player()
 
     def next_player(self):
-        self.current_player = (self.current_player + 1) % (self.get_player_count() + len(self.bots))
+        LOG("next player current player is: " + str(self.current_player))
+        self.current_player = (self.current_player + 1) % self.get_player_count()
         
         while self.is_out[self.usernames[self.current_player]]:
             LOG("next player")
-            time.sleep(0.5)
             self.current_player = (self.current_player + 1) % self.get_player_count()
 
-        if self.current_player >= self.get_player_count():
+        if self.current_player >= self.get_player_count() - self.bot_amount:
+            LOG("bot move")
             move(self)
 
         LOG(self.current_player)

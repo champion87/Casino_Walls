@@ -32,13 +32,12 @@ const PokerTable = () => {
 
     const updatePage = async () => {
         const info = await call_api(`/api/games/${game_key}/poker/info`, "GET")
-        .then(res => {
-            if (!res.ok)
-            {
-                navigate("/poker_main")
-            }
-            return res.json()
-        })
+            .then(res => {
+                if (!res.ok) {
+                    navigate("/poker_main")
+                }
+                return res.json()
+            })
         setBoardCards(info.board);
         setPlayerCards(info.hands);
         setPot(info.pot);
@@ -165,7 +164,7 @@ const PokerTable = () => {
                     <div className="player-cards flex-col">
                         {Object.entries(playerCards).map(([key, hand]) => (
                             <>
-                                <div className='inline-block m-5'>
+                                <div className={'inline-block m-5 p-2 ' + (currentPlayerName === key ? "border-blue-500 border-4 rounded-2xl" : "")}>
                                     <h2>{key}'s Hand</h2>
                                     <div id="player-cards" className="cards">
                                         {hand.map((card, index) => (

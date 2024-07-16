@@ -1,13 +1,9 @@
 import eval7
-from poker_logic import Poker
 from random import sample, random
 from routes.coins import COINS
+from utils.my_log import LOG
 
-# game.can_check()
-# game.can_fold()
-# game.can_call()
-# game.get_unfolded_players_count()
-# game.initial_money
+
 
 deck_strings = "2c,3c,4c,5c,6c,7c,8c,9c,Tc,Jc,Qc,Kc,Ac,2d,3d,4d,5d,6d,7d,8d,9d,Td,Jd,Qd,Kd,Ad,2h,3h,4h,5h,6h,7h,8h,9h,Th,Jh,Qh,Kh,Ah,2s,3s,4s,5s,6s,7s,8s,9s,Ts,Js,Qs,Ks,As".split(
     ","
@@ -16,12 +12,16 @@ deck_strings = "2c,3c,4c,5c,6c,7c,8c,9c,Tc,Jc,Qc,Kc,Ac,2d,3d,4d,5d,6d,7d,8d,9d,T
 deck = [eval7.Card(s) for s in deck_strings]
 
 
-def get_unfolded_players_count(game: Poker):
+def get_unfolded_players_count(game):
     count_unfolded = 0
     for username in game.usernames:
         if not game.is_out[username]:
             count_unfolded += 1
     return count_unfolded
+
+
+def initial_money(game, user):
+    return game.bets[user] + COINS[user]
 
 
 NUM_OF_ITERATIONS = 200000
@@ -70,11 +70,11 @@ def chance_to_win(board: list[str], my_hand: list[str], num_of_players: int):
     )  # my_chance to win against all players
 
 
-def default_move(game: Poker, user: str, to_fold: bool):
+def default_move(game, user: str, to_fold: bool):
     if game.can_check(user):
         game.stand(user)
         return True
-    elif to_fold and game.can_fold(user):
+    elif to_fold:
         game.fold(user)
         return True
     elif game.can_call(user):
@@ -84,31 +84,51 @@ def default_move(game: Poker, user: str, to_fold: bool):
     return False
 
 
-def move(game: Poker):
+def fold_chance(rate, t):
+    return 1 - rate * (rate - 1.2 * t) * (2 - t) / 2.4
+
+
+def move(game):
     num_of_unfolded_players = get_unfolded_players_count(game) - 1
     user = game.get_current_player_name()
-    my_money = game.initial_money(user)
-    my_hand = game.get_hand(user).to_poker_list_of_str()
+    LOG(f"move function started: {user}")
+    my_money = initial_money(game, user)
+    my_hand = game.get_hand_as_object(user).to_poker_list_of_str()
     board = game.get_board().to_poker_list_of_str()
     current_bet = game.get_current_bet()
     my_bet = game.get_bets()[user]
-
+    LOG("finished initialization")
     chance = chance_to_win(board, my_hand, num_of_unfolded_players)
+    LOG("finished calculating chance to win")
     expected = 1 / (num_of_unfolded_players + 1)
     rate = chance / expected
     t = (current_bet - my_bet) / my_money
     prob_to_raise = rate * (2 * rate - 1) / 6 * (1 - t)
     r = random()
     if r < prob_to_raise:  # raise!
-        raise_amount = my_money * rate * (1 - t) ** 2 / 10
-        game.my_raise(raise_amount)
+        factor = random() * 0.4 + 0.8
+        raise_amount = (my_money * rate * (1 - t) ** 2 * factor) // 10 
+        game.my_raise(user, raise_amount)
+        LOG("raised")
         return
     # didn't raise:
+    LOG("didn't raise")
     if game.can_check(user):
-        game.check(user)
+        game.stand(user)
+        LOG("Checked")
         return
+
+    prob_to_fold = fold_chance(rate, t)
+
+    if t > 0.7:
+        pass
+    elif 0.4 < t < 0.7:
+        prob_to_fold = min(0.85, fold_chance(1.3 * rate, t) - 0.15)
+    else:
+        prob_to_fold = min(0.7, fold_chance(1.3 * rate, t) - 0.3)
+
     r = random()
-    prob_to_fold = 1 - rate * (rate - 1.2 * t) * (2 - t) / 2.4
     to_fold = r < prob_to_fold
     default_move(game, user, to_fold)
+    LOG("did default move")
     return
