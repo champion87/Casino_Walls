@@ -76,11 +76,10 @@ export const PokerMainPage = () => {
           </div>
           <Button
             type="button"
-            onClick={play_singleplayer_poker}
+            onClick={async () => { navigate(`/poker_lobby/${await create_lobby("poker", 0, 4, 2)}`) }}
             className="w-44 mt-6 bg-black text-yellow-300 rounded-full hover:text-yellow-200"
           >
-            single player -
-            not yet supported
+            play with bots
           </Button>
 
 

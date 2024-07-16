@@ -3,6 +3,7 @@ from utils.my_log import LOG
 from logics.lobby import Lobby
 from routes.coins import COINS # TODO add to BJ CTOR
 from logics.card_game import BLANK_CARD, Hand, CardGame, GameStatus
+from logics.poker_bot import move
 import time
 
 class Poker(CardGame):
@@ -123,7 +124,7 @@ class Poker(CardGame):
         return self.win_state
     
     def get_users_coins(self)-> Dict[str,int]:
-        return {username : COINS[username] for username in self.usernames}
+        return {username : COINS.get(username, -1) for username in self.usernames}
     
     def get_pot(self)-> int:
         return self.pot
