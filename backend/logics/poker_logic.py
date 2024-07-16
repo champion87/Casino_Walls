@@ -3,6 +3,7 @@ from utils.my_log import LOG
 from logics.lobby import Lobby
 from routes.coins import COINS # TODO add to BJ CTOR
 from logics.card_game import BLANK_CARD, Hand, CardGame, GameStatus
+from logics.poker_bot import move
 import time
 
 class Poker(CardGame):
