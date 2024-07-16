@@ -165,7 +165,7 @@ const PokerTable = () => {
                     <div className="player-cards flex-col">
                         {Object.entries(playerCards).map(([key, hand]) => (
                             <>
-                                <div className='inline-block m-5'>
+                                <div className={'inline-block m-5'}>
                                     <h2>{key}'s Hand</h2>
                                     <div id="player-cards" className="cards">
                                         {hand.map((card, index) => (

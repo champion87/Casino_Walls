@@ -14,7 +14,7 @@ class Poker(CardGame):
         self.standing : Dict[str:bool] = {} # username : did he stand
         self.pot: int = 0
         self.current_bet: int = 0
-        self.current_player = 0
+        self.current_player: int = 0
         self.board: Hand = None
         self.round_num: int = 0
         self.bets : Dict[str:int] = {}
@@ -62,6 +62,9 @@ class Poker(CardGame):
         self.win_state = best_hand
         self.pot = 0
 
+    def get_hand_as_object(self, username):
+        return self.hands[username]
+
         
     def start_game(self):
         '''Excepts if the game is already running'''
@@ -73,9 +76,11 @@ class Poker(CardGame):
         self.win_state = ""
         self.winners = []
         self.bot_amount = self.lobby.bots_count
-        bot_money = sum(self.usernames[:self.get_player_count() - self.bot_amount]) // (self.get_player_count() - self.bot_amount) + 1
+        self.current_player = 0
+        bot_money = sum([COINS[username] for username in self.usernames[:self.get_player_count() - self.bot_amount]]) // (self.get_player_count() - self.bot_amount) + 1
 
         for username in self.usernames:
+            LOG(username)
             self.is_out[username] = False
             self.standing[username] = False
             self.bets[username] = 0
@@ -269,14 +274,15 @@ class Poker(CardGame):
         self.next_player()
 
     def next_player(self):
+        LOG("next player current player is: " + str(self.current_player))
         self.current_player = (self.current_player + 1) % self.get_player_count()
         
         while self.is_out[self.usernames[self.current_player]]:
             LOG("next player")
-            time.sleep(0.5)
             self.current_player = (self.current_player + 1) % self.get_player_count()
 
         if self.current_player >= self.get_player_count() - self.bot_amount:
+            LOG("bot move")
             move(self)
 
         LOG(self.current_player)
