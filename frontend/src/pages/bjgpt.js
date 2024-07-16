@@ -109,7 +109,7 @@ function BJ_GPT() {
     const response = await call_api(`/api/lobbies/my_lobby`, "get")
     const data = await response.json()
     console.log(data.lobby_key)
-    await call_api(`/api/games/${game_key}/blackjack/abort`, "post")
+    call_api(`/api/games/${game_key}/blackjack/abort`, "post")
     navigate(`/blackjack_lobby/${data.lobby_key}`)
   }
 
