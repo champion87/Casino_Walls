@@ -77,6 +77,14 @@ class Poker(CardGame):
             self.bets[username] = 0
             self.hands[username].draw_to_hand().draw_to_hand() # 2 initial cards in Poker
 
+        
+        for bot in self.bots:
+            self.is_out[bot] = False
+            self.standing[bot] = False
+            self.bets[bot] = 0
+            self.hands[bot].draw_to_hand().draw_to_hand() # 2 initial cards in Poker
+        
+
     
     # @return True iff all players except one are standing or out  
     def is_round_over(self):
@@ -261,11 +269,14 @@ class Poker(CardGame):
         self.next_player()
 
     def next_player(self):
-        self.current_player = (self.current_player + 1) % self.get_player_count()
+        self.current_player = (self.current_player + 1) % (self.get_player_count() + len(self.bots))
         
         while self.is_out[self.usernames[self.current_player]]:
             LOG("next player")
             time.sleep(0.5)
             self.current_player = (self.current_player + 1) % self.get_player_count()
+
+        if self.current_player >= self.get_player_count():
+            move(self)
 
         LOG(self.current_player)

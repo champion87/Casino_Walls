@@ -155,9 +155,9 @@ const reviews = [
         "stars": 3
     },
     {
-        "name": "N. Atar",
+        "name": "S. Gargir",
         "color": "green-300",
-        "review": "אין אתר",
+        "review": "מטורף",
         "stars": 5
     },
     {
