@@ -88,54 +88,67 @@ export const GamesLobbyPage = () => {
             <Label className='mt-6 text-yellow-300'>
               claim free coins every hour
             </Label>
-            <div className="grid w-full h-full grid-cols-3">
-              <Card className="flex flex-col relative items-center m-10 bg-cards bg-cover">
-                <CardHeader>
-                  <CardTitle className="text-yellow-400 font-bold">Blackjack</CardTitle>
-                  <CardDescription className="text-yellow-300">one of the all time best casino games</CardDescription>
-                </CardHeader>
-                <CardContent className="text-yellow-300 font-semibold">
-                </CardContent>
-                <CardFooter className="flex items-center justify-center absolute bottom-0">
-                  <Button className="text-yellow-400" onClick={() => navigate("/blackjack_main")}>Take Me There</Button>
-                </CardFooter>
-              </Card>
-              <Card className="flex flex-col relative items-center m-10 bg-wheel">
-                <CardHeader>
-                  <CardTitle className="text-yellow-400">Wheel of Fortune</CardTitle>
-                  <CardDescription className="text-yellow-300">one of the all time best casino games</CardDescription>
-                </CardHeader>
-                <CardContent>
-                </CardContent>
-                <CardFooter className="flex items-center justify-center absolute bottom-0">
-                  <Button className="text-yellow-300" onClick={() => navigate("/games/7/wheel_of_fortune")}>Take Me There</Button>
-                </CardFooter>
-              </Card>
+            <Button
+              type="button"
+              id="coin_claim"
+              onClick={claim_coins}
+              className="w-full mt-6 bg-white text-black rounded-full hover:text-yellow-300"
+            >
+              Here
+            </Button>
+          </div>
+          <p className='text-sm my-5 text-yellow-200'>
+            {coinStatus}
+          </p>
+          <div className="grid w-full h-full grid-cols-3">
+            <Card className="flex flex-col relative items-center m-10 bg-cards bg-cover">
+              <CardHeader>
+                <CardTitle className="text-yellow-400 font-bold">Blackjack</CardTitle>
+                <CardDescription className="text-yellow-300">one of the all time best casino games</CardDescription>
+              </CardHeader>
+              <CardContent className="text-yellow-300 font-semibold">
+              </CardContent>
+              <CardFooter className="flex items-center justify-center absolute bottom-0">
+                <Button className="text-yellow-400" onClick={() => navigate("/blackjack_main")}>Take Me There</Button>
+              </CardFooter>
+            </Card>
+            <Card className="flex flex-col relative items-center m-10 bg-wheel">
+              <CardHeader>
+                <CardTitle className="text-yellow-400">Wheel of Fortune</CardTitle>
+                <CardDescription className="text-yellow-300">one of the all time best casino games</CardDescription>
+              </CardHeader>
+              <CardContent>
+              </CardContent>
+              <CardFooter className="flex items-center justify-center absolute bottom-0">
+                <Button className="text-yellow-300" onClick={() => navigate("/games/7/wheel_of_fortune")}>Take Me There</Button>
+              </CardFooter>
+            </Card>
 
-              <Card className="flex flex-col m-10 bg-poker relative bg-cover bg-center items-center text-yellow-300">
-                <CardHeader>
-                  <CardTitle>Poker</CardTitle>
-                  <CardDescription className="text-yellow-300">certainly the all time best casino game</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <br></br>
-                  <br></br>
-                  <br></br>
-                  <br></br>
-                  <br></br>
-                  <br></br>
-                </CardContent>
-                <CardFooter className="flex items-center justify-center absolute bottom-0">
-                  <Button onClick={() => navigate("/poker_main")} className="text-yellow-300">Take Me There</Button>
-                </CardFooter>
-              </Card>
-            </div>
+            <Card className="flex flex-col m-10 bg-poker relative bg-cover bg-center items-center text-yellow-300">
+              <CardHeader>
+                <CardTitle>Poker</CardTitle>
+                <CardDescription className="text-yellow-300">certainly the all time best casino game</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <br></br>
+                <br></br>
+                <br></br>
+                <br></br>
+                <br></br>
+                <br></br>
+              </CardContent>
+              <CardFooter className="flex items-center justify-center absolute bottom-0">
+                <Button onClick={() => navigate("/poker_main")} className="text-yellow-300">Take Me There</Button>
+              </CardFooter>
+            </Card>
+          </div>
+          <div className=''>
             <Button
               type="button"
               onClick={() => navigate("/")}
               className="w-full m-4 bg-white inline-block text-black rounded-full hover:text-yellow-300"
             >
-              home page
+              Home Page
             </Button>
           </div>
         </div>
