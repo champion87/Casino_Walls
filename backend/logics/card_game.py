@@ -1,7 +1,7 @@
 from enum import Enum
 import itertools
 import random
-from typing import Dict, List
+from typing import Dict, List, Tuple
 from fastapi.params import Path
 from pydantic import BaseModel
 from utils.my_log import LOG
@@ -10,6 +10,7 @@ from logics.lobby import Lobby
 from routes.coins import COINS # TODO add to BJ CTOR
 import eval7
 
+BLANK_CARD = ("xx", True) # True means showing the back
 
 class Symbol(Enum):
     CLUBS = 1
@@ -169,6 +170,11 @@ class Hand:
     
     def to_poker_list_of_str(self):
         return [card.get_Poker_string() for card in self.cards]
+    
+    def export(self, hidden=False):
+        if hidden:
+            return [BLANK_CARD] * len(self.cards)
+        return [(card.get_Poker_string(), False) for card in self.cards] # False means show front (don't show back)
 
 
 class CardGame(Game):
@@ -185,8 +191,8 @@ class CardGame(Game):
     def get_player_count(self):
         return len(self.usernames)
 
-    def get_hand(self, username: str)-> Hand:
-        return self.hands[username]  
+    def get_hand(self, username: str)-> List[Tuple[str, bool]]:
+        return self.hands[username].export()
     
     def end_game(self):
         self.status = GameStatus.NO_GAME
@@ -194,17 +200,12 @@ class CardGame(Game):
     def get_player_num(self, username : str):
         return [i for i,x in enumerate(self.usernames) if x == username][0]
         
-    def get_hands_for_show(self, username: str):
+    def get_hands_for_show(self, username: str)-> Dict[str, List[Tuple[str, bool]]]:
         res = {}
         
-        if self.status == GameStatus.NO_GAME: # TODO make sure that this one isn't nonsense
-            for (name,hand) in self.hands.items():
-                if name != username:
-                    res[name] = hand.to_list_of_str()
-        else:
-            for (name,hand) in self.hands.items():
-                if name != username:
-                    res[name] = len(hand.to_list_of_str()) * ["xxxx\n"*3]
+        for (name,hand) in self.hands.items():
+            if name != username:
+                res[name] = hand.export(hidden=(self.status != GameStatus.NO_GAME))
                 
         return res
     

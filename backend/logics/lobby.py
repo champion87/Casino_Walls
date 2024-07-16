@@ -22,6 +22,10 @@ class Lobby:#(BaseModel):
     def add(self, user: str):
         LOG(f"{self.old_users=}")    
         LOG(f"{self.usernames=}")
+        
+        if user in self.usernames:
+            return
+        
         if len(self.usernames) >= self.max_players:
             raise Exception(f"Lobby <{self.key}> is full!")
         if user not in self.old_users and self.is_locked:
@@ -29,6 +33,7 @@ class Lobby:#(BaseModel):
         else:
             if user not in self.usernames:
                 self.usernames.append(user)
+            if user not in self.old_users:
                 self.old_users.append(user)
         LOG(f"{self.old_users=}")    
         LOG(f"{self.usernames=}")

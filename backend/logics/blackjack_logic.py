@@ -1,9 +1,8 @@
-from typing import Dict, List
+from typing import Dict, List, Tuple
 from utils.my_log import LOG
 from logics.lobby import Lobby
 from routes.coins import COINS # TODO add to BJ CTOR
-from logics.card_game import Hand, CardGame, GameStatus
-
+from logics.card_game import Hand, CardGame, GameStatus, BLANK_CARD
 
 class BlackJack(CardGame):
     def __init__(self, lobby: Lobby, prize, max_players):
@@ -71,11 +70,20 @@ class BlackJack(CardGame):
         return True    
     
     
-    def get_dealer_hand(self) -> Hand:
-        return self.dealer_hand
+    def get_dealer_hand(self, fully_visable:bool) -> List[Tuple[str, bool]]:
+        if fully_visable:
+            return self.dealer_hand.export()
+        else:
+            return [self.dealer_hand.export()[0], BLANK_CARD]
     
     def get_score(self, username: str) -> List[str]:
         return self.hands[username].get_BJ_score()
+    
+    def get_dealer_score(self, fully_visable:bool) -> int:
+        if fully_visable:
+            return self.dealer_hand.get_BJ_score()
+        else:
+            return self.dealer_hand.cards[0].get_BJ_value()
     
     def draw(self, username:str):
         if self.is_out[username]:

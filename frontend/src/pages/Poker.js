@@ -4,6 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Button } from 'src/components/ui/button';
 import { Slider } from "../components/ui/slider"
 
+import Card from '@heruka_urgyen/react-playing-cards/lib/TcN'
 
 const PokerTable = () => {
     const navigate = useNavigate()
@@ -30,7 +31,14 @@ const PokerTable = () => {
     const [raisePercentage, setRaisePercentage] = useState(0); // how much the user wants to raise by
 
     const updatePage = async () => {
-        const info = await call_api(`/api/games/${game_key}/poker/info`, "GET").then(res => res.json())
+        const info = await call_api(`/api/games/${game_key}/poker/info`, "GET")
+        .then(res => {
+            if (!res.ok)
+            {
+                navigate("/poker_main")
+            }
+            return res.json()
+        })
         setBoardCards(info.board);
         setPlayerCards(info.hands);
         setPot(info.pot);
@@ -161,7 +169,8 @@ const PokerTable = () => {
                                     <h2>{key}'s Hand</h2>
                                     <div id="player-cards" className="cards">
                                         {hand.map((card, index) => (
-                                            <div key={index} className="card">{card}</div>))}
+                                            <Card key={index} card={card[0]} height="100px" back={card[1]} />
+                                        ))}
                                     </div>
                                     <h2>{key}'s Bet: ${bets[key]}</h2>
                                     <h2>{key}'s Coins: ${coins[key]}</h2>
@@ -185,7 +194,8 @@ const PokerTable = () => {
                     <h2 className="mb-4 text-xl text-yellow-300">Board</h2>
                     <div className="flex items-center justify-center">
                         {boardCards.map((card, index) => (
-                            <div key={index} className="card inline-block">{card}</div>
+                            <Card key={index} card={card[0]} height="100px" back={card[1]} />
+                            // <div key={index} className="card inline-block">{card}</div>
                         ))}
                     </div>
                 </div>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './bjgpt.css';
 import { call_api } from 'src/lib/utils';
 import { useNavigate, useParams } from 'react-router-dom';
+import Card from '@heruka_urgyen/react-playing-cards/lib/TcN'
 
 function BJ_GPT() {
   const navigate = useNavigate();
@@ -145,7 +146,12 @@ function BJ_GPT() {
 
   async function startNewGame() {
 
-    await call_api(`/api/games/${game_key}/blackjack/try_restart_game`, "post")
+    const response = await call_api(`/api/games/${game_key}/blackjack/try_restart_game`, "post")
+    if (!response.ok)
+    {
+      navigate("/blackjack_main")
+    }
+
 
     let newDealerHand = await getDealerHand()
     let newPlayerHand = await getHand();
@@ -190,7 +196,8 @@ function BJ_GPT() {
         <h2>Dealer's Hand</h2>
         <div id="dealer-cards" className="cards">
           {dealerHand.map((card) => (
-            <div key={card} className="card">{card}</div>
+            <Card key={card[0]} card={card[0]} height="100px" back={card[1]} />
+            // <div key={card} className="card">{card}</div>
           ))}
         </div>
         <div id="dealer-score" className="score">{dealerScore}</div>
@@ -199,7 +206,9 @@ function BJ_GPT() {
         <h2>Your Hand</h2>
         <div id="player-cards" className="cards">
           {playerHand.map((card) => (
-            <div key={card} className="card">{card}</div>
+            // <div key={card} className="card">{card}</div>
+            <Card key={card[0]} card={card[0]} height="100px" back={card[1]} />
+
           ))}
         </div>
         <div id="player-score" className="score">{playerScore}</div>
@@ -225,7 +234,8 @@ function BJ_GPT() {
 
                 {console.log("hand")}{console.log(hand)}{console.log("hands")}{console.log(hands)}{
                   hand.map((card, index) => (
-                    <div key={index} className="card">{card}</div>))}
+                    <Card key={card[0] + index} card={card[0]} height="100px" back={card[1]} />
+                  ))}
               </div>
             </>
           ))

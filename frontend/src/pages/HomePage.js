@@ -70,16 +70,17 @@ export const HomePage = () => {
                                 <Button className="text-yellow-300" onClick={() => navigate("/games/7/wheel_of_fortune")}>Take Me There</Button>
                             </CardFooter>
                         </Card>
-                        <Card className="w-[350px] m-10 bg-black text-yellow-300">
+
+                        <Card className="w-[350px] m-10 bg-poker bg-cover text-yellow-300">
                             <CardHeader>
-                                <CardTitle>Coming Soon...</CardTitle>
-                                <CardDescription className="text-yellow-300">one of the all time best casino games</CardDescription>
+                                <CardTitle>Poker</CardTitle>
+                                <CardDescription className="text-yellow-300">certainly the all time best casino game</CardDescription>
                             </CardHeader>
                             <CardContent>
-
+                
                             </CardContent>
                             <CardFooter className="flex items-center justify-center text-yellow-300">
-                                <Button className="text-yellow-300">Take Me There</Button>
+                                <Button onClick={() => navigate("/poker_main")} className="text-yellow-300">Take Me There</Button>
                             </CardFooter>
                         </Card>
                     </div>
